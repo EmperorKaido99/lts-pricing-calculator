@@ -83,9 +83,15 @@ a { color: var(--brand-mid); }
   background: url("../assets/hero-pattern.svg") center / cover no-repeat;
   pointer-events: none;
 }
-.hero__text { position: relative; max-width: 1080px; margin: 0 auto; text-align: left; }
+.hero__inner {
+  position: relative; max-width: 1080px; margin: 0 auto;
+  display: flex; align-items: center; justify-content: space-between; gap: 32px;
+}
+.hero__text { flex: 1 1 420px; text-align: left; }
+.hero__art { flex: 0 1 440px; display: flex; justify-content: flex-end; min-width: 0; }
+.hero__art img { width: 100%; max-width: 440px; height: auto; }
 .hero h1 { margin: 0 0 10px; font-size: 36px; font-weight: 800; letter-spacing: -0.5px; }
-.hero p { margin: 0 0 22px; color: rgba(255,255,255,0.92); font-size: 17px; max-width: 640px; }
+.hero p { margin: 0 0 22px; color: rgba(255,255,255,0.92); font-size: 17px; max-width: 560px; }
 .hero .btn--primary {
   background: #fff; color: var(--brand-blue);
 }
@@ -293,6 +299,19 @@ a { color: var(--brand-mid); }
 .totals-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 14px; }
 .totals-grid__label { font-size: 12px; color: var(--text-muted); }
 .totals-grid__value { font-size: 22px; font-weight: 800; color: var(--navy-900); }
+.totals-grid__value.is-clickable { cursor: pointer; display: inline-block; border-radius: 8px; padding: 2px 8px; margin: -2px -8px; transition: background .15s; }
+.totals-grid__value.is-clickable:hover { background: var(--brand-gradient-soft); }
+.totals-grid__value.is-clickable:focus-visible { outline: 2px solid var(--brand-mid); outline-offset: 2px; }
+
+/* live-update pulse when the estimate changes */
+@keyframes costPulse {
+  0% { transform: scale(1); }
+  35% { transform: scale(1.12); }
+  100% { transform: scale(1); }
+}
+.cost-pulse { animation: costPulse .45s ease; }
+.topbar__stat-value { transform-origin: right center; }
+.totals-grid__value { transform-origin: center; }
 #total-monthly, #total-annual {
   background: var(--brand-gradient);
   -webkit-background-clip: text; background-clip: text; color: transparent;
@@ -425,8 +444,11 @@ a { color: var(--brand-mid); }
 .support-bubble__hours { font-size: 11px; }
 
 @media (max-width: 720px) {
-  .hero { padding: 40px 20px; }
+  .hero { padding: 36px 20px; }
   .hero h1 { font-size: 28px; }
+  .hero__inner { flex-direction: column; align-items: flex-start; gap: 24px; }
+  .hero__art { align-self: center; justify-content: center; flex-basis: auto; }
+  .hero__art img { max-width: 260px; }
   .line-item__grid { grid-template-columns: 1fr; }
   .contract-options { grid-template-columns: repeat(2, 1fr); }
   .savings-table { grid-template-columns: repeat(2, 1fr); }

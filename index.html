@@ -43,10 +43,15 @@
 
 <!-- ============ HERO ============ -->
 <section class="hero">
-  <div class="hero__text">
-    <h1>Pricing calculator</h1>
-    <p>See exactly what your training office gets with LTS — and what it costs.</p>
-    <a class="btn btn--primary" href="https://www.ltsystems.co.za/pricing/" target="_blank" rel="noopener">Get started with LTS</a>
+  <div class="hero__inner">
+    <div class="hero__text">
+      <h1>Pricing calculator</h1>
+      <p>See exactly what your training office gets with LTS — and what it costs.</p>
+      <a class="btn btn--primary" href="https://www.ltsystems.co.za/pricing/" target="_blank" rel="noopener">Get started with LTS</a>
+    </div>
+    <div class="hero__art">
+      <img src="assets/hero-calculator.svg" alt="Calculator" width="430" height="410" />
+    </div>
   </div>
 </section>
 
@@ -132,7 +137,7 @@
         <div class="totals-grid">
           <div>
             <div class="totals-grid__label">Upfront cost</div>
-            <div class="totals-grid__value">R0.00</div>
+            <div class="totals-grid__value" id="total-upfront">R0.00</div>
           </div>
           <div>
             <div class="totals-grid__label">Monthly cost</div>

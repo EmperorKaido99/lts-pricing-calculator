@@ -1,0 +1,82 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 430 410" role="img" aria-label="Calculator illustration">
+  <defs>
+    <linearGradient id="calcBody" x1="0" y1="0" x2="0.4" y2="1">
+      <stop offset="0" stop-color="#ffffff"/>
+      <stop offset="1" stop-color="#e8ecf3"/>
+    </linearGradient>
+    <linearGradient id="calcScreen" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#0a8fd0"/>
+      <stop offset="1" stop-color="#10d18a"/>
+    </linearGradient>
+    <filter id="calcShadow" x="-20%" y="-20%" width="140%" height="150%">
+      <feDropShadow dx="0" dy="18" stdDeviation="20" flood-color="#0a2a4d" flood-opacity="0.28"/>
+    </filter>
+  </defs>
+
+  <!-- body -->
+  <rect x="20" y="18" width="390" height="374" rx="30" fill="url(#calcBody)" stroke="#d7dce6" stroke-width="1.5" filter="url(#calcShadow)"/>
+
+  <!-- screen -->
+  <rect x="52" y="46" width="326" height="74" rx="14" fill="url(#calcScreen)"/>
+  <text x="366" y="92" text-anchor="end" font-family="'Courier New', monospace" font-size="40" font-weight="700" fill="#0b3a2f" fill-opacity="0.18" letter-spacing="4">88888888</text>
+  <text x="366" y="92" text-anchor="end" font-family="'Courier New', monospace" font-size="40" font-weight="700" fill="#ffffff">0</text>
+
+  <!-- keys: fills -->
+  <g stroke-width="0">
+    <!-- Row 1 : function (amber) + AC (blue) -->
+    <rect x="52"  y="140" width="54" height="44" rx="10" fill="#dca63f"/>
+    <rect x="120" y="140" width="54" height="44" rx="10" fill="#dca63f"/>
+    <rect x="188" y="140" width="54" height="44" rx="10" fill="#dca63f"/>
+    <rect x="256" y="140" width="54" height="44" rx="10" fill="#dca63f"/>
+    <rect x="324" y="140" width="54" height="44" rx="10" fill="#2f7ef0"/>
+
+    <!-- Row 2 : 7 8 9 ÷ × -->
+    <rect x="52"  y="192" width="54" height="44" rx="10" fill="#363b43"/>
+    <rect x="120" y="192" width="54" height="44" rx="10" fill="#363b43"/>
+    <rect x="188" y="192" width="54" height="44" rx="10" fill="#363b43"/>
+    <rect x="256" y="192" width="54" height="44" rx="10" fill="#c2c8d2"/>
+    <rect x="324" y="192" width="54" height="44" rx="10" fill="#c2c8d2"/>
+
+    <!-- Row 3 : 4 5 6 − + -->
+    <rect x="52"  y="244" width="54" height="44" rx="10" fill="#363b43"/>
+    <rect x="120" y="244" width="54" height="44" rx="10" fill="#363b43"/>
+    <rect x="188" y="244" width="54" height="44" rx="10" fill="#363b43"/>
+    <rect x="256" y="244" width="54" height="44" rx="10" fill="#c2c8d2"/>
+    <rect x="324" y="244" width="54" height="44" rx="10" fill="#c2c8d2"/>
+
+    <!-- Row 4 : 1 2 3 . = -->
+    <rect x="52"  y="296" width="54" height="44" rx="10" fill="#363b43"/>
+    <rect x="120" y="296" width="54" height="44" rx="10" fill="#363b43"/>
+    <rect x="188" y="296" width="54" height="44" rx="10" fill="#363b43"/>
+    <rect x="256" y="296" width="54" height="44" rx="10" fill="#c2c8d2"/>
+    <rect x="324" y="296" width="54" height="44" rx="10" fill="#c2c8d2"/>
+
+    <!-- Row 5 : 0 (wide) . AC (wide, blue) -->
+    <rect x="52"  y="348" width="122" height="44" rx="10" fill="#363b43"/>
+    <rect x="188" y="348" width="54"  height="44" rx="10" fill="#c2c8d2"/>
+    <rect x="256" y="348" width="122" height="44" rx="10" fill="#2f7ef0"/>
+  </g>
+
+  <!-- keys: labels -->
+  <g font-family="-apple-system, 'Segoe UI', Arial, sans-serif" text-anchor="middle" dominant-baseline="central">
+    <g font-size="15" font-weight="700" fill="#4a3410">
+      <text x="79"  y="162">MC</text><text x="147" y="162">M+</text>
+      <text x="215" y="162">M-</text><text x="283" y="162">MR</text>
+    </g>
+    <text x="351" y="162" font-size="15" font-weight="800" fill="#ffffff">AC</text>
+
+    <g font-size="20" font-weight="700" fill="#ffffff">
+      <text x="79"  y="214">7</text><text x="147" y="214">8</text><text x="215" y="214">9</text>
+      <text x="79"  y="266">4</text><text x="147" y="266">5</text><text x="215" y="266">6</text>
+      <text x="79"  y="318">1</text><text x="147" y="318">2</text><text x="215" y="318">3</text>
+      <text x="113" y="370">0</text>
+    </g>
+    <g font-size="22" font-weight="700" fill="#2a2f36">
+      <text x="283" y="214">&#247;</text><text x="351" y="214">&#215;</text>
+      <text x="283" y="266">&#8722;</text><text x="351" y="266">+</text>
+      <text x="283" y="318">.</text><text x="351" y="318">=</text>
+      <text x="215" y="370">.</text>
+    </g>
+    <text x="317" y="370" font-size="18" font-weight="800" fill="#ffffff">AC</text>
+  </g>
+</svg>

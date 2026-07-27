@@ -69,20 +69,27 @@
     calcLoader.show(() => goToTab("estimate"));
   }
 
-  // The estimate price in the top bar loads the estimate page with the loader
-  $$(".topbar__stat").forEach((stat) => {
-    stat.classList.add("is-clickable");
-    stat.setAttribute("role", "button");
-    stat.setAttribute("tabindex", "0");
-    stat.title = "Open your estimate";
-    stat.addEventListener("click", loadEstimatePage);
-    stat.addEventListener("keydown", (e) => {
+  function wireLoaderTrigger(el, title) {
+    if (!el) return;
+    el.classList.add("is-clickable");
+    el.setAttribute("role", "button");
+    el.setAttribute("tabindex", "0");
+    el.title = title;
+    el.addEventListener("click", loadEstimatePage);
+    el.addEventListener("keydown", (e) => {
       if (e.key === "Enter" || e.key === " ") {
         e.preventDefault();
         loadEstimatePage();
       }
     });
-  });
+  }
+
+  // The estimate price — in the top bar AND the bottom totals card — opens the
+  // estimate page through the loading transition.
+  $$(".topbar__stat").forEach((stat) => wireLoaderTrigger(stat, "Open your estimate"));
+  ["#total-upfront", "#total-monthly", "#total-annual"].forEach((sel) =>
+    wireLoaderTrigger($(sel), "Recalculate your estimate")
+  );
 
   // ---------- audience toggle ----------
   $$(".segmented__btn").forEach((btn) => {
@@ -227,21 +234,35 @@
     return `<a class="btn btn--primary" target="_blank" rel="noopener" href="mailto:${LTS_DATA.contact.email}?subject=Update our LTS plan">Contact support to update your plan</a>`;
   }
 
-  function renderTotals() {
-    if (state.lines.length === 0) {
-      $("#stat-monthly").textContent = fmt(0);
-      $("#total-monthly").textContent = fmt(0);
-      $("#total-annual").textContent = fmt(0);
-      $("#totals-cta").innerHTML = "";
-      return;
+  // Update a cost figure and pulse it when the value actually changes, so the
+  // running estimate is visibly "live" at both the top bar and the totals card.
+  function setCost(sel, text) {
+    const el = $(sel);
+    if (!el) return;
+    if (el.textContent !== text) {
+      el.textContent = text;
+      el.classList.remove("cost-pulse");
+      void el.offsetWidth; // restart the animation
+      el.classList.add("cost-pulse");
     }
-    const totals = LTSCalculator.totalEstimate(state.lines);
+  }
+
+  function renderTotals() {
+    const totals = state.lines.length
+      ? LTSCalculator.totalEstimate(state.lines)
+      : { monthlyExclVat: 0, annualExclVat: 0, monthlyInclVat: 0, annualInclVat: 0 };
     const monthly = state.showVat ? totals.monthlyInclVat : totals.monthlyExclVat;
     const annual = state.showVat ? totals.annualInclVat : totals.annualExclVat;
-    $("#stat-monthly").textContent = fmt(monthly);
-    $("#total-monthly").textContent = fmt(monthly);
-    $("#total-annual").textContent = fmt(annual);
-    $("#totals-cta").innerHTML = ctaHtml();
+
+    // LTS charges no setup / installation / licensing fee, so the upfront cost
+    // is always R0.00 — shown live at the top and bottom for transparency.
+    setCost("#stat-upfront", fmt(0));
+    setCost("#total-upfront", fmt(0));
+    setCost("#stat-monthly", fmt(monthly));
+    setCost("#total-monthly", fmt(monthly));
+    setCost("#total-annual", fmt(annual));
+
+    $("#totals-cta").innerHTML = state.lines.length ? ctaHtml() : "";
   }
 
   // ---------- export / save / share ----------

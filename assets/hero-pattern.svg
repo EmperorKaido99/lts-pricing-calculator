@@ -6,13 +6,6 @@
     <path d="M980 20 L1140 20 L1220 165 L1140 310 L980 310 L900 165 Z"/>
     <path d="M770 60 L880 60 L935 155 L880 250 L770 250 L715 155 Z"/>
   </g>
-  <!-- Circular "arrow" motifs -->
-  <g fill="none" stroke="#ffffff" stroke-opacity="0.16" stroke-width="2">
-    <circle cx="170" cy="175" r="40"/>
-    <path d="M150 175 L188 175 M176 163 L190 175 L176 187"/>
-    <circle cx="1050" cy="165" r="34"/>
-    <path d="M1033 165 L1065 165 M1055 155 L1067 165 L1055 175"/>
-  </g>
   <!-- Scattered plus marks -->
   <g fill="none" stroke="#ffffff" stroke-opacity="0.28" stroke-width="2">
     <path d="M470 250 h18 M479 241 v18"/>

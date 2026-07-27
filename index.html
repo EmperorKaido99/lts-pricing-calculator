@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>LTS Pricing Calculator</title>
+<link rel="stylesheet" href="css/styles.css" />
+</head>
+<body>
+
+<!-- ============ TOP BAR ============ -->
+<header class="topbar">
+  <div class="topbar__left">
+    <span class="topbar__title">LTS Pricing Calculator</span>
+  </div>
+  <div class="topbar__right">
+    <div class="topbar__stat">
+      <span class="topbar__stat-value" id="stat-upfront">R0.00</span>
+      <span class="topbar__stat-label">Estimated upfront cost</span>
+    </div>
+    <div class="topbar__stat">
+      <span class="topbar__stat-value" id="stat-monthly">R0.00</span>
+      <span class="topbar__stat-label">Estimated monthly cost</span>
+    </div>
+    <a class="btn btn--ghost" href="https://www.ltsystems.co.za/login/" target="_blank" rel="noopener">Log in</a>
+  </div>
+</header>
+
+<!-- ============ HERO ============ -->
+<section class="hero">
+  <div class="hero__text">
+    <h1>Pricing calculator</h1>
+    <p>See exactly what your training office gets with LTS — and what it costs.</p>
+    <a class="btn btn--primary" href="https://www.ltsystems.co.za/pricing/" target="_blank" rel="noopener">Get started with LTS</a>
+  </div>
+</section>
+
+<!-- ============ LOGIN BANNER ============ -->
+<div class="banner">
+  <a href="https://www.ltsystems.co.za/login/" target="_blank" rel="noopener">Log in</a>
+  to save this estimate to your LTS account, or use Save below to keep it on this device.
+</div>
+
+<!-- ============ AUDIENCE TOGGLE ============ -->
+<div class="audience">
+  <span class="audience__label">I am a:</span>
+  <div class="segmented" role="tablist" aria-label="Customer type">
+    <button class="segmented__btn is-active" data-audience="new" type="button">New customer</button>
+    <button class="segmented__btn" data-audience="existing" type="button">Existing customer</button>
+  </div>
+</div>
+
+<!-- ============ TABS ============ -->
+<nav class="tabs" role="tablist" aria-label="Pricing calculator sections">
+  <button class="tabs__btn is-active" data-tab="products" type="button">Products</button>
+  <button class="tabs__btn" data-tab="estimate" type="button">Your Estimate <span id="tab-line-count" class="tabs__badge" hidden>0</span></button>
+  <button class="tabs__btn" data-tab="templates" type="button">Estimate templates</button>
+  <button class="tabs__btn" data-tab="saved" type="button">Saved estimates</button>
+  <button class="tabs__btn" data-tab="faqs" type="button">FAQs</button>
+</nav>
+
+<main class="content">
+
+  <!-- ============ PRODUCTS TAB ============ -->
+  <section class="tabpanel is-active" id="panel-products">
+    <p class="panel-intro">LTS sells one thing, and does it well: a single online assessment &amp; learner tracking platform, priced by trainee count. Add it to your estimate and configure it on the right.</p>
+
+    <div class="product-card">
+      <div class="product-card__main">
+        <div class="product-card__icon" aria-hidden="true">📋</div>
+        <div>
+          <h2 id="product-name"></h2>
+          <p class="product-card__tagline" id="product-tagline"></p>
+          <p class="product-card__desc" id="product-desc"></p>
+          <ul class="product-card__props" id="product-props"></ul>
+        </div>
+      </div>
+      <div class="product-card__action">
+        <div class="product-card__from">From</div>
+        <div class="product-card__price" id="product-from-price"></div>
+        <div class="product-card__per">per trainee / month, excl. VAT</div>
+        <button class="btn btn--primary" id="btn-add-to-estimate" type="button">Add to estimate</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ ESTIMATE TAB ============ -->
+  <section class="tabpanel" id="panel-estimate">
+    <div class="estimate-empty" id="estimate-empty">
+      <p>Your estimate is empty. Add the LTS platform from the <button class="linklike" data-goto-tab="products" type="button">Products</button> tab, or start from a <button class="linklike" data-goto-tab="templates" type="button">template</button>.</p>
+    </div>
+
+    <div id="estimate-builder" hidden>
+      <div class="card">
+        <div class="card__row card__row--top">
+          <div class="field">
+            <label for="input-estimate-name">Estimate name</label>
+            <input type="text" id="input-estimate-name" value="My LTS estimate" />
+          </div>
+          <div class="card__actions">
+            <button class="icon-btn" id="btn-add-line" type="button" title="Add another line item">+ Add line</button>
+            <button class="icon-btn icon-btn--danger" id="btn-clear-estimate" type="button" title="Clear estimate">Clear</button>
+          </div>
+        </div>
+      </div>
+
+      <div id="estimate-lines"></div>
+
+      <div class="card totals-card">
+        <div class="totals-card__toggle">
+          <label class="switch">
+            <input type="checkbox" id="toggle-vat" />
+            <span class="switch__track"><span class="switch__thumb"></span></span>
+          </label>
+          <span>Show prices including VAT (15%)</span>
+        </div>
+        <div class="totals-grid">
+          <div>
+            <div class="totals-grid__label">Upfront cost</div>
+            <div class="totals-grid__value">R0.00</div>
+          </div>
+          <div>
+            <div class="totals-grid__label">Monthly cost</div>
+            <div class="totals-grid__value" id="total-monthly">R0.00</div>
+          </div>
+          <div>
+            <div class="totals-grid__label">Annual cost</div>
+            <div class="totals-grid__value" id="total-annual">R0.00</div>
+          </div>
+        </div>
+        <p class="totals-card__note">Prices are estimates, exclude VAT unless stated, and are valid until <span id="prices-valid-until"></span>. LTS escalates rates on 1 April each year in line with the previous year's average CPI (SARB figure). Actual pricing is confirmed in your LTS Service Level Agreement.</p>
+        <div class="totals-card__cta" id="totals-cta"></div>
+        <div class="totals-card__buttons">
+          <button class="btn btn--outline" id="btn-export" type="button">⬇ Export to Excel</button>
+          <button class="btn btn--outline" id="btn-save" type="button">💾 Save</button>
+          <button class="btn btn--outline" id="btn-share" type="button">🔗 Share</button>
+        </div>
+        <p class="save-feedback" id="save-feedback" hidden></p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ TEMPLATES TAB ============ -->
+  <section class="tabpanel" id="panel-templates">
+    <p class="panel-intro">Common training-office profiles, pre-configured. Pick one as a starting point, then fine-tune the trainee count on the Estimate tab.</p>
+    <div class="template-grid" id="template-grid"></div>
+  </section>
+
+  <!-- ============ SAVED TAB ============ -->
+  <section class="tabpanel" id="panel-saved">
+    <p class="panel-intro">Estimates you save are kept on this device.</p>
+    <div id="saved-list" class="saved-list"></div>
+  </section>
+
+  <!-- ============ FAQ TAB ============ -->
+  <section class="tabpanel" id="panel-faqs">
+    <div id="faq-list" class="faq-list"></div>
+  </section>
+
+</main>
+
+<!-- ============ SUPPORT BUBBLE ============ -->
+<div class="support-bubble" id="support-bubble">
+  <button class="support-bubble__toggle" id="support-toggle" type="button" aria-expanded="false">
+    💬 Contact Support
+  </button>
+  <div class="support-bubble__panel" id="support-panel" hidden>
+    <h4>Contact LTS Support</h4>
+    <p>Have a question about pricing or your estimate? Reach the LTS team directly:</p>
+    <p><strong>Phone:</strong> <a id="support-phone1" href="#"></a> / <a id="support-phone2" href="#"></a></p>
+    <p><strong>Email:</strong> <a id="support-email" href="#"></a></p>
+    <p class="support-bubble__hours">Help desk: 07:00–19:00 business days, 10:00–13:00 weekends &amp; holidays.</p>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script src="js/data.js"></script>
+<script src="js/calculator.js"></script>
+<script src="js/export.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>

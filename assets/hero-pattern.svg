@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 360" preserveAspectRatio="xMidYMid slice">
+  <!-- Large translucent hexagon outlines (flat-top), echoing the LTS brand art -->
+  <g fill="none" stroke="#ffffff" stroke-opacity="0.13" stroke-width="2">
+    <path d="M90 30 L250 30 L330 175 L250 320 L90 320 L10 175 Z"/>
+    <path d="M300 90 L430 90 L495 205 L430 320 L300 320 L235 205 Z"/>
+    <path d="M980 20 L1140 20 L1220 165 L1140 310 L980 310 L900 165 Z"/>
+    <path d="M770 60 L880 60 L935 155 L880 250 L770 250 L715 155 Z"/>
+  </g>
+  <!-- Circular "arrow" motifs -->
+  <g fill="none" stroke="#ffffff" stroke-opacity="0.16" stroke-width="2">
+    <circle cx="170" cy="175" r="40"/>
+    <path d="M150 175 L188 175 M176 163 L190 175 L176 187"/>
+    <circle cx="1050" cy="165" r="34"/>
+    <path d="M1033 165 L1065 165 M1055 155 L1067 165 L1055 175"/>
+  </g>
+  <!-- Scattered plus marks -->
+  <g fill="none" stroke="#ffffff" stroke-opacity="0.28" stroke-width="2">
+    <path d="M470 250 h18 M479 241 v18"/>
+    <path d="M560 130 h14 M567 123 v14"/>
+    <path d="M640 300 h14 M647 293 v14"/>
+    <path d="M905 250 h16 M913 242 v16"/>
+    <path d="M700 210 h12 M706 204 v12"/>
+    <path d="M1140 260 h14 M1147 253 v14"/>
+  </g>
+</svg>

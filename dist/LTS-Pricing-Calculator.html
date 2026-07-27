@@ -1,0 +1,1535 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>LTS Pricing Calculator</title>
+<style>
+:root {
+  /* ---- LTS brand ---- */
+  --brand-blue: #1a2ae6;
+  --brand-mid: #0a8fd0;
+  --brand-green: #10d18a;
+  --brand-gradient: linear-gradient(120deg, #1a2ae6 0%, #0a8fd0 50%, #10d18a 100%);
+  --brand-gradient-soft: linear-gradient(120deg, rgba(26,42,230,0.08) 0%, rgba(16,209,138,0.08) 100%);
+
+  /* ---- Neutrals / text ---- */
+  --navy-900: #101b33;
+  --navy-800: #16244a;
+  --navy-700: #1f3163;
+  --teal-500: #10b090;
+  --teal-600: #0a8fd0;
+  --teal-50: #e7f6f1;
+  --bg: #f5f7fb;
+  --surface: #ffffff;
+  --border: #e2e5ec;
+  --text: #1c2333;
+  --text-muted: #5b6478;
+  --success: #10a86f;
+  --radius: 12px;
+  --shadow: 0 1px 2px rgba(16, 27, 51, 0.06), 0 6px 18px rgba(16, 27, 51, 0.06);
+  --shadow-brand: 0 8px 24px rgba(26, 42, 230, 0.18);
+  font-family: -apple-system, "Segoe UI", Inter, Roboto, Helvetica, Arial, sans-serif;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-size: 15px;
+  line-height: 1.5;
+}
+
+a { color: var(--brand-mid); }
+
+/* ---------- Top bar ---------- */
+.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  padding: 12px 24px;
+  flex-wrap: wrap;
+  gap: 12px;
+  position: relative;
+}
+/* gradient hairline under the top bar */
+.topbar::after {
+  content: "";
+  position: absolute;
+  left: 0; right: 0; bottom: -1px;
+  height: 3px;
+  background: var(--brand-gradient);
+}
+.topbar__left { display: flex; align-items: center; gap: 12px; }
+.lts-logo { display: inline-flex; filter: drop-shadow(0 2px 6px rgba(26,42,230,0.28)); }
+.topbar__title { font-size: 18px; font-weight: 700; color: var(--navy-900); letter-spacing: 0.2px; }
+.topbar__right { display: flex; align-items: center; gap: 24px; }
+.topbar__stat { text-align: right; line-height: 1.2; }
+.topbar__stat-value {
+  display: block; font-size: 18px; font-weight: 700;
+  background: var(--brand-gradient);
+  -webkit-background-clip: text; background-clip: text; color: transparent;
+}
+.topbar__stat-label { font-size: 12px; color: var(--text-muted); }
+
+/* ---------- Hero ---------- */
+.hero {
+  position: relative;
+  background: var(--brand-gradient);
+  color: #fff;
+  padding: 56px 24px;
+  overflow: hidden;
+}
+.hero::before {
+  content: "";
+  position: absolute; inset: 0;
+  background: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMjAwIDM2MCIgcHJlc2VydmVBc3BlY3RSYXRpbz0ieE1pZFlNaWQgc2xpY2UiPgogIDwhLS0gTGFyZ2UgdHJhbnNsdWNlbnQgaGV4YWdvbiBvdXRsaW5lcyAoZmxhdC10b3ApLCBlY2hvaW5nIHRoZSBMVFMgYnJhbmQgYXJ0IC0tPgogIDxnIGZpbGw9Im5vbmUiIHN0cm9rZT0iI2ZmZmZmZiIgc3Ryb2tlLW9wYWNpdHk9IjAuMTMiIHN0cm9rZS13aWR0aD0iMiI+CiAgICA8cGF0aCBkPSJNOTAgMzAgTDI1MCAzMCBMMzMwIDE3NSBMMjUwIDMyMCBMOTAgMzIwIEwxMCAxNzUgWiIvPgogICAgPHBhdGggZD0iTTMwMCA5MCBMNDMwIDkwIEw0OTUgMjA1IEw0MzAgMzIwIEwzMDAgMzIwIEwyMzUgMjA1IFoiLz4KICAgIDxwYXRoIGQ9Ik05ODAgMjAgTDExNDAgMjAgTDEyMjAgMTY1IEwxMTQwIDMxMCBMOTgwIDMxMCBMOTAwIDE2NSBaIi8+CiAgICA8cGF0aCBkPSJNNzcwIDYwIEw4ODAgNjAgTDkzNSAxNTUgTDg4MCAyNTAgTDc3MCAyNTAgTDcxNSAxNTUgWiIvPgogIDwvZz4KICA8IS0tIFNjYXR0ZXJlZCBwbHVzIG1hcmtzIC0tPgogIDxnIGZpbGw9Im5vbmUiIHN0cm9rZT0iI2ZmZmZmZiIgc3Ryb2tlLW9wYWNpdHk9IjAuMjgiIHN0cm9rZS13aWR0aD0iMiI+CiAgICA8cGF0aCBkPSJNNDcwIDI1MCBoMTggTTQ3OSAyNDEgdjE4Ii8+CiAgICA8cGF0aCBkPSJNNTYwIDEzMCBoMTQgTTU2NyAxMjMgdjE0Ii8+CiAgICA8cGF0aCBkPSJNNjQwIDMwMCBoMTQgTTY0NyAyOTMgdjE0Ii8+CiAgICA8cGF0aCBkPSJNOTA1IDI1MCBoMTYgTTkxMyAyNDIgdjE2Ii8+CiAgICA8cGF0aCBkPSJNNzAwIDIxMCBoMTIgTTcwNiAyMDQgdjEyIi8+CiAgICA8cGF0aCBkPSJNMTE0MCAyNjAgaDE0IE0xMTQ3IDI1MyB2MTQiLz4KICA8L2c+Cjwvc3ZnPgo=") center / cover no-repeat;
+  pointer-events: none;
+}
+.hero__inner {
+  position: relative; max-width: 1080px; margin: 0 auto;
+  display: flex; align-items: center; justify-content: space-between; gap: 32px;
+}
+.hero__text { flex: 1 1 420px; text-align: left; }
+.hero__art { flex: 0 1 440px; display: flex; justify-content: flex-end; min-width: 0; }
+.hero__art img { width: 100%; max-width: 440px; height: auto; }
+.hero h1 { margin: 0 0 10px; font-size: 36px; font-weight: 800; letter-spacing: -0.5px; }
+.hero p { margin: 0 0 22px; color: rgba(255,255,255,0.92); font-size: 17px; max-width: 560px; }
+.hero .btn--primary {
+  background: #fff; color: var(--brand-blue);
+}
+.hero .btn--primary:hover { background: #f0f2ff; }
+
+/* ---------- Banner ---------- */
+.banner {
+  background: var(--brand-gradient-soft);
+  border-bottom: 1px solid var(--border);
+  text-align: center;
+  padding: 12px 16px;
+  font-size: 14px;
+  color: var(--navy-900);
+}
+.banner a { font-weight: 700; color: var(--brand-blue); }
+
+/* ---------- Audience toggle ---------- */
+.audience {
+  max-width: 1080px;
+  margin: 20px auto 0;
+  padding: 0 24px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.audience__label { font-weight: 600; color: var(--navy-900); font-size: 14px; }
+.segmented { display: inline-flex; background: var(--surface); border: 1px solid var(--border); border-radius: 999px; padding: 3px; }
+.segmented__btn {
+  border: none; background: transparent; padding: 6px 16px; border-radius: 999px;
+  font-size: 13px; font-weight: 600; color: var(--text-muted); cursor: pointer;
+  transition: color .15s;
+}
+.segmented__btn.is-active { background: var(--brand-gradient); color: #fff; }
+
+/* ---------- Tabs ---------- */
+.tabs {
+  max-width: 1080px;
+  margin: 16px auto 0;
+  padding: 0 24px;
+  display: flex;
+  gap: 4px;
+  border-bottom: 1px solid var(--border);
+  flex-wrap: wrap;
+}
+.tabs__btn {
+  border: none; background: transparent; padding: 12px 16px; cursor: pointer;
+  font-size: 14px; font-weight: 600; color: var(--text-muted);
+  border-bottom: 2px solid transparent; margin-bottom: -1px;
+  display: flex; align-items: center; gap: 6px;
+  transition: color .15s;
+}
+.tabs__btn:hover { color: var(--navy-900); }
+.tabs__btn.is-active { color: var(--brand-blue); border-image: var(--brand-gradient) 1; border-bottom-width: 2px; border-bottom-style: solid; }
+.tabs__badge {
+  background: var(--brand-gradient); color: #fff; font-size: 11px; font-weight: 700;
+  border-radius: 999px; padding: 1px 7px;
+}
+
+/* ---------- Content / panels ---------- */
+.content { max-width: 1080px; margin: 0 auto; padding: 24px; }
+.tabpanel { display: none; }
+.tabpanel.is-active { display: block; }
+.panel-intro { color: var(--text-muted); margin: 0 0 20px; max-width: 640px; }
+
+/* ---------- Product card ---------- */
+.product-card {
+  position: relative;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 24px;
+  display: flex;
+  justify-content: space-between;
+  gap: 24px;
+  flex-wrap: wrap;
+  overflow: hidden;
+}
+/* gradient edge accent */
+.product-card::before {
+  content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 5px;
+  background: var(--brand-gradient);
+}
+.product-card__main { display: flex; gap: 16px; max-width: 620px; }
+.product-card__icon {
+  font-size: 26px; width: 54px; height: 54px; flex: none;
+  background: var(--brand-gradient); border-radius: 12px; color: #fff;
+  display: flex; align-items: center; justify-content: center;
+  box-shadow: var(--shadow-brand);
+}
+.product-card__main h2 { margin: 0 0 4px; font-size: 19px; color: var(--navy-900); }
+.product-card__tagline { margin: 0 0 8px; color: var(--brand-mid); font-weight: 700; font-size: 13px; }
+.product-card__desc { margin: 0 0 12px; color: var(--text-muted); }
+.product-card__props { margin: 0; padding: 0; list-style: none; }
+.product-card__props li {
+  font-size: 13px; color: var(--text); padding: 3px 0 3px 20px; position: relative;
+}
+.product-card__props li::before { content: "✓"; position: absolute; left: 0; color: var(--brand-green); font-weight: 700; }
+.product-card__action { text-align: right; min-width: 190px; }
+.product-card__from { font-size: 12px; color: var(--text-muted); }
+.product-card__price {
+  font-size: 24px; font-weight: 800;
+  background: var(--brand-gradient);
+  -webkit-background-clip: text; background-clip: text; color: transparent;
+}
+.product-card__per { font-size: 12px; color: var(--text-muted); margin-bottom: 12px; }
+
+/* ---------- Buttons ---------- */
+.btn {
+  display: inline-block; border-radius: 8px; padding: 10px 20px; font-size: 14px;
+  font-weight: 700; cursor: pointer; border: 1px solid transparent; text-decoration: none;
+  transition: transform .08s, box-shadow .15s, background .15s;
+}
+.btn--primary { background: var(--brand-gradient); color: #fff; box-shadow: var(--shadow-brand); }
+.btn--primary:hover { transform: translateY(-1px); box-shadow: 0 10px 28px rgba(26,42,230,0.28); }
+.btn--outline { background: #fff; color: var(--navy-900); border-color: var(--border); }
+.btn--outline:hover { border-color: var(--brand-mid); color: var(--brand-blue); }
+.btn--ghost { background: transparent; color: var(--navy-900); border-color: var(--border); }
+.btn--ghost:hover { border-color: var(--brand-mid); color: var(--brand-blue); }
+/* LOGIN pill — indigo/blue brand button */
+.btn--login {
+  background: linear-gradient(180deg, #2626e6 0%, #1a1ad6 100%);
+  color: #fff; border-radius: 999px; padding: 9px 26px; letter-spacing: 1px;
+  box-shadow: 0 4px 14px rgba(26, 26, 214, 0.32);
+}
+.btn--login:hover { transform: translateY(-1px); box-shadow: 0 8px 22px rgba(26, 42, 230, 0.38); }
+.linklike { background: none; border: none; padding: 0; color: var(--brand-mid); font: inherit; font-weight: 600; cursor: pointer; text-decoration: underline; }
+
+/* ---------- Cards / estimate builder ---------- */
+.card {
+  background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius);
+  box-shadow: var(--shadow); padding: 20px; margin-bottom: 16px;
+}
+.card__row--top { display: flex; justify-content: space-between; align-items: flex-end; gap: 16px; flex-wrap: wrap; }
+.card__actions { display: flex; gap: 8px; }
+.card__subtitle { color: var(--text-muted); font-size: 13px; margin: -6px 0 14px; }
+.field { display: flex; flex-direction: column; gap: 4px; }
+.field label { font-size: 12px; font-weight: 600; color: var(--text-muted); }
+.field input, .field select {
+  border: 1px solid var(--border); border-radius: 8px; padding: 8px 10px; font-size: 14px;
+  min-width: 220px; font-family: inherit; transition: border-color .15s, box-shadow .15s;
+}
+.field input:focus, .field select:focus {
+  outline: none; border-color: var(--brand-mid);
+  box-shadow: 0 0 0 3px rgba(10,143,208,0.15);
+}
+.icon-btn {
+  background: #fff; border: 1px solid var(--border); border-radius: 8px; padding: 7px 12px;
+  font-size: 13px; font-weight: 600; cursor: pointer; color: var(--navy-900);
+}
+.icon-btn:hover { border-color: var(--brand-mid); color: var(--brand-blue); }
+.icon-btn--danger { color: #b3261e; }
+.icon-btn--danger:hover { border-color: #b3261e; color: #b3261e; }
+
+.estimate-empty {
+  background: var(--surface); border: 1px dashed var(--border); border-radius: var(--radius);
+  padding: 40px 24px; text-align: center; color: var(--text-muted);
+}
+
+.line-item { position: relative; }
+.line-item__remove {
+  position: absolute; top: 16px; right: 16px; border: none; background: transparent;
+  color: var(--text-muted); cursor: pointer; font-size: 16px;
+}
+.line-item__grid { display: grid; grid-template-columns: 1.4fr 1fr 1.2fr; gap: 16px; margin-bottom: 14px; }
+.line-item__tier { font-size: 12px; color: var(--text-muted); margin-top: 4px; }
+.contract-options { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+.contract-option {
+  border: 1px solid var(--border); border-radius: 8px; padding: 10px; cursor: pointer;
+  text-align: left; background: #fff; transition: border-color .15s, background .15s;
+}
+.contract-option:hover { border-color: var(--brand-mid); }
+.contract-option.is-selected { border-color: var(--brand-green); background: var(--brand-gradient-soft); }
+.contract-option__label { font-size: 13px; font-weight: 700; color: var(--navy-900); display: flex; justify-content: space-between; align-items: center; }
+.contract-option__badge { font-size: 10px; background: var(--brand-gradient); color: #fff; border-radius: 999px; padding: 1px 6px; }
+.contract-option__rate { font-size: 15px; font-weight: 700; margin-top: 4px; }
+.contract-option__save { font-size: 11px; color: var(--success); font-weight: 700; }
+.line-item__result {
+  display: flex; justify-content: space-between; border-top: 1px solid var(--border);
+  padding-top: 12px; margin-top: 4px; font-size: 13px; color: var(--text-muted);
+}
+.line-item__result b { color: var(--navy-900); font-size: 15px; }
+
+/* ---------- Savings table ---------- */
+.savings-table { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+.savings-cell { border: 1px solid var(--border); border-radius: 8px; padding: 12px; text-align: center; }
+.savings-cell.is-best { border-color: var(--brand-green); background: var(--brand-gradient-soft); }
+.savings-cell__term { font-size: 12px; font-weight: 700; color: var(--navy-900); }
+.savings-cell__price { font-size: 17px; font-weight: 700; margin: 4px 0; }
+.savings-cell__save { font-size: 11px; color: var(--success); font-weight: 700; }
+
+/* ---------- Totals ---------- */
+.totals-card {
+  position: relative; overflow: hidden;
+  border-top: 3px solid transparent;
+  border-image: var(--brand-gradient) 1;
+}
+.totals-card__toggle { display: flex; align-items: center; gap: 10px; margin-bottom: 16px; font-size: 13px; }
+.switch { display: inline-flex; }
+.switch input { display: none; }
+.switch__track { width: 34px; height: 20px; background: var(--border); border-radius: 999px; position: relative; display: inline-block; cursor: pointer; transition: background .15s; }
+.switch__thumb { position: absolute; top: 2px; left: 2px; width: 16px; height: 16px; border-radius: 50%; background: #fff; transition: left .15s; box-shadow: 0 1px 2px rgba(0,0,0,.3); }
+.switch input:checked + .switch__track { background: var(--brand-green); }
+.switch input:checked + .switch__track .switch__thumb { left: 16px; }
+.totals-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 14px; }
+.totals-grid__label { font-size: 12px; color: var(--text-muted); }
+.totals-grid__value { font-size: 22px; font-weight: 800; color: var(--navy-900); }
+.totals-grid__value.is-clickable { cursor: pointer; display: inline-block; border-radius: 8px; padding: 2px 8px; margin: -2px -8px; transition: background .15s; }
+.totals-grid__value.is-clickable:hover { background: var(--brand-gradient-soft); }
+.totals-grid__value.is-clickable:focus-visible { outline: 2px solid var(--brand-mid); outline-offset: 2px; }
+
+/* live-update pulse when the estimate changes */
+@keyframes costPulse {
+  0% { transform: scale(1); }
+  35% { transform: scale(1.12); }
+  100% { transform: scale(1); }
+}
+.cost-pulse { animation: costPulse .45s ease; }
+.topbar__stat-value { transform-origin: right center; }
+.totals-grid__value { transform-origin: center; }
+#total-monthly, #total-annual {
+  background: var(--brand-gradient);
+  -webkit-background-clip: text; background-clip: text; color: transparent;
+}
+.totals-card__note { font-size: 12px; color: var(--text-muted); }
+.totals-card__cta { margin: 12px 0; }
+.totals-card__buttons { display: flex; gap: 10px; flex-wrap: wrap; }
+.save-feedback { color: var(--success); font-size: 13px; font-weight: 600; margin-top: 10px; }
+
+/* ---------- Templates ---------- */
+.template-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 16px; }
+.template-card {
+  position: relative;
+  background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius);
+  box-shadow: var(--shadow); padding: 18px; display: flex; flex-direction: column; gap: 8px;
+  transition: transform .1s, box-shadow .15s, border-color .15s;
+}
+.template-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-brand); border-color: transparent; }
+.template-card h3 { margin: 0; font-size: 15px; color: var(--navy-900); }
+.template-card p { margin: 0; font-size: 13px; color: var(--text-muted); flex: 1; }
+.template-card__meta { font-size: 12px; color: var(--brand-mid); font-weight: 700; }
+
+/* ---------- Saved list ---------- */
+.saved-list { display: flex; flex-direction: column; gap: 10px; }
+.saved-item {
+  background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius);
+  padding: 14px 18px; display: flex; justify-content: space-between; align-items: center;
+}
+.saved-item__meta { font-size: 12px; color: var(--text-muted); }
+.empty-note { color: var(--text-muted); font-size: 14px; }
+
+/* ---------- FAQs ---------- */
+.faq-list { display: flex; flex-direction: column; gap: 24px; }
+.faq-category h3 { color: var(--brand-blue); font-size: 15px; margin: 0 0 8px; }
+.faq-item { border-bottom: 1px solid var(--border); padding: 10px 0; }
+.faq-item summary { cursor: pointer; font-weight: 600; color: var(--navy-900); }
+.faq-item p { margin: 8px 0 0; color: var(--text-muted); font-size: 14px; }
+
+/* ---------- Brand divider bar ---------- */
+.brand-bar {
+  height: 5px;
+  background: var(--brand-gradient);
+  width: 100%;
+}
+
+/* ---------- Footer ---------- */
+.site-footer { margin-top: 32px; background: #fff; border-top: 1px solid var(--border); }
+.site-footer__inner {
+  max-width: 1080px; margin: 0 auto; padding: 18px 24px;
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 12px; flex-wrap: wrap;
+}
+.site-footer__brand { display: flex; align-items: center; gap: 10px; font-weight: 700; color: var(--navy-900); font-size: 14px; }
+.lts-logo--sm { filter: drop-shadow(0 1px 3px rgba(26,42,230,0.25)); }
+.site-footer__note { font-size: 12px; color: var(--text-muted); }
+
+/* ---------- Estimate price: clickable ---------- */
+.topbar__stat.is-clickable { cursor: pointer; border-radius: 8px; padding: 4px 8px; margin: -4px -8px; transition: background .15s; }
+.topbar__stat.is-clickable:hover { background: var(--brand-gradient-soft); }
+.topbar__stat.is-clickable:focus-visible { outline: 2px solid var(--brand-mid); outline-offset: 2px; }
+
+/* ---------- Azure-style calculator loading overlay ---------- */
+.calc-loader[hidden] { display: none; }
+.calc-loader {
+  position: fixed; inset: 0; z-index: 200;
+  display: flex; align-items: center; justify-content: center;
+  background: rgba(16, 27, 51, 0.55);
+  -webkit-backdrop-filter: blur(3px); backdrop-filter: blur(3px);
+  opacity: 0; transition: opacity .28s ease;
+}
+.calc-loader.is-visible { opacity: 1; }
+.calc-loader.is-done { opacity: 0; }
+.calc-loader__card {
+  background: #fff; border-radius: 16px; padding: 24px; width: 264px; text-align: center;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.35);
+  border-top: 4px solid transparent; border-image: var(--brand-gradient) 1;
+  transform: translateY(10px) scale(0.97); transition: transform .28s ease;
+}
+.calc-loader.is-visible .calc-loader__card { transform: translateY(0) scale(1); }
+
+/* grey calculator body */
+.calc-device { background: #eef0f4; border-radius: 12px; padding: 14px; }
+.calc-device__screen {
+  height: 36px; border-radius: 6px; margin-bottom: 12px;
+  background: #d9dee6; position: relative; overflow: hidden;
+}
+.calc-device__keys { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+.calc-device__keys span {
+  height: 28px; border-radius: 6px; background: #d9dee6; position: relative; overflow: hidden;
+}
+/* shimmer sweep */
+.calc-device__screen::after,
+.calc-device__keys span::after {
+  content: ""; position: absolute; inset: 0;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.9), transparent);
+  transform: translateX(-100%);
+  animation: calcShimmer 1.25s infinite;
+}
+.calc-device__keys span:nth-child(4n+1)::after { animation-delay: 0s; }
+.calc-device__keys span:nth-child(4n+2)::after { animation-delay: .09s; }
+.calc-device__keys span:nth-child(4n+3)::after { animation-delay: .18s; }
+.calc-device__keys span:nth-child(4n+4)::after { animation-delay: .27s; }
+@keyframes calcShimmer { 100% { transform: translateX(100%); } }
+
+.calc-loader__label { margin-top: 16px; font-size: 13px; font-weight: 700; color: var(--navy-900); }
+.calc-loader__bar { margin-top: 10px; height: 4px; border-radius: 999px; background: #e2e5ec; overflow: hidden; }
+.calc-loader__bar span { display: block; height: 100%; width: 0; background: var(--brand-gradient); }
+.calc-loader.is-visible .calc-loader__bar span { animation: calcProgress 1.15s ease forwards; }
+@keyframes calcProgress { 0% { width: 0; } 100% { width: 100%; } }
+
+@media (prefers-reduced-motion: reduce) {
+  .calc-device__screen::after, .calc-device__keys span::after { animation: none; }
+  .calc-loader.is-visible .calc-loader__bar span { animation-duration: .3s; }
+}
+
+/* ---------- Support bubble ---------- */
+.support-bubble { position: fixed; right: 20px; bottom: 20px; z-index: 50; }
+.support-bubble__toggle {
+  background: var(--brand-gradient); color: #fff; border: none; border-radius: 999px;
+  padding: 12px 18px; font-size: 14px; font-weight: 700; cursor: pointer; box-shadow: var(--shadow-brand);
+}
+.support-bubble__panel {
+  position: absolute; bottom: 54px; right: 0; width: 260px;
+  background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius);
+  box-shadow: var(--shadow); padding: 16px;
+  border-top: 3px solid transparent; border-image: var(--brand-gradient) 1;
+}
+.support-bubble__panel h4 { margin: 0 0 6px; color: var(--brand-blue); }
+.support-bubble__panel p { margin: 4px 0; font-size: 13px; color: var(--text-muted); }
+.support-bubble__hours { font-size: 11px; }
+
+@media (max-width: 720px) {
+  .hero { padding: 36px 20px; }
+  .hero h1 { font-size: 28px; }
+  .hero__inner { flex-direction: column; align-items: flex-start; gap: 24px; }
+  .hero__art { align-self: center; justify-content: center; flex-basis: auto; }
+  .hero__art img { max-width: 260px; }
+  .line-item__grid { grid-template-columns: 1fr; }
+  .contract-options { grid-template-columns: repeat(2, 1fr); }
+  .savings-table { grid-template-columns: repeat(2, 1fr); }
+  .totals-grid { grid-template-columns: 1fr; }
+  .product-card { flex-direction: column; }
+  .product-card__action { text-align: left; }
+}
+
+</style>
+</head>
+<body>
+
+<!-- ============ TOP BAR ============ -->
+<header class="topbar">
+  <div class="topbar__left">
+    <span class="lts-logo" aria-hidden="true">
+      <svg viewBox="0 0 100 100" width="46" height="46" role="img" aria-label="LTS logo">
+        <defs>
+          <linearGradient id="ltsGrad" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0" stop-color="#1a2ae6" />
+            <stop offset="0.55" stop-color="#0a8fd0" />
+            <stop offset="1" stop-color="#10d18a" />
+          </linearGradient>
+        </defs>
+        <path d="M27 6 L73 6 L96 50 L73 94 L27 94 L4 50 Z" fill="url(#ltsGrad)" />
+        <text x="50" y="50" text-anchor="middle" dominant-baseline="central"
+              font-family="-apple-system, Segoe UI, Inter, Arial, sans-serif"
+              font-size="30" font-weight="700" letter-spacing="1" fill="#ffffff">LTS</text>
+      </svg>
+    </span>
+    <span class="topbar__title">LTS Pricing Calculator</span>
+  </div>
+  <div class="topbar__right">
+    <div class="topbar__stat">
+      <span class="topbar__stat-value" id="stat-upfront">R0.00</span>
+      <span class="topbar__stat-label">Estimated upfront cost</span>
+    </div>
+    <div class="topbar__stat">
+      <span class="topbar__stat-value" id="stat-monthly">R0.00</span>
+      <span class="topbar__stat-label">Estimated monthly cost</span>
+    </div>
+    <a class="btn btn--login" href="https://www.ltsystems.co.za/login/" target="_blank" rel="noopener">LOGIN</a>
+  </div>
+</header>
+
+<!-- ============ HERO ============ -->
+<section class="hero">
+  <div class="hero__inner">
+    <div class="hero__text">
+      <h1>Pricing calculator</h1>
+      <p>See exactly what your training office gets with LTS — and what it costs.</p>
+      <a class="btn btn--primary" href="https://www.ltsystems.co.za/pricing/" target="_blank" rel="noopener">Get started with LTS</a>
+    </div>
+    <div class="hero__art">
+      <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA0MzAgNDEwIiByb2xlPSJpbWciIGFyaWEtbGFiZWw9IkNhbGN1bGF0b3IgaWxsdXN0cmF0aW9uIj4KICA8ZGVmcz4KICAgIDxsaW5lYXJHcmFkaWVudCBpZD0iY2FsY0JvZHkiIHgxPSIwIiB5MT0iMCIgeDI9IjAuNCIgeTI9IjEiPgogICAgICA8c3RvcCBvZmZzZXQ9IjAiIHN0b3AtY29sb3I9IiNmZmZmZmYiLz4KICAgICAgPHN0b3Agb2Zmc2V0PSIxIiBzdG9wLWNvbG9yPSIjZThlY2YzIi8+CiAgICA8L2xpbmVhckdyYWRpZW50PgogICAgPGxpbmVhckdyYWRpZW50IGlkPSJjYWxjU2NyZWVuIiB4MT0iMCIgeTE9IjAiIHgyPSIxIiB5Mj0iMSI+CiAgICAgIDxzdG9wIG9mZnNldD0iMCIgc3RvcC1jb2xvcj0iIzBhOGZkMCIvPgogICAgICA8c3RvcCBvZmZzZXQ9IjEiIHN0b3AtY29sb3I9IiMxMGQxOGEiLz4KICAgIDwvbGluZWFyR3JhZGllbnQ+CiAgICA8ZmlsdGVyIGlkPSJjYWxjU2hhZG93IiB4PSItMjAlIiB5PSItMjAlIiB3aWR0aD0iMTQwJSIgaGVpZ2h0PSIxNTAlIj4KICAgICAgPGZlRHJvcFNoYWRvdyBkeD0iMCIgZHk9IjE4IiBzdGREZXZpYXRpb249IjIwIiBmbG9vZC1jb2xvcj0iIzBhMmE0ZCIgZmxvb2Qtb3BhY2l0eT0iMC4yOCIvPgogICAgPC9maWx0ZXI+CiAgPC9kZWZzPgoKICA8IS0tIGJvZHkgLS0+CiAgPHJlY3QgeD0iMjAiIHk9IjE4IiB3aWR0aD0iMzkwIiBoZWlnaHQ9IjM3NCIgcng9IjMwIiBmaWxsPSJ1cmwoI2NhbGNCb2R5KSIgc3Ryb2tlPSIjZDdkY2U2IiBzdHJva2Utd2lkdGg9IjEuNSIgZmlsdGVyPSJ1cmwoI2NhbGNTaGFkb3cpIi8+CgogIDwhLS0gc2NyZWVuIC0tPgogIDxyZWN0IHg9IjUyIiB5PSI0NiIgd2lkdGg9IjMyNiIgaGVpZ2h0PSI3NCIgcng9IjE0IiBmaWxsPSJ1cmwoI2NhbGNTY3JlZW4pIi8+CiAgPHRleHQgeD0iMzY2IiB5PSI5MiIgdGV4dC1hbmNob3I9ImVuZCIgZm9udC1mYW1pbHk9IidDb3VyaWVyIE5ldycsIG1vbm9zcGFjZSIgZm9udC1zaXplPSI0MCIgZm9udC13ZWlnaHQ9IjcwMCIgZmlsbD0iIzBiM2EyZiIgZmlsbC1vcGFjaXR5PSIwLjE4IiBsZXR0ZXItc3BhY2luZz0iNCI+ODg4ODg4ODg8L3RleHQ+CiAgPHRleHQgeD0iMzY2IiB5PSI5MiIgdGV4dC1hbmNob3I9ImVuZCIgZm9udC1mYW1pbHk9IidDb3VyaWVyIE5ldycsIG1vbm9zcGFjZSIgZm9udC1zaXplPSI0MCIgZm9udC13ZWlnaHQ9IjcwMCIgZmlsbD0iI2ZmZmZmZiI+MDwvdGV4dD4KCiAgPCEtLSBrZXlzOiBmaWxscyAtLT4KICA8ZyBzdHJva2Utd2lkdGg9IjAiPgogICAgPCEtLSBSb3cgMSA6IGZ1bmN0aW9uIChhbWJlcikgKyBBQyAoYmx1ZSkgLS0+CiAgICA8cmVjdCB4PSI1MiIgIHk9IjE0MCIgd2lkdGg9IjU0IiBoZWlnaHQ9IjQ0IiByeD0iMTAiIGZpbGw9IiNkY2E2M2YiLz4KICAgIDxyZWN0IHg9IjEyMCIgeT0iMTQwIiB3aWR0aD0iNTQiIGhlaWdodD0iNDQiIHJ4PSIxMCIgZmlsbD0iI2RjYTYzZiIvPgogICAgPHJlY3QgeD0iMTg4IiB5PSIxNDAiIHdpZHRoPSI1NCIgaGVpZ2h0PSI0NCIgcng9IjEwIiBmaWxsPSIjZGNhNjNmIi8+CiAgICA8cmVjdCB4PSIyNTYiIHk9IjE0MCIgd2lkdGg9IjU0IiBoZWlnaHQ9IjQ0IiByeD0iMTAiIGZpbGw9IiNkY2E2M2YiLz4KICAgIDxyZWN0IHg9IjMyNCIgeT0iMTQwIiB3aWR0aD0iNTQiIGhlaWdodD0iNDQiIHJ4PSIxMCIgZmlsbD0iIzJmN2VmMCIvPgoKICAgIDwhLS0gUm93IDIgOiA3IDggOSDDtyDDlyAtLT4KICAgIDxyZWN0IHg9IjUyIiAgeT0iMTkyIiB3aWR0aD0iNTQiIGhlaWdodD0iNDQiIHJ4PSIxMCIgZmlsbD0iIzM2M2I0MyIvPgogICAgPHJlY3QgeD0iMTIwIiB5PSIxOTIiIHdpZHRoPSI1NCIgaGVpZ2h0PSI0NCIgcng9IjEwIiBmaWxsPSIjMzYzYjQzIi8+CiAgICA8cmVjdCB4PSIxODgiIHk9IjE5MiIgd2lkdGg9IjU0IiBoZWlnaHQ9IjQ0IiByeD0iMTAiIGZpbGw9IiMzNjNiNDMiLz4KICAgIDxyZWN0IHg9IjI1NiIgeT0iMTkyIiB3aWR0aD0iNTQiIGhlaWdodD0iNDQiIHJ4PSIxMCIgZmlsbD0iI2MyYzhkMiIvPgogICAgPHJlY3QgeD0iMzI0IiB5PSIxOTIiIHdpZHRoPSI1NCIgaGVpZ2h0PSI0NCIgcng9IjEwIiBmaWxsPSIjYzJjOGQyIi8+CgogICAgPCEtLSBSb3cgMyA6IDQgNSA2IOKIkiArIC0tPgogICAgPHJlY3QgeD0iNTIiICB5PSIyNDQiIHdpZHRoPSI1NCIgaGVpZ2h0PSI0NCIgcng9IjEwIiBmaWxsPSIjMzYzYjQzIi8+CiAgICA8cmVjdCB4PSIxMjAiIHk9IjI0NCIgd2lkdGg9IjU0IiBoZWlnaHQ9IjQ0IiByeD0iMTAiIGZpbGw9IiMzNjNiNDMiLz4KICAgIDxyZWN0IHg9IjE4OCIgeT0iMjQ0IiB3aWR0aD0iNTQiIGhlaWdodD0iNDQiIHJ4PSIxMCIgZmlsbD0iIzM2M2I0MyIvPgogICAgPHJlY3QgeD0iMjU2IiB5PSIyNDQiIHdpZHRoPSI1NCIgaGVpZ2h0PSI0NCIgcng9IjEwIiBmaWxsPSIjYzJjOGQyIi8+CiAgICA8cmVjdCB4PSIzMjQiIHk9IjI0NCIgd2lkdGg9IjU0IiBoZWlnaHQ9IjQ0IiByeD0iMTAiIGZpbGw9IiNjMmM4ZDIiLz4KCiAgICA8IS0tIFJvdyA0IDogMSAyIDMgLiA9IC0tPgogICAgPHJlY3QgeD0iNTIiICB5PSIyOTYiIHdpZHRoPSI1NCIgaGVpZ2h0PSI0NCIgcng9IjEwIiBmaWxsPSIjMzYzYjQzIi8+CiAgICA8cmVjdCB4PSIxMjAiIHk9IjI5NiIgd2lkdGg9IjU0IiBoZWlnaHQ9IjQ0IiByeD0iMTAiIGZpbGw9IiMzNjNiNDMiLz4KICAgIDxyZWN0IHg9IjE4OCIgeT0iMjk2IiB3aWR0aD0iNTQiIGhlaWdodD0iNDQiIHJ4PSIxMCIgZmlsbD0iIzM2M2I0MyIvPgogICAgPHJlY3QgeD0iMjU2IiB5PSIyOTYiIHdpZHRoPSI1NCIgaGVpZ2h0PSI0NCIgcng9IjEwIiBmaWxsPSIjYzJjOGQyIi8+CiAgICA8cmVjdCB4PSIzMjQiIHk9IjI5NiIgd2lkdGg9IjU0IiBoZWlnaHQ9IjQ0IiByeD0iMTAiIGZpbGw9IiNjMmM4ZDIiLz4KCiAgICA8IS0tIFJvdyA1IDogMCAod2lkZSkgLiBBQyAod2lkZSwgYmx1ZSkgLS0+CiAgICA8cmVjdCB4PSI1MiIgIHk9IjM0OCIgd2lkdGg9IjEyMiIgaGVpZ2h0PSI0NCIgcng9IjEwIiBmaWxsPSIjMzYzYjQzIi8+CiAgICA8cmVjdCB4PSIxODgiIHk9IjM0OCIgd2lkdGg9IjU0IiAgaGVpZ2h0PSI0NCIgcng9IjEwIiBmaWxsPSIjYzJjOGQyIi8+CiAgICA8cmVjdCB4PSIyNTYiIHk9IjM0OCIgd2lkdGg9IjEyMiIgaGVpZ2h0PSI0NCIgcng9IjEwIiBmaWxsPSIjMmY3ZWYwIi8+CiAgPC9nPgoKICA8IS0tIGtleXM6IGxhYmVscyAtLT4KICA8ZyBmb250LWZhbWlseT0iLWFwcGxlLXN5c3RlbSwgJ1NlZ29lIFVJJywgQXJpYWwsIHNhbnMtc2VyaWYiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGRvbWluYW50LWJhc2VsaW5lPSJjZW50cmFsIj4KICAgIDxnIGZvbnQtc2l6ZT0iMTUiIGZvbnQtd2VpZ2h0PSI3MDAiIGZpbGw9IiM0YTM0MTAiPgogICAgICA8dGV4dCB4PSI3OSIgIHk9IjE2MiI+TUM8L3RleHQ+PHRleHQgeD0iMTQ3IiB5PSIxNjIiPk0rPC90ZXh0PgogICAgICA8dGV4dCB4PSIyMTUiIHk9IjE2MiI+TS08L3RleHQ+PHRleHQgeD0iMjgzIiB5PSIxNjIiPk1SPC90ZXh0PgogICAgPC9nPgogICAgPHRleHQgeD0iMzUxIiB5PSIxNjIiIGZvbnQtc2l6ZT0iMTUiIGZvbnQtd2VpZ2h0PSI4MDAiIGZpbGw9IiNmZmZmZmYiPkFDPC90ZXh0PgoKICAgIDxnIGZvbnQtc2l6ZT0iMjAiIGZvbnQtd2VpZ2h0PSI3MDAiIGZpbGw9IiNmZmZmZmYiPgogICAgICA8dGV4dCB4PSI3OSIgIHk9IjIxNCI+NzwvdGV4dD48dGV4dCB4PSIxNDciIHk9IjIxNCI+ODwvdGV4dD48dGV4dCB4PSIyMTUiIHk9IjIxNCI+OTwvdGV4dD4KICAgICAgPHRleHQgeD0iNzkiICB5PSIyNjYiPjQ8L3RleHQ+PHRleHQgeD0iMTQ3IiB5PSIyNjYiPjU8L3RleHQ+PHRleHQgeD0iMjE1IiB5PSIyNjYiPjY8L3RleHQ+CiAgICAgIDx0ZXh0IHg9Ijc5IiAgeT0iMzE4Ij4xPC90ZXh0Pjx0ZXh0IHg9IjE0NyIgeT0iMzE4Ij4yPC90ZXh0Pjx0ZXh0IHg9IjIxNSIgeT0iMzE4Ij4zPC90ZXh0PgogICAgICA8dGV4dCB4PSIxMTMiIHk9IjM3MCI+MDwvdGV4dD4KICAgIDwvZz4KICAgIDxnIGZvbnQtc2l6ZT0iMjIiIGZvbnQtd2VpZ2h0PSI3MDAiIGZpbGw9IiMyYTJmMzYiPgogICAgICA8dGV4dCB4PSIyODMiIHk9IjIxNCI+JiMyNDc7PC90ZXh0Pjx0ZXh0IHg9IjM1MSIgeT0iMjE0Ij4mIzIxNTs8L3RleHQ+CiAgICAgIDx0ZXh0IHg9IjI4MyIgeT0iMjY2Ij4mIzg3MjI7PC90ZXh0Pjx0ZXh0IHg9IjM1MSIgeT0iMjY2Ij4rPC90ZXh0PgogICAgICA8dGV4dCB4PSIyODMiIHk9IjMxOCI+LjwvdGV4dD48dGV4dCB4PSIzNTEiIHk9IjMxOCI+PTwvdGV4dD4KICAgICAgPHRleHQgeD0iMjE1IiB5PSIzNzAiPi48L3RleHQ+CiAgICA8L2c+CiAgICA8dGV4dCB4PSIzMTciIHk9IjM3MCIgZm9udC1zaXplPSIxOCIgZm9udC13ZWlnaHQ9IjgwMCIgZmlsbD0iI2ZmZmZmZiI+QUM8L3RleHQ+CiAgPC9nPgo8L3N2Zz4K" alt="Calculator" width="430" height="410" />
+    </div>
+  </div>
+</section>
+
+<!-- ============ LOGIN BANNER ============ -->
+<div class="banner">
+  <a href="https://www.ltsystems.co.za/login/" target="_blank" rel="noopener">Log in</a>
+  to save this estimate to your LTS account, or use Save below to keep it on this device.
+</div>
+
+<!-- ============ AUDIENCE TOGGLE ============ -->
+<div class="audience">
+  <span class="audience__label">I am a:</span>
+  <div class="segmented" role="tablist" aria-label="Customer type">
+    <button class="segmented__btn is-active" data-audience="new" type="button">New customer</button>
+    <button class="segmented__btn" data-audience="existing" type="button">Existing customer</button>
+  </div>
+</div>
+
+<!-- ============ TABS ============ -->
+<nav class="tabs" role="tablist" aria-label="Pricing calculator sections">
+  <button class="tabs__btn is-active" data-tab="products" type="button">Products</button>
+  <button class="tabs__btn" data-tab="estimate" type="button">Your Estimate <span id="tab-line-count" class="tabs__badge" hidden>0</span></button>
+  <button class="tabs__btn" data-tab="templates" type="button">Estimate templates</button>
+  <button class="tabs__btn" data-tab="saved" type="button">Saved estimates</button>
+  <button class="tabs__btn" data-tab="faqs" type="button">FAQs</button>
+</nav>
+
+<main class="content">
+
+  <!-- ============ PRODUCTS TAB ============ -->
+  <section class="tabpanel is-active" id="panel-products">
+    <p class="panel-intro">LTS sells one thing, and does it well: a single online assessment &amp; learner tracking platform, priced by trainee count. Add it to your estimate and configure it on the right.</p>
+
+    <div class="product-card">
+      <div class="product-card__main">
+        <div class="product-card__icon" aria-hidden="true">📋</div>
+        <div>
+          <h2 id="product-name"></h2>
+          <p class="product-card__tagline" id="product-tagline"></p>
+          <p class="product-card__desc" id="product-desc"></p>
+          <ul class="product-card__props" id="product-props"></ul>
+        </div>
+      </div>
+      <div class="product-card__action">
+        <div class="product-card__from">From</div>
+        <div class="product-card__price" id="product-from-price"></div>
+        <div class="product-card__per">per trainee / month, excl. VAT</div>
+        <button class="btn btn--primary" id="btn-add-to-estimate" type="button">Add to estimate</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ ESTIMATE TAB ============ -->
+  <section class="tabpanel" id="panel-estimate">
+    <div class="estimate-empty" id="estimate-empty">
+      <p>Your estimate is empty. Add the LTS platform from the <button class="linklike" data-goto-tab="products" type="button">Products</button> tab, or start from a <button class="linklike" data-goto-tab="templates" type="button">template</button>.</p>
+    </div>
+
+    <div id="estimate-builder" hidden>
+      <div class="card">
+        <div class="card__row card__row--top">
+          <div class="field">
+            <label for="input-estimate-name">Estimate name</label>
+            <input type="text" id="input-estimate-name" value="My LTS estimate" />
+          </div>
+          <div class="card__actions">
+            <button class="icon-btn" id="btn-add-line" type="button" title="Add another line item">+ Add line</button>
+            <button class="icon-btn icon-btn--danger" id="btn-clear-estimate" type="button" title="Clear estimate">Clear</button>
+          </div>
+        </div>
+      </div>
+
+      <div id="estimate-lines"></div>
+
+      <div class="card totals-card">
+        <div class="totals-card__toggle">
+          <label class="switch">
+            <input type="checkbox" id="toggle-vat" />
+            <span class="switch__track"><span class="switch__thumb"></span></span>
+          </label>
+          <span>Show prices including VAT (15%)</span>
+        </div>
+        <div class="totals-grid">
+          <div>
+            <div class="totals-grid__label">Upfront cost</div>
+            <div class="totals-grid__value" id="total-upfront">R0.00</div>
+          </div>
+          <div>
+            <div class="totals-grid__label">Monthly cost</div>
+            <div class="totals-grid__value" id="total-monthly">R0.00</div>
+          </div>
+          <div>
+            <div class="totals-grid__label">Annual cost</div>
+            <div class="totals-grid__value" id="total-annual">R0.00</div>
+          </div>
+        </div>
+        <p class="totals-card__note">Prices are estimates, exclude VAT unless stated, and are valid until <span id="prices-valid-until"></span>. LTS escalates rates on 1 April each year in line with the previous year's average CPI (SARB figure). Actual pricing is confirmed in your LTS Service Level Agreement.</p>
+        <div class="totals-card__cta" id="totals-cta"></div>
+        <div class="totals-card__buttons">
+          <button class="btn btn--outline" id="btn-export" type="button">⬇ Export to Excel</button>
+          <button class="btn btn--outline" id="btn-save" type="button">💾 Save</button>
+          <button class="btn btn--outline" id="btn-share" type="button">🔗 Share</button>
+        </div>
+        <p class="save-feedback" id="save-feedback" hidden></p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ TEMPLATES TAB ============ -->
+  <section class="tabpanel" id="panel-templates">
+    <p class="panel-intro">Common training-office profiles, pre-configured. Pick one as a starting point, then fine-tune the trainee count on the Estimate tab.</p>
+    <div class="template-grid" id="template-grid"></div>
+  </section>
+
+  <!-- ============ SAVED TAB ============ -->
+  <section class="tabpanel" id="panel-saved">
+    <p class="panel-intro">Estimates you save are kept on this device.</p>
+    <div id="saved-list" class="saved-list"></div>
+  </section>
+
+  <!-- ============ FAQ TAB ============ -->
+  <section class="tabpanel" id="panel-faqs">
+    <div id="faq-list" class="faq-list"></div>
+  </section>
+
+</main>
+
+<!-- ============ FOOTER ============ -->
+<footer class="site-footer">
+  <div class="brand-bar" aria-hidden="true"></div>
+  <div class="site-footer__inner">
+    <span class="site-footer__brand">
+      <span class="lts-logo lts-logo--sm" aria-hidden="true">
+        <svg viewBox="0 0 100 100" width="26" height="26" role="img" aria-label="LTS logo">
+          <path d="M27 6 L73 6 L96 50 L73 94 L27 94 L4 50 Z" fill="url(#ltsGrad)" />
+          <text x="50" y="50" text-anchor="middle" dominant-baseline="central"
+                font-family="-apple-system, Segoe UI, Inter, Arial, sans-serif"
+                font-size="30" font-weight="700" letter-spacing="1" fill="#ffffff">LTS</text>
+        </svg>
+      </span>
+      LTS — Learner Tracking Systems
+    </span>
+    <span class="site-footer__note">Prices exclude VAT unless stated · Estimates only</span>
+  </div>
+</footer>
+
+<!-- ============ CALCULATOR LOADING OVERLAY ============ -->
+<div class="calc-loader" id="calc-loader" hidden role="status" aria-live="polite" aria-label="Loading your estimate">
+  <div class="calc-loader__card">
+    <div class="calc-device">
+      <div class="calc-device__screen"></div>
+      <div class="calc-device__keys">
+        <span></span><span></span><span></span><span></span>
+        <span></span><span></span><span></span><span></span>
+        <span></span><span></span><span></span><span></span>
+        <span></span><span></span><span></span><span></span>
+      </div>
+    </div>
+    <div class="calc-loader__label">Loading your estimate…</div>
+    <div class="calc-loader__bar"><span></span></div>
+  </div>
+</div>
+
+<!-- ============ SUPPORT BUBBLE ============ -->
+<div class="support-bubble" id="support-bubble">
+  <button class="support-bubble__toggle" id="support-toggle" type="button" aria-expanded="false">
+    💬 Contact Support
+  </button>
+  <div class="support-bubble__panel" id="support-panel" hidden>
+    <h4>Contact LTS Support</h4>
+    <p>Have a question about pricing or your estimate? Reach the LTS team directly:</p>
+    <p><strong>Phone:</strong> <a id="support-phone1" href="#"></a> / <a id="support-phone2" href="#"></a></p>
+    <p><strong>Email:</strong> <a id="support-email" href="#"></a></p>
+    <p class="support-bubble__hours">Help desk: 07:00–19:00 business days, 10:00–13:00 weekends &amp; holidays.</p>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script>
+/**
+ * LTS Pricing Calculator — data model
+ *
+ * Source of truth: https://www.ltsystems.co.za/pricing/
+ * All rates are ZAR, per trainee, per month, EXCLUDING VAT, valid until 31 Mar 2027.
+ * LTS escalates prices on 1 April each year by ~previous year's average CPI (SARB figure).
+ *
+ * IMPORTANT: these figures were pulled from the live public pricing page. If LTS
+ * updates the published rates, update ONLY this file — nothing else needs to change.
+ */
+
+const LTS_DATA = {
+  companyName: "LTS",
+  fullName: "Learner Tracking Systems",
+  currency: "ZAR",
+  currencySymbol: "R",
+  vatRate: 0.15, // South Africa standard VAT rate, unchanged in the 2026 Budget
+  pricesValidUntil: "31 March 2027",
+  escalationNote:
+    "LTS escalates prices on 1 April each year by an amount that approximates the previous year's average CPI inflation figure issued by the South African Reserve Bank.",
+
+  contact: {
+    phone1: "086 110 5966",
+    phone2: "012 253 0017",
+    email: "info@LTSystems.co.za",
+  },
+
+  // The one core product LTS sells: SaaS online assessment / learner tracking platform.
+  product: {
+    id: "lts-platform",
+    name: "Online Assessment & Learner Tracking Platform",
+    tagline: "The preferred electronic assessment solution for training offices",
+    description:
+      "A web-based platform for managing trainee assessments, competency tracking and reporting — accessible anywhere, with no software to install and no per-user licensing fees.",
+    valueProps: [
+      "24/7 web-based access — no installation, works on any device",
+      "Full compliance with SAICA, CIMA, ACCA, IIA, Compliance Institute, SAIGA and SAIPA requirements",
+      "Extensive reporting: outcome status, progress, score grid, moderator review reports",
+      "Help desk support 07:00–19:00 on business days, 10:00–13:00 weekends & holidays",
+      "99.99% average uptime",
+      "No licensing fees, no installation fees — only the ongoing per-trainee subscription",
+      "Records retained for at least 5 years after a trainee is signed off",
+    ],
+  },
+
+  // Trainee volume brackets — the published price applies to ALL trainees once a firm
+  // falls in a bracket (not a marginal/graduated rate).
+  tiers: [
+    { id: "1-29", label: "1 – 29 trainees", min: 1, max: 29, sample: 15 },
+    { id: "30-99", label: "30 – 99 trainees", min: 30, max: 99, sample: 60 },
+    { id: "100-249", label: "100 – 249 trainees", min: 100, max: 249, sample: 150 },
+    { id: "250-499", label: "250 – 499 trainees", min: 250, max: 499, sample: 350 },
+    { id: "500+", label: "500+ trainees", min: 500, max: Infinity, sample: 600 },
+  ],
+
+  // Contract terms — locking in a longer term unlocks a lower monthly rate.
+  contracts: [
+    { id: "payg", label: "Pay-as-you-go", years: 0, badge: null },
+    { id: "1yr", label: "1 Year Contract", years: 1, badge: null },
+    { id: "2yr", label: "2 Year Contract", years: 2, badge: "Popular" },
+    { id: "3yr", label: "3 Year Contract", years: 3, badge: "Best value" },
+  ],
+
+  // Rate per trainee per month, excl. VAT (ZAR) — [contractId][tierId]
+  rates: {
+    payg: { "1-29": 418.23, "30-99": 350.61, "100-249": 250.69, "250-499": 223.77, "500+": 209.41 },
+    "1yr": { "1-29": 330.27, "30-99": 286.59, "100-249": 223.77, "250-499": 198.05, "500+": 195.65 },
+    "2yr": { "1-29": 266.25, "30-99": 223.77, "100-249": 209.41, "250-499": 181.29, "500+": 169.92 },
+    "3yr": { "1-29": 223.77, "30-99": 209.41, "100-249": 198.05, "250-499": 169.92, "500+": 160.94 },
+  },
+
+  // Ready-made estimate templates — mirrors Azure's "estimate templates" concept.
+  // Each groups a representative trainee count + contract term for a common firm profile.
+  templates: [
+    {
+      id: "new-small-firm",
+      name: "New Client — Small Firm",
+      description: "Just switching to LTS or starting out. Flexible, no long-term commitment.",
+      trainees: 15,
+      contractId: "payg",
+      audience: "new",
+    },
+    {
+      id: "growing-firm",
+      name: "Growing Firm",
+      description: "A firm with a growing trainee intake, ready to lock in a better rate.",
+      trainees: 60,
+      contractId: "1yr",
+      audience: "both",
+    },
+    {
+      id: "established-firm",
+      name: "Established Training Office",
+      description: "A firm with a steady trainee base looking for predictable costs.",
+      trainees: 150,
+      contractId: "2yr",
+      audience: "both",
+    },
+    {
+      id: "large-training-office",
+      name: "Large Training Office",
+      description: "Multiple offices or a large annual intake, committing for maximum savings.",
+      trainees: 350,
+      contractId: "3yr",
+      audience: "existing",
+    },
+    {
+      id: "enterprise-national",
+      name: "Enterprise / National Firm",
+      description: "500+ trainees across regions — LTS's best available rate.",
+      trainees: 600,
+      contractId: "3yr",
+      audience: "existing",
+    },
+  ],
+
+  faqs: [
+    {
+      category: "Becoming an LTS subscriber",
+      items: [
+        {
+          q: "How do I subscribe to LTS?",
+          a: "Three steps: LTS signs a Client Service Level Agreement with you (including a system walkthrough and pricing), your company details and payment option are confirmed and captured, then all users are registered — larger clients can bulk-upload their user list.",
+        },
+        {
+          q: "Can I see a demo first?",
+          a: "Yes — contact the LTS team to arrange a free demo before you commit.",
+        },
+      ],
+    },
+    {
+      category: "What's included in the price",
+      items: [
+        {
+          q: "What do I actually get for the monthly fee?",
+          a: "A 24/7 web-based assessment platform, compliance with your professional body's rules, help-desk support, self-help manuals and video tutorials, and initial onboarding training. The fee only depends on trainee count and features — there's no extra charge for adding other staff/reviewer users.",
+        },
+        {
+          q: "Are there setup, licensing or installation fees?",
+          a: "No — LTS charges only the ongoing per-trainee subscription. There are no licensing fees and nothing to install.",
+        },
+        {
+          q: "Is training included?",
+          a: "Self-help guides, manuals and tutorial videos are included. Once-off onboarding training can be arranged for new clients; ongoing training for newly added trainees can be arranged at an additional cost, which LTS keeps low by grouping sessions across clients.",
+        },
+      ],
+    },
+    {
+      category: "Support & reliability",
+      items: [
+        {
+          q: "What are your support hours?",
+          a: "Help desk support runs 07:00–19:00 on business days, and 10:00–13:00 on weekends and public holidays. Average response time on business days is around 27 minutes.",
+        },
+        {
+          q: "How reliable is the platform?",
+          a: "Average uptime during business hours is 99.99%.",
+        },
+      ],
+    },
+    {
+      category: "Compliance",
+      items: [
+        {
+          q: "Which professional bodies does LTS support?",
+          a: "LTS has been the SAICA-preferred electronic assessment solution provider since 2010, and also supports CIMA, ACCA, IIA, the Compliance Institute, SAIGA and SAIPA.",
+        },
+      ],
+    },
+  ],
+};
+
+</script>
+<script>
+/**
+ * LTS Pricing Calculator — calculation engine
+ * Pure functions, no DOM access, so this file is unit-testable on its own.
+ */
+
+const LTSCalculator = (() => {
+  function getTierForCount(count) {
+    const n = Math.max(1, Math.floor(Number(count) || 0));
+    return LTS_DATA.tiers.find((t) => n >= t.min && n <= t.max) || LTS_DATA.tiers[LTS_DATA.tiers.length - 1];
+  }
+
+  function getTier(tierId) {
+    return LTS_DATA.tiers.find((t) => t.id === tierId);
+  }
+
+  function getContract(contractId) {
+    return LTS_DATA.contracts.find((c) => c.id === contractId);
+  }
+
+  function getRate(contractId, tierId) {
+    const row = LTS_DATA.rates[contractId];
+    return row ? row[tierId] : undefined;
+  }
+
+  /**
+   * Compute the estimate for a single line item.
+   * @param {{trainees:number, contractId:string}} input
+   */
+  function calcLine({ trainees, contractId }) {
+    const tier = getTierForCount(trainees);
+    const rate = getRate(contractId, tier.id);
+    const n = Math.max(1, Math.floor(Number(trainees) || 0));
+    const monthlyExclVat = n * rate;
+    const annualExclVat = monthlyExclVat * 12;
+    return {
+      trainees: n,
+      tier,
+      contract: getContract(contractId),
+      ratePerTrainee: rate,
+      monthlyExclVat,
+      annualExclVat,
+      monthlyInclVat: monthlyExclVat * (1 + LTS_DATA.vatRate),
+      annualInclVat: annualExclVat * (1 + LTS_DATA.vatRate),
+    };
+  }
+
+  /**
+   * % saved on the per-trainee rate vs. Pay-as-you-go, for the same trainee count.
+   */
+  function calcSavingsVsPayg(trainees, contractId) {
+    if (contractId === "payg") return 0;
+    const tier = getTierForCount(trainees);
+    const paygRate = getRate("payg", tier.id);
+    const rate = getRate(contractId, tier.id);
+    if (!paygRate || !rate) return 0;
+    return ((paygRate - rate) / paygRate) * 100;
+  }
+
+  /**
+   * Full breakdown across every contract term for a given trainee count —
+   * powers the "Savings Options" comparison panel.
+   */
+  function calcAllContracts(trainees) {
+    return LTS_DATA.contracts.map((c) => ({
+      ...calcLine({ trainees, contractId: c.id }),
+      savingsPct: calcSavingsVsPayg(trainees, c.id),
+    }));
+  }
+
+  function formatCurrency(amount, { decimals = 2 } = {}) {
+    return (
+      LTS_DATA.currencySymbol +
+      Number(amount).toLocaleString("en-ZA", {
+        minimumFractionDigits: decimals,
+        maximumFractionDigits: decimals,
+      })
+    );
+  }
+
+  function formatPercent(value) {
+    return `${value >= 0 ? "" : "-"}${Math.abs(value).toFixed(0)}%`;
+  }
+
+  /**
+   * Sum a list of estimate line items (an "estimate" can hold more than one
+   * line — e.g. separate cost centres or offices — same idea as Azure letting
+   * you combine several products into one estimate).
+   */
+  function totalEstimate(lines) {
+    return lines.reduce(
+      (acc, line) => {
+        const calc = calcLine(line);
+        acc.monthlyExclVat += calc.monthlyExclVat;
+        acc.annualExclVat += calc.annualExclVat;
+        acc.monthlyInclVat += calc.monthlyInclVat;
+        acc.annualInclVat += calc.annualInclVat;
+        return acc;
+      },
+      { monthlyExclVat: 0, annualExclVat: 0, monthlyInclVat: 0, annualInclVat: 0 }
+    );
+  }
+
+  return {
+    getTierForCount,
+    getTier,
+    getContract,
+    getRate,
+    calcLine,
+    calcSavingsVsPayg,
+    calcAllContracts,
+    formatCurrency,
+    formatPercent,
+    totalEstimate,
+  };
+})();
+
+</script>
+<script>
+/**
+ * LTS Pricing Calculator — export / save / share helpers
+ * No backend required: Export uses SheetJS (client-side .xlsx generation),
+ * Save uses browser storage (falls back to in-memory if storage is blocked),
+ * Share encodes the estimate into a URL so it can be pasted/emailed.
+ */
+
+const LTSExport = (() => {
+  const STORAGE_KEY = "lts_pricing_estimates";
+
+  // In-memory fallback so Save never throws, even in sandboxed/embedded contexts
+  // where localStorage is unavailable (e.g. an iframe preview).
+  let memoryFallback = null;
+
+  function storageAvailable() {
+    try {
+      const testKey = "__lts_test__";
+      window.localStorage.setItem(testKey, "1");
+      window.localStorage.removeItem(testKey);
+      return true;
+    } catch (e) {
+      return false;
+    }
+  }
+
+  function saveEstimate(estimateName, lines) {
+    const record = { name: estimateName, savedAt: new Date().toISOString(), lines };
+    if (storageAvailable()) {
+      const all = JSON.parse(window.localStorage.getItem(STORAGE_KEY) || "[]");
+      all.push(record);
+      window.localStorage.setItem(STORAGE_KEY, JSON.stringify(all));
+      return { ok: true, mode: "local" };
+    }
+    memoryFallback = memoryFallback || [];
+    memoryFallback.push(record);
+    return { ok: true, mode: "memory" };
+  }
+
+  function loadSavedEstimates() {
+    if (storageAvailable()) {
+      return JSON.parse(window.localStorage.getItem(STORAGE_KEY) || "[]");
+    }
+    return memoryFallback || [];
+  }
+
+  function buildShareUrl(lines, meta) {
+    const payload = { lines, meta };
+    const encoded = encodeURIComponent(btoa(JSON.stringify(payload)));
+    const url = new URL(window.location.href);
+    url.hash = "estimate=" + encoded;
+    return url.toString();
+  }
+
+  function readShareUrl() {
+    const hash = window.location.hash || "";
+    const match = hash.match(/estimate=([^&]+)/);
+    if (!match) return null;
+    try {
+      const json = atob(decodeURIComponent(match[1]));
+      return JSON.parse(json);
+    } catch (e) {
+      return null;
+    }
+  }
+
+  function exportToExcel(lines, meta) {
+    if (typeof XLSX === "undefined") {
+      alert("Export library did not load — check your internet connection and try again.");
+      return;
+    }
+
+    const rows = lines.map((line) => {
+      const calc = LTSCalculator.calcLine(line);
+      return {
+        "Line item": line.label || calc.tier.label,
+        "Trainees": calc.trainees,
+        "Bracket": calc.tier.label,
+        "Contract term": calc.contract.label,
+        "Rate per trainee / month (excl. VAT)": calc.ratePerTrainee,
+        "Monthly (excl. VAT)": Number(calc.monthlyExclVat.toFixed(2)),
+        "Monthly (incl. VAT)": Number(calc.monthlyInclVat.toFixed(2)),
+        "Annual (excl. VAT)": Number(calc.annualExclVat.toFixed(2)),
+        "Annual (incl. VAT)": Number(calc.annualInclVat.toFixed(2)),
+      };
+    });
+
+    const totals = LTSCalculator.totalEstimate(lines);
+    rows.push({});
+    rows.push({
+      "Line item": "TOTAL",
+      "Monthly (excl. VAT)": Number(totals.monthlyExclVat.toFixed(2)),
+      "Monthly (incl. VAT)": Number(totals.monthlyInclVat.toFixed(2)),
+      "Annual (excl. VAT)": Number(totals.annualExclVat.toFixed(2)),
+      "Annual (incl. VAT)": Number(totals.annualInclVat.toFixed(2)),
+    });
+
+    const ws = XLSX.utils.json_to_sheet(rows);
+    ws["!cols"] = [{ wch: 26 }, { wch: 10 }, { wch: 16 }, { wch: 16 }, { wch: 20 }, { wch: 18 }, { wch: 18 }, { wch: 16 }, { wch: 16 }];
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, "LTS Estimate");
+
+    const infoRows = [
+      ["LTS Pricing Estimate"],
+      ["Estimate name", meta?.name || "Untitled estimate"],
+      ["Generated", new Date().toLocaleString("en-ZA")],
+      ["Prices valid until", LTS_DATA.pricesValidUntil],
+      ["Currency", LTS_DATA.currency + " — excludes VAT unless marked otherwise"],
+      ["Contact", `${LTS_DATA.contact.phone1} / ${LTS_DATA.contact.email}`],
+    ];
+    const wsInfo = XLSX.utils.aoa_to_sheet(infoRows);
+    XLSX.utils.book_append_sheet(wb, wsInfo, "Info");
+
+    const filename = `LTS-Estimate-${(meta?.name || "untitled").replace(/[^a-z0-9]+/gi, "-")}.xlsx`;
+    XLSX.writeFile(wb, filename);
+  }
+
+  return { saveEstimate, loadSavedEstimates, buildShareUrl, readShareUrl, exportToExcel };
+})();
+
+</script>
+<script>
+/**
+ * LTS Pricing Calculator — app wiring
+ * Talks to LTS_DATA (data.js), LTSCalculator (calculator.js) and LTSExport (export.js).
+ */
+
+(function () {
+  const state = {
+    audience: "new", // 'new' | 'existing'
+    lines: [], // [{ id, label, trainees, contractId }]
+    showVat: false,
+  };
+
+  let lineSeq = 0;
+
+  // ---------- helpers ----------
+  const $ = (sel, root = document) => root.querySelector(sel);
+  const $$ = (sel, root = document) => Array.from(root.querySelectorAll(sel));
+  const fmt = LTSCalculator.formatCurrency;
+  const fmtPct = LTSCalculator.formatPercent;
+
+  function newLine(overrides = {}) {
+    lineSeq += 1;
+    return Object.assign(
+      {
+        id: "line-" + lineSeq,
+        label: "Line " + lineSeq,
+        trainees: 15,
+        contractId: "payg",
+      },
+      overrides
+    );
+  }
+
+  // ---------- tabs ----------
+  function goToTab(tabId) {
+    $$(".tabs__btn").forEach((b) => b.classList.toggle("is-active", b.dataset.tab === tabId));
+    $$(".tabpanel").forEach((p) => p.classList.toggle("is-active", p.id === "panel-" + tabId));
+  }
+
+  $$(".tabs__btn").forEach((btn) => btn.addEventListener("click", () => goToTab(btn.dataset.tab)));
+  $$("[data-goto-tab]").forEach((btn) => btn.addEventListener("click", () => goToTab(btn.dataset.gotoTab)));
+
+  // ---------- Azure-style "calculator" loading transition ----------
+  const calcLoader = {
+    el: $("#calc-loader"),
+    busy: false,
+    show(next) {
+      const el = this.el;
+      if (!el || this.busy) return;
+      this.busy = true;
+      el.hidden = false;
+      el.classList.remove("is-done");
+      void el.offsetWidth; // reflow so the fade-in / progress restart
+      el.classList.add("is-visible");
+      setTimeout(() => {
+        if (typeof next === "function") next(); // swap the page underneath the overlay
+        el.classList.add("is-done");
+        el.classList.remove("is-visible");
+        setTimeout(() => {
+          el.hidden = true;
+          el.classList.remove("is-done");
+          this.busy = false;
+        }, 320);
+      }, 1150);
+    },
+  };
+
+  function loadEstimatePage() {
+    calcLoader.show(() => goToTab("estimate"));
+  }
+
+  function wireLoaderTrigger(el, title) {
+    if (!el) return;
+    el.classList.add("is-clickable");
+    el.setAttribute("role", "button");
+    el.setAttribute("tabindex", "0");
+    el.title = title;
+    el.addEventListener("click", loadEstimatePage);
+    el.addEventListener("keydown", (e) => {
+      if (e.key === "Enter" || e.key === " ") {
+        e.preventDefault();
+        loadEstimatePage();
+      }
+    });
+  }
+
+  // The estimate price — in the top bar AND the bottom totals card — opens the
+  // estimate page through the loading transition.
+  $$(".topbar__stat").forEach((stat) => wireLoaderTrigger(stat, "Open your estimate"));
+  ["#total-upfront", "#total-monthly", "#total-annual"].forEach((sel) =>
+    wireLoaderTrigger($(sel), "Recalculate your estimate")
+  );
+
+  // ---------- audience toggle ----------
+  $$(".segmented__btn").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      state.audience = btn.dataset.audience;
+      $$(".segmented__btn").forEach((b) => b.classList.toggle("is-active", b === btn));
+      renderTotals(); // CTA copy depends on audience
+    });
+  });
+
+  // ---------- product tab ----------
+  function renderProduct() {
+    const p = LTS_DATA.product;
+    $("#product-name").textContent = p.name;
+    $("#product-tagline").textContent = p.tagline;
+    $("#product-desc").textContent = p.description;
+    $("#product-props").innerHTML = p.valueProps.map((v) => `<li>${v}</li>`).join("");
+    const cheapestRate = Math.min(...Object.values(LTS_DATA.rates["3yr"]));
+    $("#product-from-price").textContent = fmt(cheapestRate);
+  }
+
+  $("#btn-add-to-estimate").addEventListener("click", () => {
+    if (state.lines.length === 0) {
+      state.lines.push(newLine({ label: "LTS Platform" }));
+    }
+    renderEstimate();
+    goToTab("estimate");
+  });
+
+  // ---------- estimate tab ----------
+  function contractOptionHtml(line, contract) {
+    const calc = LTSCalculator.calcLine({ trainees: line.trainees, contractId: contract.id });
+    const savings = LTSCalculator.calcSavingsVsPayg(line.trainees, contract.id);
+    const selected = line.contractId === contract.id;
+    return `
+      <button type="button" class="contract-option ${selected ? "is-selected" : ""}" data-line="${line.id}" data-contract="${contract.id}">
+        <div class="contract-option__label">
+          <span>${contract.label}</span>
+          ${contract.badge ? `<span class="contract-option__badge">${contract.badge}</span>` : ""}
+        </div>
+        <div class="contract-option__rate">${fmt(calc.ratePerTrainee)} <span style="font-weight:400;font-size:11px;color:var(--text-muted)">/trainee/mo</span></div>
+        ${savings > 0 ? `<div class="contract-option__save">Save ${fmtPct(savings)} vs pay-as-you-go</div>` : `<div class="contract-option__save" style="color:var(--text-muted)">Reference rate</div>`}
+      </button>`;
+  }
+
+  function lineHtml(line) {
+    const calc = LTSCalculator.calcLine({ trainees: line.trainees, contractId: line.contractId });
+    const removeBtn = state.lines.length > 1 ? `<button class="line-item__remove" data-remove="${line.id}" title="Remove line" type="button">✕</button>` : "";
+    return `
+      <div class="card line-item" data-line-card="${line.id}">
+        ${removeBtn}
+        <div class="line-item__grid">
+          <div class="field">
+            <label for="name-${line.id}">Line item name</label>
+            <input type="text" id="name-${line.id}" data-field="label" data-line="${line.id}" value="${line.label}" />
+          </div>
+          <div class="field">
+            <label for="trainees-${line.id}">Number of trainees</label>
+            <input type="number" min="1" id="trainees-${line.id}" data-field="trainees" data-line="${line.id}" value="${line.trainees}" />
+            <div class="line-item__tier">Bracket: ${calc.tier.label}</div>
+          </div>
+          <div class="field">
+            <label>&nbsp;</label>
+            <div class="line-item__result">
+              <span>Monthly<br/><b>${fmt(state.showVat ? calc.monthlyInclVat : calc.monthlyExclVat)}</b></span>
+              <span>Annual<br/><b>${fmt(state.showVat ? calc.annualInclVat : calc.annualExclVat)}</b></span>
+            </div>
+          </div>
+        </div>
+        <div class="contract-options">
+          ${LTS_DATA.contracts.map((c) => contractOptionHtml(line, c)).join("")}
+        </div>
+      </div>`;
+  }
+
+  function renderEstimate() {
+    const hasLines = state.lines.length > 0;
+    $("#estimate-empty").hidden = hasLines;
+    $("#estimate-builder").hidden = !hasLines;
+    $("#tab-line-count").hidden = !hasLines;
+    $("#tab-line-count").textContent = state.lines.length;
+
+    $("#estimate-lines").innerHTML = state.lines.map(lineHtml).join("");
+
+    // wire per-line inputs
+    $$('[data-field="trainees"]').forEach((input) => {
+      input.addEventListener("change", (e) => {
+        const line = state.lines.find((l) => l.id === e.target.dataset.line);
+        line.trainees = Math.max(1, parseInt(e.target.value, 10) || 1);
+        renderEstimate();
+      });
+    });
+    $$('[data-field="label"]').forEach((input) => {
+      input.addEventListener("change", (e) => {
+        const line = state.lines.find((l) => l.id === e.target.dataset.line);
+        line.label = e.target.value || line.label;
+      });
+    });
+    $$(".contract-option").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        const line = state.lines.find((l) => l.id === btn.dataset.line);
+        line.contractId = btn.dataset.contract;
+        renderEstimate();
+      });
+    });
+    $$("[data-remove]").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        state.lines = state.lines.filter((l) => l.id !== btn.dataset.remove);
+        renderEstimate();
+      });
+    });
+
+    renderTotals();
+  }
+
+  $("#btn-add-line").addEventListener("click", () => {
+    state.lines.push(newLine({ label: "Line " + (state.lines.length + 1) }));
+    renderEstimate();
+  });
+
+  $("#btn-clear-estimate").addEventListener("click", () => {
+    if (confirm("Clear the whole estimate?")) {
+      state.lines = [];
+      renderEstimate();
+      goToTab("products");
+    }
+  });
+
+  $("#toggle-vat").addEventListener("change", (e) => {
+    state.showVat = e.target.checked;
+    renderEstimate();
+  });
+
+  function ctaHtml() {
+    if (state.lines.length === 0) return "";
+    const primaryLine = state.lines[0];
+    const contract = LTSCalculator.getContract(primaryLine.contractId);
+    if (state.audience === "new") {
+      const signupParam = contract.id === "payg" ? "Pay-as-you-go" : contract.years + "-Year-Contract";
+      return `<a class="btn btn--primary" target="_blank" rel="noopener" href="https://www.ltsystems.co.za/sign-up/?type_of_contract=${encodeURIComponent(signupParam)}">Sign up on this plan</a>`;
+    }
+    return `<a class="btn btn--primary" target="_blank" rel="noopener" href="mailto:${LTS_DATA.contact.email}?subject=Update our LTS plan">Contact support to update your plan</a>`;
+  }
+
+  // Update a cost figure and pulse it when the value actually changes, so the
+  // running estimate is visibly "live" at both the top bar and the totals card.
+  function setCost(sel, text) {
+    const el = $(sel);
+    if (!el) return;
+    if (el.textContent !== text) {
+      el.textContent = text;
+      el.classList.remove("cost-pulse");
+      void el.offsetWidth; // restart the animation
+      el.classList.add("cost-pulse");
+    }
+  }
+
+  function renderTotals() {
+    const totals = state.lines.length
+      ? LTSCalculator.totalEstimate(state.lines)
+      : { monthlyExclVat: 0, annualExclVat: 0, monthlyInclVat: 0, annualInclVat: 0 };
+    const monthly = state.showVat ? totals.monthlyInclVat : totals.monthlyExclVat;
+    const annual = state.showVat ? totals.annualInclVat : totals.annualExclVat;
+
+    // LTS charges no setup / installation / licensing fee, so the upfront cost
+    // is always R0.00 — shown live at the top and bottom for transparency.
+    setCost("#stat-upfront", fmt(0));
+    setCost("#total-upfront", fmt(0));
+    setCost("#stat-monthly", fmt(monthly));
+    setCost("#total-monthly", fmt(monthly));
+    setCost("#total-annual", fmt(annual));
+
+    $("#totals-cta").innerHTML = state.lines.length ? ctaHtml() : "";
+  }
+
+  // ---------- export / save / share ----------
+  $("#btn-export").addEventListener("click", () => {
+    if (state.lines.length === 0) return;
+    LTSExport.exportToExcel(state.lines, { name: $("#input-estimate-name").value });
+  });
+
+  $("#btn-save").addEventListener("click", () => {
+    if (state.lines.length === 0) return;
+    const result = LTSExport.saveEstimate($("#input-estimate-name").value, state.lines);
+    const msg =
+      result.mode === "local"
+        ? "Saved to this browser."
+        : "Saved for this session (browser storage isn't available here).";
+    const feedback = $("#save-feedback");
+    feedback.textContent = msg;
+    feedback.hidden = false;
+    renderSavedList();
+  });
+
+  $("#btn-share").addEventListener("click", async () => {
+    if (state.lines.length === 0) return;
+    const url = LTSExport.buildShareUrl(state.lines, { name: $("#input-estimate-name").value, audience: state.audience });
+    try {
+      await navigator.clipboard.writeText(url);
+      const feedback = $("#save-feedback");
+      feedback.textContent = "Share link copied to clipboard.";
+      feedback.hidden = false;
+    } catch (e) {
+      prompt("Copy this share link:", url);
+    }
+  });
+
+  function renderSavedList() {
+    const saved = LTSExport.loadSavedEstimates();
+    const container = $("#saved-list");
+    if (saved.length === 0) {
+      container.innerHTML = `<p class="empty-note">No saved estimates yet. Build an estimate and click Save.</p>`;
+      return;
+    }
+    container.innerHTML = saved
+      .map((s, i) => {
+        const totals = LTSCalculator.totalEstimate(s.lines);
+        return `
+        <div class="saved-item">
+          <div>
+            <div><strong>${s.name}</strong></div>
+            <div class="saved-item__meta">Saved ${new Date(s.savedAt).toLocaleString("en-ZA")} · ${s.lines.length} line item(s)</div>
+          </div>
+          <div>
+            <div><strong>${fmt(totals.monthlyExclVat)}</strong> /month excl. VAT</div>
+            <button class="linklike" data-load-saved="${i}" type="button">Load into estimate</button>
+          </div>
+        </div>`;
+      })
+      .join("");
+
+    $$("[data-load-saved]").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        const s = saved[parseInt(btn.dataset.loadSaved, 10)];
+        state.lines = s.lines.map((l) => newLine(l));
+        $("#input-estimate-name").value = s.name;
+        renderEstimate();
+        goToTab("estimate");
+      });
+    });
+  }
+
+  // ---------- templates ----------
+  function renderTemplates() {
+    $("#template-grid").innerHTML = LTS_DATA.templates
+      .map((t) => {
+        const calc = LTSCalculator.calcLine({ trainees: t.trainees, contractId: t.contractId });
+        return `
+        <div class="template-card">
+          <h3>${t.name}</h3>
+          <p>${t.description}</p>
+          <div class="template-card__meta">${t.trainees} trainees · ${LTSCalculator.getContract(t.contractId).label}</div>
+          <div><strong>${fmt(calc.monthlyExclVat)}</strong> <span style="font-size:12px;color:var(--text-muted)">/month excl. VAT</span></div>
+          <button class="btn btn--outline" data-use-template="${t.id}" type="button">Use this template</button>
+        </div>`;
+      })
+      .join("");
+
+    $$("[data-use-template]").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        const t = LTS_DATA.templates.find((x) => x.id === btn.dataset.useTemplate);
+        state.lines = [newLine({ label: t.name, trainees: t.trainees, contractId: t.contractId })];
+        $("#input-estimate-name").value = t.name;
+        renderEstimate();
+        goToTab("estimate");
+      });
+    });
+  }
+
+  // ---------- FAQs ----------
+  function renderFaqs() {
+    $("#faq-list").innerHTML = LTS_DATA.faqs
+      .map(
+        (cat) => `
+        <div class="faq-category">
+          <h3>${cat.category}</h3>
+          ${cat.items
+            .map(
+              (item) => `
+            <details class="faq-item">
+              <summary>${item.q}</summary>
+              <p>${item.a}</p>
+            </details>`
+            )
+            .join("")}
+        </div>`
+      )
+      .join("");
+  }
+
+  // ---------- support bubble ----------
+  $("#support-phone1").textContent = LTS_DATA.contact.phone1;
+  $("#support-phone1").href = "tel:" + LTS_DATA.contact.phone1.replace(/\s/g, "");
+  $("#support-phone2").textContent = LTS_DATA.contact.phone2;
+  $("#support-phone2").href = "tel:" + LTS_DATA.contact.phone2.replace(/\s/g, "");
+  $("#support-email").textContent = LTS_DATA.contact.email;
+  $("#support-email").href = "mailto:" + LTS_DATA.contact.email;
+
+  $("#support-toggle").addEventListener("click", () => {
+    const panel = $("#support-panel");
+    const willShow = panel.hidden;
+    panel.hidden = !willShow;
+    $("#support-toggle").setAttribute("aria-expanded", String(willShow));
+  });
+
+  // ---------- shared-link restore ----------
+  function restoreFromShareUrl() {
+    const payload = LTSExport.readShareUrl();
+    if (!payload || !payload.lines || !payload.lines.length) return false;
+    state.lines = payload.lines.map((l) => newLine(l));
+    if (payload.meta?.name) $("#input-estimate-name").value = payload.meta.name;
+    if (payload.meta?.audience) {
+      state.audience = payload.meta.audience;
+      $$(".segmented__btn").forEach((b) => b.classList.toggle("is-active", b.dataset.audience === state.audience));
+    }
+    return true;
+  }
+
+  // ---------- init ----------
+  function init() {
+    $("#prices-valid-until").textContent = LTS_DATA.pricesValidUntil;
+    renderProduct();
+    renderTemplates();
+    renderFaqs();
+    renderSavedList();
+
+    const restored = restoreFromShareUrl();
+    renderEstimate();
+    if (restored) goToTab("estimate");
+  }
+
+  init();
+})();
+
+</script>
+</body>
+</html>

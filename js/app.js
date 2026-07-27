@@ -40,6 +40,50 @@
   $$(".tabs__btn").forEach((btn) => btn.addEventListener("click", () => goToTab(btn.dataset.tab)));
   $$("[data-goto-tab]").forEach((btn) => btn.addEventListener("click", () => goToTab(btn.dataset.gotoTab)));
 
+  // ---------- Azure-style "calculator" loading transition ----------
+  const calcLoader = {
+    el: $("#calc-loader"),
+    busy: false,
+    show(next) {
+      const el = this.el;
+      if (!el || this.busy) return;
+      this.busy = true;
+      el.hidden = false;
+      el.classList.remove("is-done");
+      void el.offsetWidth; // reflow so the fade-in / progress restart
+      el.classList.add("is-visible");
+      setTimeout(() => {
+        if (typeof next === "function") next(); // swap the page underneath the overlay
+        el.classList.add("is-done");
+        el.classList.remove("is-visible");
+        setTimeout(() => {
+          el.hidden = true;
+          el.classList.remove("is-done");
+          this.busy = false;
+        }, 320);
+      }, 1150);
+    },
+  };
+
+  function loadEstimatePage() {
+    calcLoader.show(() => goToTab("estimate"));
+  }
+
+  // The estimate price in the top bar loads the estimate page with the loader
+  $$(".topbar__stat").forEach((stat) => {
+    stat.classList.add("is-clickable");
+    stat.setAttribute("role", "button");
+    stat.setAttribute("tabindex", "0");
+    stat.title = "Open your estimate";
+    stat.addEventListener("click", loadEstimatePage);
+    stat.addEventListener("keydown", (e) => {
+      if (e.key === "Enter" || e.key === " ") {
+        e.preventDefault();
+        loadEstimatePage();
+      }
+    });
+  });
+
   // ---------- audience toggle ----------
   $$(".segmented__btn").forEach((btn) => {
     btn.addEventListener("click", () => {

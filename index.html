@@ -157,6 +157,53 @@
         </div>
         <p class="save-feedback" id="save-feedback" hidden></p>
       </div>
+
+      <!-- ===== Cost of NOT using LTS ===== -->
+      <div class="card compare-card">
+        <h3 class="compare-card__title">The cost of <span>not</span> using LTS</h3>
+        <p class="compare-card__sub">The same admin done by hand costs time and money every month. Adjust the assumptions to match your office — see what LTS gives back.</p>
+
+        <div class="compare-assumptions">
+          <div class="field">
+            <label for="assume-hours">Manual admin hours / trainee / month</label>
+            <input type="number" id="assume-hours" min="0" step="0.5" />
+          </div>
+          <div class="field">
+            <label for="assume-rate">Your staff cost / hour (R)</label>
+            <input type="number" id="assume-rate" min="0" step="10" />
+          </div>
+          <div class="field">
+            <label for="assume-materials">Paper, printing &amp; storage / trainee / month (R)</label>
+            <input type="number" id="assume-materials" min="0" step="5" />
+          </div>
+        </div>
+
+        <div class="compare-grid">
+          <div class="compare-col compare-col--without">
+            <div class="compare-col__tag">Without LTS — by hand</div>
+            <div class="compare-col__big" id="cmp-without-monthly">R0.00</div>
+            <div class="compare-col__per">per month</div>
+            <ul>
+              <li>Admin time: <b id="cmp-hours">0</b> hours / month</li>
+              <li>Cost of that time: <b id="cmp-labour">R0.00</b></li>
+              <li>Paper &amp; storage: <b id="cmp-materials">R0.00</b></li>
+            </ul>
+          </div>
+          <div class="compare-col compare-col--with">
+            <div class="compare-col__tag">With LTS</div>
+            <div class="compare-col__big" id="cmp-with-monthly">R0.00</div>
+            <div class="compare-col__per">per month</div>
+            <ul>
+              <li>One simple per-trainee subscription</li>
+              <li>No paper, no manual capturing</li>
+              <li>Automated tracking, reports &amp; audit trail</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="compare-savings" id="cmp-savings"></div>
+        <p class="compare-card__note">These figures are your own estimates of manual effort, not LTS charges — they help show the time and money LTS saves. LTS costs above exclude VAT unless the toggle is on.</p>
+      </div>
     </div>
   </section>
 

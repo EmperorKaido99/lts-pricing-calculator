@@ -8,6 +8,7 @@
     audience: "new", // 'new' | 'existing'
     lines: [], // [{ id, label, trainees, contractId }]
     showVat: false,
+    baseline: Object.assign({}, LTS_DATA.manualBaseline), // "cost of not using LTS" assumptions
   };
 
   let lineSeq = 0;
@@ -223,6 +224,23 @@
     renderEstimate();
   });
 
+  // "Cost of not using LTS" assumption inputs
+  const baselineInputs = {
+    "#assume-hours": "hoursPerTrainee",
+    "#assume-rate": "hourlyRate",
+    "#assume-materials": "materialsPerTrainee",
+  };
+  Object.entries(baselineInputs).forEach(([sel, key]) => {
+    const input = $(sel);
+    if (!input) return;
+    input.value = state.baseline[key];
+    input.addEventListener("input", () => {
+      const v = parseFloat(input.value);
+      state.baseline[key] = isNaN(v) || v < 0 ? 0 : v;
+      renderTotals();
+    });
+  });
+
   function ctaHtml() {
     if (state.lines.length === 0) return "";
     const primaryLine = state.lines[0];
@@ -263,6 +281,40 @@
     setCost("#total-annual", fmt(annual));
 
     $("#totals-cta").innerHTML = state.lines.length ? ctaHtml() : "";
+
+    renderComparison(monthly);
+  }
+
+  // "The cost of NOT using LTS" — compare the manual baseline against the
+  // currently displayed LTS monthly cost, live.
+  function renderComparison(ltsMonthly) {
+    if (state.lines.length === 0) return;
+    const totalTrainees = state.lines.reduce((sum, l) => sum + (parseInt(l.trainees, 10) || 0), 0);
+    const base = LTSCalculator.manualBaselineCost(
+      Object.assign({ trainees: totalTrainees }, state.baseline)
+    );
+
+    setCost("#cmp-without-monthly", fmt(base.monthly));
+    setCost("#cmp-with-monthly", fmt(ltsMonthly));
+    setCost("#cmp-hours", base.hours.toLocaleString("en-ZA"));
+    setCost("#cmp-labour", fmt(base.labourCost));
+    setCost("#cmp-materials", fmt(base.materialsCost));
+
+    const saveMonthly = base.monthly - ltsMonthly;
+    const saveAnnual = saveMonthly * 12;
+    const hoursLabel = `<b>${base.hours.toLocaleString("en-ZA")}</b> hours`;
+    const savingsEl = $("#cmp-savings");
+    if (saveMonthly >= 0) {
+      savingsEl.classList.remove("is-negative");
+      savingsEl.innerHTML =
+        `With LTS you save <b>${fmt(saveMonthly)}</b> a month — that's <b>${fmt(saveAnnual)}</b> a year ` +
+        `and ${hoursLabel} of staff time handed back every month.`;
+    } else {
+      savingsEl.classList.add("is-negative");
+      savingsEl.innerHTML =
+        `At these settings LTS is about <b>${fmt(-saveMonthly)}</b> a month more than doing it by hand — ` +
+        `but it still frees up ${hoursLabel} every month and removes the compliance, filing and audit risk.`;
+    }
   }
 
   // ---------- export / save / share ----------

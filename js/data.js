@@ -19,6 +19,17 @@ const LTS_DATA = {
   escalationNote:
     "LTS escalates prices on 1 April each year by an amount that approximates the previous year's average CPI inflation figure issued by the South African Reserve Bank.",
 
+  // "Cost of NOT using LTS" — a manual/paper baseline the customer compares
+  // against. These are editable ASSUMPTIONS shown to the user, not LTS charges:
+  // the time and money a training office spends doing, by hand, the admin that
+  // LTS automates (capturing assessments, tracking competencies, chasing
+  // trainees, moderator reports, filing and audit prep).
+  manualBaseline: {
+    hoursPerTrainee: 2, // staff hours per trainee per month spent on manual admin
+    hourlyRate: 250, // fully-loaded staff cost per hour (ZAR)
+    materialsPerTrainee: 50, // paper, printing, filing & storage per trainee per month (ZAR)
+  },
+
   contact: {
     phone1: "086 110 5966",
     phone2: "012 253 0017",

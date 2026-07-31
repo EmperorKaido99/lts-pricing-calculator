@@ -321,6 +321,41 @@ a { color: var(--brand-mid); }
 .totals-card__buttons { display: flex; gap: 10px; flex-wrap: wrap; }
 .save-feedback { color: var(--success); font-size: 13px; font-weight: 600; margin-top: 10px; }
 
+/* ---------- Cost of NOT using LTS ---------- */
+.compare-card { border-top: 3px solid transparent; border-image: var(--brand-gradient) 1; }
+.compare-card__title { margin: 4px 0 2px; font-size: 18px; font-weight: 800; color: var(--navy-900); }
+.compare-card__title span { color: #b3261e; text-transform: uppercase; font-style: italic; }
+.compare-card__sub { margin: 0 0 16px; color: var(--text-muted); font-size: 13px; max-width: 640px; }
+.compare-assumptions { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 18px; }
+.compare-assumptions .field input { min-width: 0; width: 100%; }
+
+.compare-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.compare-col { border-radius: 12px; padding: 16px 18px; }
+.compare-col--without { background: #fff4f2; border: 1px solid #f2cdc7; }
+.compare-col--with { background: var(--brand-gradient-soft); border: 1px solid rgba(16, 209, 138, 0.4); }
+.compare-col__tag { font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.6px; }
+.compare-col--without .compare-col__tag { color: #c0392b; }
+.compare-col--with .compare-col__tag { color: var(--brand-blue); }
+.compare-col__big { font-size: 27px; font-weight: 800; margin-top: 4px; }
+.compare-col--without .compare-col__big { color: #b3261e; }
+.compare-col--with .compare-col__big {
+  background: var(--brand-gradient); -webkit-background-clip: text; background-clip: text; color: transparent;
+}
+.compare-col__per { font-size: 12px; color: var(--text-muted); margin-bottom: 10px; }
+.compare-col ul { margin: 0; padding: 0; list-style: none; }
+.compare-col li { font-size: 13px; color: var(--text); padding: 3px 0; }
+.compare-col--with li { padding-left: 20px; position: relative; }
+.compare-col--with li::before { content: "✓"; position: absolute; left: 0; color: var(--brand-green); font-weight: 700; }
+
+.compare-savings {
+  margin-top: 16px; padding: 14px 18px; border-radius: 12px;
+  background: var(--brand-gradient); color: #fff; font-size: 15px; font-weight: 600;
+  box-shadow: var(--shadow-brand);
+}
+.compare-savings.is-negative { background: #eef1f6; color: var(--navy-900); box-shadow: none; border: 1px solid var(--border); }
+.compare-savings b { font-weight: 800; }
+.compare-card__note { font-size: 11px; color: var(--text-muted); margin: 12px 0 0; }
+
 /* ---------- Templates ---------- */
 .template-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 16px; }
 .template-card {
@@ -453,6 +488,8 @@ a { color: var(--brand-mid); }
   .contract-options { grid-template-columns: repeat(2, 1fr); }
   .savings-table { grid-template-columns: repeat(2, 1fr); }
   .totals-grid { grid-template-columns: 1fr; }
+  .compare-assumptions { grid-template-columns: 1fr; }
+  .compare-grid { grid-template-columns: 1fr; }
   .product-card { flex-direction: column; }
   .product-card__action { text-align: left; }
 }

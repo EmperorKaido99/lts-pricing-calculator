@@ -67,6 +67,20 @@ const LTSCalculator = (() => {
     }));
   }
 
+  /**
+   * The "cost of NOT using LTS" — what it costs to run the same processes by
+   * hand for a given trainee count: staff time (hours × rate) plus materials.
+   * All inputs are caller-supplied assumptions so the user can adjust them.
+   */
+  function manualBaselineCost({ trainees, hoursPerTrainee, hourlyRate, materialsPerTrainee }) {
+    const n = Math.max(1, Math.floor(Number(trainees) || 0));
+    const hours = n * Math.max(0, Number(hoursPerTrainee) || 0);
+    const labourCost = hours * Math.max(0, Number(hourlyRate) || 0);
+    const materialsCost = n * Math.max(0, Number(materialsPerTrainee) || 0);
+    const monthly = labourCost + materialsCost;
+    return { trainees: n, hours, labourCost, materialsCost, monthly, annual: monthly * 12 };
+  }
+
   function formatCurrency(amount, { decimals = 2 } = {}) {
     return (
       LTS_DATA.currencySymbol +
@@ -108,6 +122,7 @@ const LTSCalculator = (() => {
     calcLine,
     calcSavingsVsPayg,
     calcAllContracts,
+    manualBaselineCost,
     formatCurrency,
     formatPercent,
     totalEstimate,

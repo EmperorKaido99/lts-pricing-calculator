@@ -285,6 +285,11 @@ select.icon-btn { font-family: inherit; -webkit-appearance: menulist; appearance
   border-top: 3px solid transparent;
   border-image: var(--brand-gradient) 1;
 }
+.pending-note {
+  border: 1px dashed #dca63f; background: #fff8ec; color: #8a5a1f;
+  border-radius: 8px; padding: 8px 12px; font-size: 12px; font-weight: 600;
+  margin-bottom: 16px;
+}
 .totals-card__toggle { display: flex; align-items: center; gap: 10px; margin-bottom: 16px; font-size: 13px; }
 .switch { display: inline-flex; }
 .switch input { display: none; }
@@ -567,6 +572,7 @@ select.icon-btn { font-family: inherit; -webkit-appearance: menulist; appearance
       <div id="estimate-lines"></div>
 
       <div class="card totals-card">
+        <div class="pending-note">⏳ Pending review: awaiting details from Susan &amp; Thato on this section (Totals &amp; call to action).</div>
         <div class="totals-card__toggle">
           <label class="switch">
             <input type="checkbox" id="toggle-vat" />

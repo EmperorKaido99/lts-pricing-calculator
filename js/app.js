@@ -402,36 +402,10 @@
     }
   }
 
-  // ---------- export / save / share ----------
+  // ---------- export ----------
   $("#btn-export").addEventListener("click", () => {
     if (state.lines.length === 0) return;
     LTSExport.exportToExcel(state.lines, { name: $("#input-estimate-name").value });
-  });
-
-  $("#btn-save").addEventListener("click", () => {
-    if (state.lines.length === 0) return;
-    const result = LTSExport.saveEstimate($("#input-estimate-name").value, state.lines);
-    const msg =
-      result.mode === "local"
-        ? "Saved to this browser."
-        : "Saved for this session (browser storage isn't available here).";
-    const feedback = $("#save-feedback");
-    feedback.textContent = msg;
-    feedback.hidden = false;
-    renderSavedList();
-  });
-
-  $("#btn-share").addEventListener("click", async () => {
-    if (state.lines.length === 0) return;
-    const url = LTSExport.buildShareUrl(state.lines, { name: $("#input-estimate-name").value, audience: state.audience });
-    try {
-      await navigator.clipboard.writeText(url);
-      const feedback = $("#save-feedback");
-      feedback.textContent = "Share link copied to clipboard.";
-      feedback.hidden = false;
-    } catch (e) {
-      prompt("Copy this share link:", url);
-    }
   });
 
   function renderSavedList() {

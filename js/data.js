@@ -18,6 +18,7 @@ const LTS_DATA = {
   pricesValidUntil: "31 March 2027",
   escalationNote:
     "LTS escalates prices on 1 April each year by an amount that approximates the previous year's average CPI inflation figure issued by the South African Reserve Bank.",
+  annualEscalationPct: 6.6, // confirmed CPI-based increase applying from 1 April
 
   // "Cost of NOT using LTS" — a manual/paper baseline the customer compares
   // against. These are editable ASSUMPTIONS shown to the user, not LTS charges:
@@ -41,7 +42,7 @@ const LTS_DATA = {
   products: [
     {
       id: "platform",
-      name: "Online Assessment & Learner Tracking Platform",
+      name: "LTS - Practical Experience and Learner Tracking Platform",
       tagline: "The preferred electronic assessment solution for training offices",
       description:
         "A web-based platform for managing trainee assessments, competency tracking and reporting — accessible anywhere, with no software to install and no per-user licensing fees.",
@@ -58,13 +59,13 @@ const LTS_DATA = {
     },
     {
       id: "timesheet",
-      name: "Time Sheet",
+      name: "TS - Timesheet Tracking",
       tagline: "Staff time tracking, billed separately from the assessment platform",
       description:
         "A standalone module for logging and reporting staff time. Priced per timesheet user — flat, not per trainee, with no volume brackets.",
       valueProps: [
         "One flat rate per timesheet user, regardless of trainee count",
-        "Billed separately from the Online Assessment & Learner Tracking Platform",
+        "Billed separately from the LTS - Practical Experience and Learner Tracking Platform",
         "Same subscription model — no installation or licensing fees",
       ],
       pricingModel: "flat",

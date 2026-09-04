@@ -47,23 +47,13 @@
     <div class="hero__text">
       <h1>Pricing calculator</h1>
       <p>See exactly what your training office gets with LTS — and what it costs.</p>
-      <a class="btn btn--primary" href="https://www.ltsystems.co.za/pricing/" target="_blank" rel="noopener">Get started with LTS</a>
+      <button class="btn btn--primary" id="btn-hero-get-started" type="button">Get started with LTS</button>
     </div>
     <div class="hero__art">
       <img src="assets/hero-calculator.svg" alt="Calculator" width="430" height="410" />
     </div>
   </div>
 </section>
-
-
-<!-- ============ AUDIENCE TOGGLE ============ -->
-<div class="audience">
-  <span class="audience__label">I am a:</span>
-  <div class="segmented" role="tablist" aria-label="Customer type">
-    <button class="segmented__btn is-active" data-audience="new" type="button">New customer</button>
-    <button class="segmented__btn" data-audience="existing" type="button">Existing customer</button>
-  </div>
-</div>
 
 <!-- ============ TABS ============ -->
 <nav class="tabs" role="tablist" aria-label="Pricing calculator sections">
@@ -97,7 +87,9 @@
             <input type="text" id="input-estimate-name" value="My LTS estimate" />
           </div>
           <div class="card__actions">
-            <button class="icon-btn" id="btn-add-line" type="button" title="Add another line item">+ Add line</button>
+            <select class="icon-btn" id="add-line-select" title="Add another line item" aria-label="Add another line item">
+              <option value="" selected disabled>+ Add line</option>
+            </select>
             <button class="icon-btn icon-btn--danger" id="btn-clear-estimate" type="button" title="Clear estimate">Clear</button>
           </div>
         </div>
@@ -123,7 +115,7 @@
             <div class="totals-grid__value" id="total-monthly">R0.00</div>
           </div>
           <div>
-            <div class="totals-grid__label">Annual cost</div>
+            <div class="totals-grid__label">Estimated Annual Cost</div>
             <div class="totals-grid__value" id="total-annual">R0.00</div>
           </div>
         </div>

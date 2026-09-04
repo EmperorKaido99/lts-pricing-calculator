@@ -27,7 +27,7 @@
         label: "Line " + lineSeq,
         productId: "platform",
         trainees: 15,
-        contractId: "payg",
+        contractId: "3yr", // LTS's best-value term is the default for a new platform line
         units: 1,
       },
       overrides
@@ -94,32 +94,43 @@
     wireLoaderTrigger($(sel), "Recalculate your estimate")
   );
 
-  // ---------- audience toggle ----------
-  $$(".segmented__btn").forEach((btn) => {
-    btn.addEventListener("click", () => {
-      state.audience = btn.dataset.audience;
-      $$(".segmented__btn").forEach((b) => b.classList.toggle("is-active", b === btn));
-      renderTotals(); // CTA copy depends on audience
-    });
-  });
-
   // ---------- product tab ----------
   function productPriceBlockHtml(product) {
     if (product.pricingModel === "flat") {
-      const priceHtml =
-        typeof product.flatRate === "number"
-          ? `<div class="product-card__price">${fmt(product.flatRate)}</div>`
-          : `<div class="product-card__price product-card__price--tbc">Pricing to be confirmed</div>`;
+      if (typeof product.flatRate !== "number") {
+        return `
+          <div class="product-card__from">Flat rate</div>
+          <div class="product-card__price product-card__price--tbc">Pricing to be confirmed</div>
+          <div class="product-card__per">per timesheet user / month, excl. VAT</div>`;
+      }
       return `
-        <div class="product-card__from">Flat rate</div>
-        ${priceHtml}
-        <div class="product-card__per">per timesheet user / month, excl. VAT</div>`;
+        <div class="product-card__price">${fmt(product.flatRate)}</div>
+        <div class="product-card__per">per Timesheet User / month, excl VAT</div>`;
     }
-    const cheapestRate = Math.min(...Object.values(LTS_DATA.rates["3yr"]));
+    // "On average" — the 3-year rate for the smallest/starting bracket, a
+    // more honest baseline than the absolute cheapest rate across all tiers.
+    const onAverageRate = LTS_DATA.rates["3yr"]["1-29"];
     return `
-      <div class="product-card__from">From</div>
-      <div class="product-card__price">${fmt(cheapestRate)}</div>
-      <div class="product-card__per">per trainee / month, excl. VAT</div>`;
+      <div class="product-card__from">On average</div>
+      <div class="product-card__price">${fmt(onAverageRate)}</div>
+      <div class="product-card__per">per Trainee / month, excl. VAT</div>`;
+  }
+
+  // Build (but don't add) a fresh line for a product, with the line item
+  // name defaulting to the product's own name.
+  function buildLineForProduct(productId) {
+    const product = LTSCalculator.getProduct(productId);
+    if (product.pricingModel === "flat") {
+      return newLine({ label: product.name, productId, trainees: null, contractId: null, units: 1 });
+    }
+    return newLine({ label: product.name, productId });
+  }
+
+  // Add a product to the estimate once (used by Products-tab "Add to
+  // estimate" buttons and the hero CTA) — clicking twice doesn't duplicate.
+  function addToEstimateIdempotent(productId) {
+    const alreadyAdded = state.lines.some((l) => l.productId === productId);
+    if (!alreadyAdded) state.lines.push(buildLineForProduct(productId));
   }
 
   function productCardHtml(product) {
@@ -147,21 +158,20 @@
 
     $$("[data-add-product]").forEach((btn) => {
       btn.addEventListener("click", () => {
-        const productId = btn.dataset.addProduct;
-        const alreadyAdded = state.lines.some((l) => l.productId === productId);
-        if (!alreadyAdded) {
-          const product = LTSCalculator.getProduct(productId);
-          if (product.pricingModel === "flat") {
-            state.lines.push(newLine({ label: product.name, productId, trainees: null, contractId: null, units: 1 }));
-          } else {
-            state.lines.push(newLine({ label: "LTS Platform", productId }));
-          }
-        }
+        addToEstimateIdempotent(btn.dataset.addProduct);
         renderEstimate();
         goToTab("estimate");
       });
     });
   }
+
+  // Hero "Get started with LTS" — adds the core platform (3-year default)
+  // and jumps straight to the estimate.
+  $("#btn-hero-get-started").addEventListener("click", () => {
+    addToEstimateIdempotent("platform");
+    renderEstimate();
+    goToTab("estimate");
+  });
 
   // ---------- estimate tab ----------
   function contractOptionHtml(line, contract) {
@@ -174,7 +184,7 @@
           <span>${contract.label}</span>
           ${contract.badge ? `<span class="contract-option__badge">${contract.badge}</span>` : ""}
         </div>
-        <div class="contract-option__rate">${fmt(calc.ratePerTrainee)} <span style="font-weight:400;font-size:11px;color:var(--text-muted)">/trainee/mo</span></div>
+        <div class="contract-option__rate">${fmt(calc.ratePerTrainee)} <span style="font-weight:400;font-size:11px;color:var(--text-muted)">/trainee/month</span></div>
         ${savings > 0 ? `<div class="contract-option__save">Save ${fmtPct(savings)} vs pay-as-you-go</div>` : `<div class="contract-option__save" style="color:var(--text-muted)">Reference rate</div>`}
       </button>`;
   }
@@ -186,6 +196,7 @@
 
   function tieredLineHtml(line) {
     const calc = LTSCalculator.calcLine({ trainees: line.trainees, contractId: line.contractId });
+    const annualEst = LTSCalculator.estimatedAnnual(calc.monthlyExclVat);
     const removeBtn = state.lines.length > 1 ? `<button class="line-item__remove" data-remove="${line.id}" title="Remove line" type="button">✕</button>` : "";
     return `
       <div class="card line-item" data-line-card="${line.id}">
@@ -204,7 +215,7 @@
             <label>&nbsp;</label>
             <div class="line-item__result">
               <span>Monthly<br/><b>${fmt(state.showVat ? calc.monthlyInclVat : calc.monthlyExclVat)}</b></span>
-              <span>Estimated Annual<br/><b>${fmt(state.showVat ? calc.annualInclVat : calc.annualExclVat)}</b></span>
+              <span>Estimated Annual<br/><b>${fmt(state.showVat ? annualEst.inclVat : annualEst.exclVat)}</b></span>
             </div>
           </div>
         </div>
@@ -244,6 +255,7 @@
         </div>`;
     }
 
+    const annualEst = LTSCalculator.estimatedAnnual(calc.monthlyExclVat);
     return `
       <div class="card line-item" data-line-card="${line.id}">
         ${removeBtn}
@@ -255,13 +267,13 @@
           <div class="field">
             <label for="units-${line.id}">Number of timesheet users</label>
             <input type="number" min="1" id="units-${line.id}" data-field="units" data-line="${line.id}" value="${line.units}" />
-            <div class="line-item__tier">Flat rate: ${fmt(calc.ratePerUnit)} /user/mo</div>
+            <div class="line-item__tier">Flat rate: ${fmt(calc.ratePerUnit)}/user/month</div>
           </div>
           <div class="field">
             <label>&nbsp;</label>
             <div class="line-item__result">
               <span>Monthly<br/><b>${fmt(state.showVat ? calc.monthlyInclVat : calc.monthlyExclVat)}</b></span>
-              <span>Estimated Annual<br/><b>${fmt(state.showVat ? calc.annualInclVat : calc.annualExclVat)}</b></span>
+              <span>Estimated Annual<br/><b>${fmt(state.showVat ? annualEst.inclVat : annualEst.exclVat)}</b></span>
             </div>
           </div>
         </div>
@@ -315,8 +327,18 @@
     renderTotals();
   }
 
-  $("#btn-add-line").addEventListener("click", () => {
-    state.lines.push(newLine({ label: "Line " + (state.lines.length + 1) }));
+  // Populate the "+ Add line" product picker once, from the product catalogue.
+  LTS_DATA.products.forEach((p) => {
+    const opt = document.createElement("option");
+    opt.value = p.id;
+    opt.textContent = p.name;
+    $("#add-line-select").appendChild(opt);
+  });
+  $("#add-line-select").addEventListener("change", (e) => {
+    const productId = e.target.value;
+    if (!productId) return;
+    state.lines.push(buildLineForProduct(productId));
+    e.target.value = "";
     renderEstimate();
   });
 
@@ -383,7 +405,8 @@
       ? LTSCalculator.totalEstimate(state.lines)
       : { monthlyExclVat: 0, annualExclVat: 0, monthlyInclVat: 0, annualInclVat: 0 };
     const monthly = state.showVat ? totals.monthlyInclVat : totals.monthlyExclVat;
-    const annual = state.showVat ? totals.annualInclVat : totals.annualExclVat;
+    const annualEst = LTSCalculator.estimatedAnnual(totals.monthlyExclVat);
+    const annual = state.showVat ? annualEst.inclVat : annualEst.exclVat;
 
     // LTS charges no setup / installation / licensing fee, so the upfront cost
     // is always R0.00 — shown live at the top and bottom for transparency.
@@ -526,7 +549,6 @@
     if (payload.meta?.name) $("#input-estimate-name").value = payload.meta.name;
     if (payload.meta?.audience) {
       state.audience = payload.meta.audience;
-      $$(".segmented__btn").forEach((b) => b.classList.toggle("is-active", b.dataset.audience === state.audience));
     }
     return true;
   }

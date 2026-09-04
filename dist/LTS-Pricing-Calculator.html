@@ -104,24 +104,6 @@ a { color: var(--brand-mid); }
 }
 .hero .btn--primary:hover { background: #f0f2ff; }
 
-/* ---------- Audience toggle ---------- */
-.audience {
-  max-width: 1080px;
-  margin: 20px auto 0;
-  padding: 0 24px;
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-.audience__label { font-weight: 600; color: var(--navy-900); font-size: 14px; }
-.segmented { display: inline-flex; background: var(--surface); border: 1px solid var(--border); border-radius: 999px; padding: 3px; }
-.segmented__btn {
-  border: none; background: transparent; padding: 6px 16px; border-radius: 999px;
-  font-size: 13px; font-weight: 600; color: var(--text-muted); cursor: pointer;
-  transition: color .15s;
-}
-.segmented__btn.is-active { background: var(--brand-gradient); color: #fff; }
-
 /* ---------- Tabs ---------- */
 .tabs {
   max-width: 1080px;
@@ -248,6 +230,7 @@ a { color: var(--brand-mid); }
 .icon-btn:hover { border-color: var(--brand-mid); color: var(--brand-blue); }
 .icon-btn--danger { color: #b3261e; }
 .icon-btn--danger:hover { border-color: #b3261e; color: #b3261e; }
+select.icon-btn { font-family: inherit; -webkit-appearance: menulist; appearance: menulist; }
 
 .estimate-empty {
   background: var(--surface); border: 1px dashed var(--border); border-radius: var(--radius);
@@ -533,23 +516,13 @@ a { color: var(--brand-mid); }
     <div class="hero__text">
       <h1>Pricing calculator</h1>
       <p>See exactly what your training office gets with LTS — and what it costs.</p>
-      <a class="btn btn--primary" href="https://www.ltsystems.co.za/pricing/" target="_blank" rel="noopener">Get started with LTS</a>
+      <button class="btn btn--primary" id="btn-hero-get-started" type="button">Get started with LTS</button>
     </div>
     <div class="hero__art">
       <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA0MzAgNDEwIiByb2xlPSJpbWciIGFyaWEtbGFiZWw9IkNhbGN1bGF0b3IgaWxsdXN0cmF0aW9uIj4KICA8ZGVmcz4KICAgIDxsaW5lYXJHcmFkaWVudCBpZD0iY2FsY0JvZHkiIHgxPSIwIiB5MT0iMCIgeDI9IjAuNCIgeTI9IjEiPgogICAgICA8c3RvcCBvZmZzZXQ9IjAiIHN0b3AtY29sb3I9IiNmZmZmZmYiLz4KICAgICAgPHN0b3Agb2Zmc2V0PSIxIiBzdG9wLWNvbG9yPSIjZThlY2YzIi8+CiAgICA8L2xpbmVhckdyYWRpZW50PgogICAgPGxpbmVhckdyYWRpZW50IGlkPSJjYWxjU2NyZWVuIiB4MT0iMCIgeTE9IjAiIHgyPSIxIiB5Mj0iMSI+CiAgICAgIDxzdG9wIG9mZnNldD0iMCIgc3RvcC1jb2xvcj0iIzBhOGZkMCIvPgogICAgICA8c3RvcCBvZmZzZXQ9IjEiIHN0b3AtY29sb3I9IiMxMGQxOGEiLz4KICAgIDwvbGluZWFyR3JhZGllbnQ+CiAgICA8ZmlsdGVyIGlkPSJjYWxjU2hhZG93IiB4PSItMjAlIiB5PSItMjAlIiB3aWR0aD0iMTQwJSIgaGVpZ2h0PSIxNTAlIj4KICAgICAgPGZlRHJvcFNoYWRvdyBkeD0iMCIgZHk9IjE4IiBzdGREZXZpYXRpb249IjIwIiBmbG9vZC1jb2xvcj0iIzBhMmE0ZCIgZmxvb2Qtb3BhY2l0eT0iMC4yOCIvPgogICAgPC9maWx0ZXI+CiAgPC9kZWZzPgoKICA8IS0tIGJvZHkgLS0+CiAgPHJlY3QgeD0iMjAiIHk9IjE4IiB3aWR0aD0iMzkwIiBoZWlnaHQ9IjM3NCIgcng9IjMwIiBmaWxsPSJ1cmwoI2NhbGNCb2R5KSIgc3Ryb2tlPSIjZDdkY2U2IiBzdHJva2Utd2lkdGg9IjEuNSIgZmlsdGVyPSJ1cmwoI2NhbGNTaGFkb3cpIi8+CgogIDwhLS0gc2NyZWVuIC0tPgogIDxyZWN0IHg9IjUyIiB5PSI0NiIgd2lkdGg9IjMyNiIgaGVpZ2h0PSI3NCIgcng9IjE0IiBmaWxsPSJ1cmwoI2NhbGNTY3JlZW4pIi8+CiAgPHRleHQgeD0iMzY2IiB5PSI5MiIgdGV4dC1hbmNob3I9ImVuZCIgZm9udC1mYW1pbHk9IidDb3VyaWVyIE5ldycsIG1vbm9zcGFjZSIgZm9udC1zaXplPSI0MCIgZm9udC13ZWlnaHQ9IjcwMCIgZmlsbD0iIzBiM2EyZiIgZmlsbC1vcGFjaXR5PSIwLjE4IiBsZXR0ZXItc3BhY2luZz0iNCI+ODg4ODg4ODg8L3RleHQ+CiAgPHRleHQgeD0iMzY2IiB5PSI5MiIgdGV4dC1hbmNob3I9ImVuZCIgZm9udC1mYW1pbHk9IidDb3VyaWVyIE5ldycsIG1vbm9zcGFjZSIgZm9udC1zaXplPSI0MCIgZm9udC13ZWlnaHQ9IjcwMCIgZmlsbD0iI2ZmZmZmZiI+MDwvdGV4dD4KCiAgPCEtLSBrZXlzOiBmaWxscyAtLT4KICA8ZyBzdHJva2Utd2lkdGg9IjAiPgogICAgPCEtLSBSb3cgMSA6IGZ1bmN0aW9uIChhbWJlcikgKyBBQyAoYmx1ZSkgLS0+CiAgICA8cmVjdCB4PSI1MiIgIHk9IjE0MCIgd2lkdGg9IjU0IiBoZWlnaHQ9IjQ0IiByeD0iMTAiIGZpbGw9IiNkY2E2M2YiLz4KICAgIDxyZWN0IHg9IjEyMCIgeT0iMTQwIiB3aWR0aD0iNTQiIGhlaWdodD0iNDQiIHJ4PSIxMCIgZmlsbD0iI2RjYTYzZiIvPgogICAgPHJlY3QgeD0iMTg4IiB5PSIxNDAiIHdpZHRoPSI1NCIgaGVpZ2h0PSI0NCIgcng9IjEwIiBmaWxsPSIjZGNhNjNmIi8+CiAgICA8cmVjdCB4PSIyNTYiIHk9IjE0MCIgd2lkdGg9IjU0IiBoZWlnaHQ9IjQ0IiByeD0iMTAiIGZpbGw9IiNkY2E2M2YiLz4KICAgIDxyZWN0IHg9IjMyNCIgeT0iMTQwIiB3aWR0aD0iNTQiIGhlaWdodD0iNDQiIHJ4PSIxMCIgZmlsbD0iIzJmN2VmMCIvPgoKICAgIDwhLS0gUm93IDIgOiA3IDggOSDDtyDDlyAtLT4KICAgIDxyZWN0IHg9IjUyIiAgeT0iMTkyIiB3aWR0aD0iNTQiIGhlaWdodD0iNDQiIHJ4PSIxMCIgZmlsbD0iIzM2M2I0MyIvPgogICAgPHJlY3QgeD0iMTIwIiB5PSIxOTIiIHdpZHRoPSI1NCIgaGVpZ2h0PSI0NCIgcng9IjEwIiBmaWxsPSIjMzYzYjQzIi8+CiAgICA8cmVjdCB4PSIxODgiIHk9IjE5MiIgd2lkdGg9IjU0IiBoZWlnaHQ9IjQ0IiByeD0iMTAiIGZpbGw9IiMzNjNiNDMiLz4KICAgIDxyZWN0IHg9IjI1NiIgeT0iMTkyIiB3aWR0aD0iNTQiIGhlaWdodD0iNDQiIHJ4PSIxMCIgZmlsbD0iI2MyYzhkMiIvPgogICAgPHJlY3QgeD0iMzI0IiB5PSIxOTIiIHdpZHRoPSI1NCIgaGVpZ2h0PSI0NCIgcng9IjEwIiBmaWxsPSIjYzJjOGQyIi8+CgogICAgPCEtLSBSb3cgMyA6IDQgNSA2IOKIkiArIC0tPgogICAgPHJlY3QgeD0iNTIiICB5PSIyNDQiIHdpZHRoPSI1NCIgaGVpZ2h0PSI0NCIgcng9IjEwIiBmaWxsPSIjMzYzYjQzIi8+CiAgICA8cmVjdCB4PSIxMjAiIHk9IjI0NCIgd2lkdGg9IjU0IiBoZWlnaHQ9IjQ0IiByeD0iMTAiIGZpbGw9IiMzNjNiNDMiLz4KICAgIDxyZWN0IHg9IjE4OCIgeT0iMjQ0IiB3aWR0aD0iNTQiIGhlaWdodD0iNDQiIHJ4PSIxMCIgZmlsbD0iIzM2M2I0MyIvPgogICAgPHJlY3QgeD0iMjU2IiB5PSIyNDQiIHdpZHRoPSI1NCIgaGVpZ2h0PSI0NCIgcng9IjEwIiBmaWxsPSIjYzJjOGQyIi8+CiAgICA8cmVjdCB4PSIzMjQiIHk9IjI0NCIgd2lkdGg9IjU0IiBoZWlnaHQ9IjQ0IiByeD0iMTAiIGZpbGw9IiNjMmM4ZDIiLz4KCiAgICA8IS0tIFJvdyA0IDogMSAyIDMgLiA9IC0tPgogICAgPHJlY3QgeD0iNTIiICB5PSIyOTYiIHdpZHRoPSI1NCIgaGVpZ2h0PSI0NCIgcng9IjEwIiBmaWxsPSIjMzYzYjQzIi8+CiAgICA8cmVjdCB4PSIxMjAiIHk9IjI5NiIgd2lkdGg9IjU0IiBoZWlnaHQ9IjQ0IiByeD0iMTAiIGZpbGw9IiMzNjNiNDMiLz4KICAgIDxyZWN0IHg9IjE4OCIgeT0iMjk2IiB3aWR0aD0iNTQiIGhlaWdodD0iNDQiIHJ4PSIxMCIgZmlsbD0iIzM2M2I0MyIvPgogICAgPHJlY3QgeD0iMjU2IiB5PSIyOTYiIHdpZHRoPSI1NCIgaGVpZ2h0PSI0NCIgcng9IjEwIiBmaWxsPSIjYzJjOGQyIi8+CiAgICA8cmVjdCB4PSIzMjQiIHk9IjI5NiIgd2lkdGg9IjU0IiBoZWlnaHQ9IjQ0IiByeD0iMTAiIGZpbGw9IiNjMmM4ZDIiLz4KCiAgICA8IS0tIFJvdyA1IDogMCAod2lkZSkgLiBBQyAod2lkZSwgYmx1ZSkgLS0+CiAgICA8cmVjdCB4PSI1MiIgIHk9IjM0OCIgd2lkdGg9IjEyMiIgaGVpZ2h0PSI0NCIgcng9IjEwIiBmaWxsPSIjMzYzYjQzIi8+CiAgICA8cmVjdCB4PSIxODgiIHk9IjM0OCIgd2lkdGg9IjU0IiAgaGVpZ2h0PSI0NCIgcng9IjEwIiBmaWxsPSIjYzJjOGQyIi8+CiAgICA8cmVjdCB4PSIyNTYiIHk9IjM0OCIgd2lkdGg9IjEyMiIgaGVpZ2h0PSI0NCIgcng9IjEwIiBmaWxsPSIjMmY3ZWYwIi8+CiAgPC9nPgoKICA8IS0tIGtleXM6IGxhYmVscyAtLT4KICA8ZyBmb250LWZhbWlseT0iLWFwcGxlLXN5c3RlbSwgJ1NlZ29lIFVJJywgQXJpYWwsIHNhbnMtc2VyaWYiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGRvbWluYW50LWJhc2VsaW5lPSJjZW50cmFsIj4KICAgIDxnIGZvbnQtc2l6ZT0iMTUiIGZvbnQtd2VpZ2h0PSI3MDAiIGZpbGw9IiM0YTM0MTAiPgogICAgICA8dGV4dCB4PSI3OSIgIHk9IjE2MiI+TUM8L3RleHQ+PHRleHQgeD0iMTQ3IiB5PSIxNjIiPk0rPC90ZXh0PgogICAgICA8dGV4dCB4PSIyMTUiIHk9IjE2MiI+TS08L3RleHQ+PHRleHQgeD0iMjgzIiB5PSIxNjIiPk1SPC90ZXh0PgogICAgPC9nPgogICAgPHRleHQgeD0iMzUxIiB5PSIxNjIiIGZvbnQtc2l6ZT0iMTUiIGZvbnQtd2VpZ2h0PSI4MDAiIGZpbGw9IiNmZmZmZmYiPkFDPC90ZXh0PgoKICAgIDxnIGZvbnQtc2l6ZT0iMjAiIGZvbnQtd2VpZ2h0PSI3MDAiIGZpbGw9IiNmZmZmZmYiPgogICAgICA8dGV4dCB4PSI3OSIgIHk9IjIxNCI+NzwvdGV4dD48dGV4dCB4PSIxNDciIHk9IjIxNCI+ODwvdGV4dD48dGV4dCB4PSIyMTUiIHk9IjIxNCI+OTwvdGV4dD4KICAgICAgPHRleHQgeD0iNzkiICB5PSIyNjYiPjQ8L3RleHQ+PHRleHQgeD0iMTQ3IiB5PSIyNjYiPjU8L3RleHQ+PHRleHQgeD0iMjE1IiB5PSIyNjYiPjY8L3RleHQ+CiAgICAgIDx0ZXh0IHg9Ijc5IiAgeT0iMzE4Ij4xPC90ZXh0Pjx0ZXh0IHg9IjE0NyIgeT0iMzE4Ij4yPC90ZXh0Pjx0ZXh0IHg9IjIxNSIgeT0iMzE4Ij4zPC90ZXh0PgogICAgICA8dGV4dCB4PSIxMTMiIHk9IjM3MCI+MDwvdGV4dD4KICAgIDwvZz4KICAgIDxnIGZvbnQtc2l6ZT0iMjIiIGZvbnQtd2VpZ2h0PSI3MDAiIGZpbGw9IiMyYTJmMzYiPgogICAgICA8dGV4dCB4PSIyODMiIHk9IjIxNCI+JiMyNDc7PC90ZXh0Pjx0ZXh0IHg9IjM1MSIgeT0iMjE0Ij4mIzIxNTs8L3RleHQ+CiAgICAgIDx0ZXh0IHg9IjI4MyIgeT0iMjY2Ij4mIzg3MjI7PC90ZXh0Pjx0ZXh0IHg9IjM1MSIgeT0iMjY2Ij4rPC90ZXh0PgogICAgICA8dGV4dCB4PSIyODMiIHk9IjMxOCI+LjwvdGV4dD48dGV4dCB4PSIzNTEiIHk9IjMxOCI+PTwvdGV4dD4KICAgICAgPHRleHQgeD0iMjE1IiB5PSIzNzAiPi48L3RleHQ+CiAgICA8L2c+CiAgICA8dGV4dCB4PSIzMTciIHk9IjM3MCIgZm9udC1zaXplPSIxOCIgZm9udC13ZWlnaHQ9IjgwMCIgZmlsbD0iI2ZmZmZmZiI+QUM8L3RleHQ+CiAgPC9nPgo8L3N2Zz4K" alt="Calculator" width="430" height="410" />
     </div>
   </div>
 </section>
-
-
-<!-- ============ AUDIENCE TOGGLE ============ -->
-<div class="audience">
-  <span class="audience__label">I am a:</span>
-  <div class="segmented" role="tablist" aria-label="Customer type">
-    <button class="segmented__btn is-active" data-audience="new" type="button">New customer</button>
-    <button class="segmented__btn" data-audience="existing" type="button">Existing customer</button>
-  </div>
-</div>
 
 <!-- ============ TABS ============ -->
 <nav class="tabs" role="tablist" aria-label="Pricing calculator sections">
@@ -583,7 +556,9 @@ a { color: var(--brand-mid); }
             <input type="text" id="input-estimate-name" value="My LTS estimate" />
           </div>
           <div class="card__actions">
-            <button class="icon-btn" id="btn-add-line" type="button" title="Add another line item">+ Add line</button>
+            <select class="icon-btn" id="add-line-select" title="Add another line item" aria-label="Add another line item">
+              <option value="" selected disabled>+ Add line</option>
+            </select>
             <button class="icon-btn icon-btn--danger" id="btn-clear-estimate" type="button" title="Clear estimate">Clear</button>
           </div>
         </div>
@@ -609,7 +584,7 @@ a { color: var(--brand-mid); }
             <div class="totals-grid__value" id="total-monthly">R0.00</div>
           </div>
           <div>
-            <div class="totals-grid__label">Annual cost</div>
+            <div class="totals-grid__label">Estimated Annual Cost</div>
             <div class="totals-grid__value" id="total-annual">R0.00</div>
           </div>
         </div>
@@ -741,6 +716,7 @@ const LTS_DATA = {
   pricesValidUntil: "31 March 2027",
   escalationNote:
     "LTS escalates prices on 1 April each year by an amount that approximates the previous year's average CPI inflation figure issued by the South African Reserve Bank.",
+  annualEscalationPct: 6.6, // confirmed CPI-based increase applying from 1 April
 
   // "Cost of NOT using LTS" — a manual/paper baseline the customer compares
   // against. These are editable ASSUMPTIONS shown to the user, not LTS charges:
@@ -764,7 +740,7 @@ const LTS_DATA = {
   products: [
     {
       id: "platform",
-      name: "Online Assessment & Learner Tracking Platform",
+      name: "LTS - Practical Experience and Learner Tracking Platform",
       tagline: "The preferred electronic assessment solution for training offices",
       description:
         "A web-based platform for managing trainee assessments, competency tracking and reporting — accessible anywhere, with no software to install and no per-user licensing fees.",
@@ -781,13 +757,13 @@ const LTS_DATA = {
     },
     {
       id: "timesheet",
-      name: "Time Sheet",
+      name: "TS - Timesheet Tracking",
       tagline: "Staff time tracking, billed separately from the assessment platform",
       description:
         "A standalone module for logging and reporting staff time. Priced per timesheet user — flat, not per trainee, with no volume brackets.",
       valueProps: [
         "One flat rate per timesheet user, regardless of trainee count",
-        "Billed separately from the Online Assessment & Learner Tracking Platform",
+        "Billed separately from the LTS - Practical Experience and Learner Tracking Platform",
         "Same subscription model — no installation or licensing fees",
       ],
       pricingModel: "flat",
@@ -1038,6 +1014,29 @@ const LTSCalculator = (() => {
     return Object.assign({ product, pricingConfirmed: true }, calcLine(line));
   }
 
+  /**
+   * How many of the next 12 months fall before LTS's next 1-April escalation
+   * (0 if the escalation date has already passed this cycle, meaning every
+   * month ahead is at the new rate).
+   */
+  function monthsUntilNextEscalation(fromDate) {
+    const month = fromDate.getMonth(); // 0-based; April = 3
+    return (3 - month + 12) % 12;
+  }
+
+  /**
+   * "Estimated Annual" for a monthly rate — 12 months forward from today,
+   * blended across LTS's confirmed 1-April CPI escalation so the annual
+   * figure isn't just today's rate x 12.
+   */
+  function estimatedAnnual(monthlyExclVat, fromDate = new Date()) {
+    const pct = Number(LTS_DATA.annualEscalationPct) || 0;
+    const monthsBefore = monthsUntilNextEscalation(fromDate);
+    const monthsAfter = 12 - monthsBefore;
+    const exclVat = monthlyExclVat * monthsBefore + monthlyExclVat * (1 + pct / 100) * monthsAfter;
+    return { exclVat, inclVat: exclVat * (1 + LTS_DATA.vatRate) };
+  }
+
   function formatCurrency(amount, { decimals = 2 } = {}) {
     return (
       LTS_DATA.currencySymbol +
@@ -1082,6 +1081,7 @@ const LTSCalculator = (() => {
     calcSavingsVsPayg,
     calcAllContracts,
     manualBaselineCost,
+    estimatedAnnual,
     formatCurrency,
     formatPercent,
     totalEstimate,
@@ -1253,7 +1253,7 @@ const LTSExport = (() => {
         label: "Line " + lineSeq,
         productId: "platform",
         trainees: 15,
-        contractId: "payg",
+        contractId: "3yr", // LTS's best-value term is the default for a new platform line
         units: 1,
       },
       overrides
@@ -1320,32 +1320,43 @@ const LTSExport = (() => {
     wireLoaderTrigger($(sel), "Recalculate your estimate")
   );
 
-  // ---------- audience toggle ----------
-  $$(".segmented__btn").forEach((btn) => {
-    btn.addEventListener("click", () => {
-      state.audience = btn.dataset.audience;
-      $$(".segmented__btn").forEach((b) => b.classList.toggle("is-active", b === btn));
-      renderTotals(); // CTA copy depends on audience
-    });
-  });
-
   // ---------- product tab ----------
   function productPriceBlockHtml(product) {
     if (product.pricingModel === "flat") {
-      const priceHtml =
-        typeof product.flatRate === "number"
-          ? `<div class="product-card__price">${fmt(product.flatRate)}</div>`
-          : `<div class="product-card__price product-card__price--tbc">Pricing to be confirmed</div>`;
+      if (typeof product.flatRate !== "number") {
+        return `
+          <div class="product-card__from">Flat rate</div>
+          <div class="product-card__price product-card__price--tbc">Pricing to be confirmed</div>
+          <div class="product-card__per">per timesheet user / month, excl. VAT</div>`;
+      }
       return `
-        <div class="product-card__from">Flat rate</div>
-        ${priceHtml}
-        <div class="product-card__per">per timesheet user / month, excl. VAT</div>`;
+        <div class="product-card__price">${fmt(product.flatRate)}</div>
+        <div class="product-card__per">per Timesheet User / month, excl VAT</div>`;
     }
-    const cheapestRate = Math.min(...Object.values(LTS_DATA.rates["3yr"]));
+    // "On average" — the 3-year rate for the smallest/starting bracket, a
+    // more honest baseline than the absolute cheapest rate across all tiers.
+    const onAverageRate = LTS_DATA.rates["3yr"]["1-29"];
     return `
-      <div class="product-card__from">From</div>
-      <div class="product-card__price">${fmt(cheapestRate)}</div>
-      <div class="product-card__per">per trainee / month, excl. VAT</div>`;
+      <div class="product-card__from">On average</div>
+      <div class="product-card__price">${fmt(onAverageRate)}</div>
+      <div class="product-card__per">per Trainee / month, excl. VAT</div>`;
+  }
+
+  // Build (but don't add) a fresh line for a product, with the line item
+  // name defaulting to the product's own name.
+  function buildLineForProduct(productId) {
+    const product = LTSCalculator.getProduct(productId);
+    if (product.pricingModel === "flat") {
+      return newLine({ label: product.name, productId, trainees: null, contractId: null, units: 1 });
+    }
+    return newLine({ label: product.name, productId });
+  }
+
+  // Add a product to the estimate once (used by Products-tab "Add to
+  // estimate" buttons and the hero CTA) — clicking twice doesn't duplicate.
+  function addToEstimateIdempotent(productId) {
+    const alreadyAdded = state.lines.some((l) => l.productId === productId);
+    if (!alreadyAdded) state.lines.push(buildLineForProduct(productId));
   }
 
   function productCardHtml(product) {
@@ -1373,21 +1384,20 @@ const LTSExport = (() => {
 
     $$("[data-add-product]").forEach((btn) => {
       btn.addEventListener("click", () => {
-        const productId = btn.dataset.addProduct;
-        const alreadyAdded = state.lines.some((l) => l.productId === productId);
-        if (!alreadyAdded) {
-          const product = LTSCalculator.getProduct(productId);
-          if (product.pricingModel === "flat") {
-            state.lines.push(newLine({ label: product.name, productId, trainees: null, contractId: null, units: 1 }));
-          } else {
-            state.lines.push(newLine({ label: "LTS Platform", productId }));
-          }
-        }
+        addToEstimateIdempotent(btn.dataset.addProduct);
         renderEstimate();
         goToTab("estimate");
       });
     });
   }
+
+  // Hero "Get started with LTS" — adds the core platform (3-year default)
+  // and jumps straight to the estimate.
+  $("#btn-hero-get-started").addEventListener("click", () => {
+    addToEstimateIdempotent("platform");
+    renderEstimate();
+    goToTab("estimate");
+  });
 
   // ---------- estimate tab ----------
   function contractOptionHtml(line, contract) {
@@ -1400,7 +1410,7 @@ const LTSExport = (() => {
           <span>${contract.label}</span>
           ${contract.badge ? `<span class="contract-option__badge">${contract.badge}</span>` : ""}
         </div>
-        <div class="contract-option__rate">${fmt(calc.ratePerTrainee)} <span style="font-weight:400;font-size:11px;color:var(--text-muted)">/trainee/mo</span></div>
+        <div class="contract-option__rate">${fmt(calc.ratePerTrainee)} <span style="font-weight:400;font-size:11px;color:var(--text-muted)">/trainee/month</span></div>
         ${savings > 0 ? `<div class="contract-option__save">Save ${fmtPct(savings)} vs pay-as-you-go</div>` : `<div class="contract-option__save" style="color:var(--text-muted)">Reference rate</div>`}
       </button>`;
   }
@@ -1412,6 +1422,7 @@ const LTSExport = (() => {
 
   function tieredLineHtml(line) {
     const calc = LTSCalculator.calcLine({ trainees: line.trainees, contractId: line.contractId });
+    const annualEst = LTSCalculator.estimatedAnnual(calc.monthlyExclVat);
     const removeBtn = state.lines.length > 1 ? `<button class="line-item__remove" data-remove="${line.id}" title="Remove line" type="button">✕</button>` : "";
     return `
       <div class="card line-item" data-line-card="${line.id}">
@@ -1430,7 +1441,7 @@ const LTSExport = (() => {
             <label>&nbsp;</label>
             <div class="line-item__result">
               <span>Monthly<br/><b>${fmt(state.showVat ? calc.monthlyInclVat : calc.monthlyExclVat)}</b></span>
-              <span>Estimated Annual<br/><b>${fmt(state.showVat ? calc.annualInclVat : calc.annualExclVat)}</b></span>
+              <span>Estimated Annual<br/><b>${fmt(state.showVat ? annualEst.inclVat : annualEst.exclVat)}</b></span>
             </div>
           </div>
         </div>
@@ -1470,6 +1481,7 @@ const LTSExport = (() => {
         </div>`;
     }
 
+    const annualEst = LTSCalculator.estimatedAnnual(calc.monthlyExclVat);
     return `
       <div class="card line-item" data-line-card="${line.id}">
         ${removeBtn}
@@ -1481,13 +1493,13 @@ const LTSExport = (() => {
           <div class="field">
             <label for="units-${line.id}">Number of timesheet users</label>
             <input type="number" min="1" id="units-${line.id}" data-field="units" data-line="${line.id}" value="${line.units}" />
-            <div class="line-item__tier">Flat rate: ${fmt(calc.ratePerUnit)} /user/mo</div>
+            <div class="line-item__tier">Flat rate: ${fmt(calc.ratePerUnit)}/user/month</div>
           </div>
           <div class="field">
             <label>&nbsp;</label>
             <div class="line-item__result">
               <span>Monthly<br/><b>${fmt(state.showVat ? calc.monthlyInclVat : calc.monthlyExclVat)}</b></span>
-              <span>Estimated Annual<br/><b>${fmt(state.showVat ? calc.annualInclVat : calc.annualExclVat)}</b></span>
+              <span>Estimated Annual<br/><b>${fmt(state.showVat ? annualEst.inclVat : annualEst.exclVat)}</b></span>
             </div>
           </div>
         </div>
@@ -1541,8 +1553,18 @@ const LTSExport = (() => {
     renderTotals();
   }
 
-  $("#btn-add-line").addEventListener("click", () => {
-    state.lines.push(newLine({ label: "Line " + (state.lines.length + 1) }));
+  // Populate the "+ Add line" product picker once, from the product catalogue.
+  LTS_DATA.products.forEach((p) => {
+    const opt = document.createElement("option");
+    opt.value = p.id;
+    opt.textContent = p.name;
+    $("#add-line-select").appendChild(opt);
+  });
+  $("#add-line-select").addEventListener("change", (e) => {
+    const productId = e.target.value;
+    if (!productId) return;
+    state.lines.push(buildLineForProduct(productId));
+    e.target.value = "";
     renderEstimate();
   });
 
@@ -1609,7 +1631,8 @@ const LTSExport = (() => {
       ? LTSCalculator.totalEstimate(state.lines)
       : { monthlyExclVat: 0, annualExclVat: 0, monthlyInclVat: 0, annualInclVat: 0 };
     const monthly = state.showVat ? totals.monthlyInclVat : totals.monthlyExclVat;
-    const annual = state.showVat ? totals.annualInclVat : totals.annualExclVat;
+    const annualEst = LTSCalculator.estimatedAnnual(totals.monthlyExclVat);
+    const annual = state.showVat ? annualEst.inclVat : annualEst.exclVat;
 
     // LTS charges no setup / installation / licensing fee, so the upfront cost
     // is always R0.00 — shown live at the top and bottom for transparency.
@@ -1752,7 +1775,6 @@ const LTSExport = (() => {
     if (payload.meta?.name) $("#input-estimate-name").value = payload.meta.name;
     if (payload.meta?.audience) {
       state.audience = payload.meta.audience;
-      $$(".segmented__btn").forEach((b) => b.classList.toggle("is-active", b.dataset.audience === state.audience));
     }
     return true;
   }

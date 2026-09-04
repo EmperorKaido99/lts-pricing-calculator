@@ -112,6 +112,29 @@ const LTSCalculator = (() => {
     return Object.assign({ product, pricingConfirmed: true }, calcLine(line));
   }
 
+  /**
+   * How many of the next 12 months fall before LTS's next 1-April escalation
+   * (0 if the escalation date has already passed this cycle, meaning every
+   * month ahead is at the new rate).
+   */
+  function monthsUntilNextEscalation(fromDate) {
+    const month = fromDate.getMonth(); // 0-based; April = 3
+    return (3 - month + 12) % 12;
+  }
+
+  /**
+   * "Estimated Annual" for a monthly rate — 12 months forward from today,
+   * blended across LTS's confirmed 1-April CPI escalation so the annual
+   * figure isn't just today's rate x 12.
+   */
+  function estimatedAnnual(monthlyExclVat, fromDate = new Date()) {
+    const pct = Number(LTS_DATA.annualEscalationPct) || 0;
+    const monthsBefore = monthsUntilNextEscalation(fromDate);
+    const monthsAfter = 12 - monthsBefore;
+    const exclVat = monthlyExclVat * monthsBefore + monthlyExclVat * (1 + pct / 100) * monthsAfter;
+    return { exclVat, inclVat: exclVat * (1 + LTS_DATA.vatRate) };
+  }
+
   function formatCurrency(amount, { decimals = 2 } = {}) {
     return (
       LTS_DATA.currencySymbol +
@@ -156,6 +179,7 @@ const LTSCalculator = (() => {
     calcSavingsVsPayg,
     calcAllContracts,
     manualBaselineCost,
+    estimatedAnnual,
     formatCurrency,
     formatPercent,
     totalEstimate,

@@ -17,6 +17,10 @@ const LTSCalculator = (() => {
     return LTS_DATA.contracts.find((c) => c.id === contractId);
   }
 
+  function getProduct(productId) {
+    return LTS_DATA.products.find((p) => p.id === productId);
+  }
+
   function getRate(contractId, tierId) {
     const row = LTS_DATA.rates[contractId];
     return row ? row[tierId] : undefined;
@@ -69,16 +73,43 @@ const LTSCalculator = (() => {
 
   /**
    * The "cost of NOT using LTS" — what it costs to run the same processes by
-   * hand for a given trainee count: staff time (hours × rate) plus materials.
-   * All inputs are caller-supplied assumptions so the user can adjust them.
+   * hand for a given trainee count: staff time (hours × rate). All inputs
+   * are caller-supplied assumptions so the user can adjust them.
    */
-  function manualBaselineCost({ trainees, hoursPerTrainee, hourlyRate, materialsPerTrainee }) {
+  function manualBaselineCost({ trainees, hoursPerTrainee, hourlyRate }) {
     const n = Math.max(1, Math.floor(Number(trainees) || 0));
     const hours = n * Math.max(0, Number(hoursPerTrainee) || 0);
     const labourCost = hours * Math.max(0, Number(hourlyRate) || 0);
-    const materialsCost = n * Math.max(0, Number(materialsPerTrainee) || 0);
-    const monthly = labourCost + materialsCost;
-    return { trainees: n, hours, labourCost, materialsCost, monthly, annual: monthly * 12 };
+    const monthly = labourCost;
+    return { trainees: n, hours, labourCost, monthly, annual: monthly * 12 };
+  }
+
+  /**
+   * Estimate a single line item regardless of which product it's for.
+   * The core platform is tiered (trainees x contract term, via calcLine);
+   * flat-rate add-ons (e.g. Time Sheet) are priced per unit and contribute
+   * R0 to totals until LTS confirms the rate.
+   */
+  function calcEstimateLine(line) {
+    const product = getProduct(line.productId) || LTS_DATA.products[0];
+    if (product.pricingModel === "flat") {
+      const n = Math.max(1, Math.floor(Number(line.units) || 0));
+      const rate = typeof product.flatRate === "number" ? product.flatRate : null;
+      const pricingConfirmed = rate !== null;
+      const monthlyExclVat = pricingConfirmed ? n * rate : 0;
+      const annualExclVat = monthlyExclVat * 12;
+      return {
+        product,
+        pricingConfirmed,
+        units: n,
+        ratePerUnit: rate,
+        monthlyExclVat,
+        annualExclVat,
+        monthlyInclVat: monthlyExclVat * (1 + LTS_DATA.vatRate),
+        annualInclVat: annualExclVat * (1 + LTS_DATA.vatRate),
+      };
+    }
+    return Object.assign({ product, pricingConfirmed: true }, calcLine(line));
   }
 
   function formatCurrency(amount, { decimals = 2 } = {}) {
@@ -103,7 +134,7 @@ const LTSCalculator = (() => {
   function totalEstimate(lines) {
     return lines.reduce(
       (acc, line) => {
-        const calc = calcLine(line);
+        const calc = calcEstimateLine(line);
         acc.monthlyExclVat += calc.monthlyExclVat;
         acc.annualExclVat += calc.annualExclVat;
         acc.monthlyInclVat += calc.monthlyInclVat;
@@ -118,8 +149,10 @@ const LTSCalculator = (() => {
     getTierForCount,
     getTier,
     getContract,
+    getProduct,
     getRate,
     calcLine,
+    calcEstimateLine,
     calcSavingsVsPayg,
     calcAllContracts,
     manualBaselineCost,

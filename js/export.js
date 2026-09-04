@@ -70,7 +70,20 @@ const LTSExport = (() => {
     }
 
     const rows = lines.map((line) => {
-      const calc = LTSCalculator.calcLine(line);
+      const calc = LTSCalculator.calcEstimateLine(line);
+      if (calc.product.pricingModel === "flat") {
+        return {
+          "Line item": line.label || calc.product.name,
+          "Trainees": calc.units + " timesheet user(s)",
+          "Bracket": "",
+          "Contract term": "",
+          "Rate per trainee / month (excl. VAT)": calc.pricingConfirmed ? calc.ratePerUnit : "To be confirmed",
+          "Monthly (excl. VAT)": calc.pricingConfirmed ? Number(calc.monthlyExclVat.toFixed(2)) : "To be confirmed",
+          "Monthly (incl. VAT)": calc.pricingConfirmed ? Number(calc.monthlyInclVat.toFixed(2)) : "To be confirmed",
+          "Annual (excl. VAT)": calc.pricingConfirmed ? Number(calc.annualExclVat.toFixed(2)) : "To be confirmed",
+          "Annual (incl. VAT)": calc.pricingConfirmed ? Number(calc.annualInclVat.toFixed(2)) : "To be confirmed",
+        };
+      }
       return {
         "Line item": line.label || calc.tier.label,
         "Trainees": calc.trainees,

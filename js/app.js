@@ -25,8 +25,10 @@
       {
         id: "line-" + lineSeq,
         label: "Line " + lineSeq,
+        productId: "platform",
         trainees: 15,
         contractId: "payg",
+        units: 1,
       },
       overrides
     );
@@ -102,23 +104,64 @@
   });
 
   // ---------- product tab ----------
-  function renderProduct() {
-    const p = LTS_DATA.product;
-    $("#product-name").textContent = p.name;
-    $("#product-tagline").textContent = p.tagline;
-    $("#product-desc").textContent = p.description;
-    $("#product-props").innerHTML = p.valueProps.map((v) => `<li>${v}</li>`).join("");
+  function productPriceBlockHtml(product) {
+    if (product.pricingModel === "flat") {
+      const priceHtml =
+        typeof product.flatRate === "number"
+          ? `<div class="product-card__price">${fmt(product.flatRate)}</div>`
+          : `<div class="product-card__price product-card__price--tbc">Pricing to be confirmed</div>`;
+      return `
+        <div class="product-card__from">Flat rate</div>
+        ${priceHtml}
+        <div class="product-card__per">per timesheet user / month, excl. VAT</div>`;
+    }
     const cheapestRate = Math.min(...Object.values(LTS_DATA.rates["3yr"]));
-    $("#product-from-price").textContent = fmt(cheapestRate);
+    return `
+      <div class="product-card__from">From</div>
+      <div class="product-card__price">${fmt(cheapestRate)}</div>
+      <div class="product-card__per">per trainee / month, excl. VAT</div>`;
   }
 
-  $("#btn-add-to-estimate").addEventListener("click", () => {
-    if (state.lines.length === 0) {
-      state.lines.push(newLine({ label: "LTS Platform" }));
-    }
-    renderEstimate();
-    goToTab("estimate");
-  });
+  function productCardHtml(product) {
+    const icon = product.pricingModel === "flat" ? "⏱️" : "📋";
+    return `
+      <div class="product-card">
+        <div class="product-card__main">
+          <div class="product-card__icon" aria-hidden="true">${icon}</div>
+          <div>
+            <h2>${product.name}</h2>
+            <p class="product-card__tagline">${product.tagline}</p>
+            <p class="product-card__desc">${product.description}</p>
+            <ul class="product-card__props">${product.valueProps.map((v) => `<li>${v}</li>`).join("")}</ul>
+          </div>
+        </div>
+        <div class="product-card__action">
+          ${productPriceBlockHtml(product)}
+          <button class="btn btn--primary" data-add-product="${product.id}" type="button">Add to estimate</button>
+        </div>
+      </div>`;
+  }
+
+  function renderProducts() {
+    $("#product-list").innerHTML = LTS_DATA.products.map(productCardHtml).join("");
+
+    $$("[data-add-product]").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        const productId = btn.dataset.addProduct;
+        const alreadyAdded = state.lines.some((l) => l.productId === productId);
+        if (!alreadyAdded) {
+          const product = LTSCalculator.getProduct(productId);
+          if (product.pricingModel === "flat") {
+            state.lines.push(newLine({ label: product.name, productId, trainees: null, contractId: null, units: 1 }));
+          } else {
+            state.lines.push(newLine({ label: "LTS Platform", productId }));
+          }
+        }
+        renderEstimate();
+        goToTab("estimate");
+      });
+    });
+  }
 
   // ---------- estimate tab ----------
   function contractOptionHtml(line, contract) {
@@ -137,6 +180,11 @@
   }
 
   function lineHtml(line) {
+    const product = LTSCalculator.getProduct(line.productId) || LTS_DATA.products[0];
+    return product.pricingModel === "flat" ? flatLineHtml(line, product) : tieredLineHtml(line);
+  }
+
+  function tieredLineHtml(line) {
     const calc = LTSCalculator.calcLine({ trainees: line.trainees, contractId: line.contractId });
     const removeBtn = state.lines.length > 1 ? `<button class="line-item__remove" data-remove="${line.id}" title="Remove line" type="button">✕</button>` : "";
     return `
@@ -156,12 +204,39 @@
             <label>&nbsp;</label>
             <div class="line-item__result">
               <span>Monthly<br/><b>${fmt(state.showVat ? calc.monthlyInclVat : calc.monthlyExclVat)}</b></span>
-              <span>Annual<br/><b>${fmt(state.showVat ? calc.annualInclVat : calc.annualExclVat)}</b></span>
+              <span>Estimated Annual<br/><b>${fmt(state.showVat ? calc.annualInclVat : calc.annualExclVat)}</b></span>
             </div>
           </div>
         </div>
         <div class="contract-options">
           ${LTS_DATA.contracts.map((c) => contractOptionHtml(line, c)).join("")}
+        </div>
+      </div>`;
+  }
+
+  function flatLineHtml(line, product) {
+    const removeBtn = state.lines.length > 1 ? `<button class="line-item__remove" data-remove="${line.id}" title="Remove line" type="button">✕</button>` : "";
+    const subject = encodeURIComponent(`${product.name} pricing for ${line.label}`);
+    return `
+      <div class="card line-item line-item--tbc" data-line-card="${line.id}">
+        ${removeBtn}
+        <div class="line-item__grid">
+          <div class="field">
+            <label for="name-${line.id}">Line item name</label>
+            <input type="text" id="name-${line.id}" data-field="label" data-line="${line.id}" value="${line.label}" />
+          </div>
+          <div class="field">
+            <label for="units-${line.id}">Number of timesheet users</label>
+            <input type="number" min="1" id="units-${line.id}" data-field="units" data-line="${line.id}" value="${line.units}" />
+          </div>
+          <div class="field">
+            <label>&nbsp;</label>
+            <div class="line-item__tbc">
+              <strong>Pricing to be confirmed</strong>
+              <span>Not included in your totals yet.</span>
+              <a class="linklike" href="mailto:${LTS_DATA.contact.email}?subject=${subject}">Contact LTS for a quote</a>
+            </div>
+          </div>
         </div>
       </div>`;
   }
@@ -180,6 +255,13 @@
       input.addEventListener("change", (e) => {
         const line = state.lines.find((l) => l.id === e.target.dataset.line);
         line.trainees = Math.max(1, parseInt(e.target.value, 10) || 1);
+        renderEstimate();
+      });
+    });
+    $$('[data-field="units"]').forEach((input) => {
+      input.addEventListener("change", (e) => {
+        const line = state.lines.find((l) => l.id === e.target.dataset.line);
+        line.units = Math.max(1, parseInt(e.target.value, 10) || 1);
         renderEstimate();
       });
     });
@@ -228,7 +310,6 @@
   const baselineInputs = {
     "#assume-hours": "hoursPerTrainee",
     "#assume-rate": "hourlyRate",
-    "#assume-materials": "materialsPerTrainee",
   };
   Object.entries(baselineInputs).forEach(([sel, key]) => {
     const input = $(sel);
@@ -243,7 +324,12 @@
 
   function ctaHtml() {
     if (state.lines.length === 0) return "";
-    const primaryLine = state.lines[0];
+    const primaryLine = state.lines.find((l) => l.contractId);
+    if (!primaryLine) {
+      // No priced line yet (e.g. only a "pricing to be confirmed" add-on) —
+      // there's no plan to sign up on, so point them at a quote instead.
+      return `<a class="btn btn--primary" target="_blank" rel="noopener" href="mailto:${LTS_DATA.contact.email}?subject=LTS pricing enquiry">Contact LTS for a quote</a>`;
+    }
     const contract = LTSCalculator.getContract(primaryLine.contractId);
     if (state.audience === "new") {
       const signupParam = contract.id === "payg" ? "Pay-as-you-go" : contract.years + "-Year-Contract";
@@ -298,7 +384,6 @@
     setCost("#cmp-with-monthly", fmt(ltsMonthly));
     setCost("#cmp-hours", base.hours.toLocaleString("en-ZA"));
     setCost("#cmp-labour", fmt(base.labourCost));
-    setCost("#cmp-materials", fmt(base.materialsCost));
 
     const saveMonthly = base.monthly - ltsMonthly;
     const saveAnnual = saveMonthly * 12;
@@ -463,7 +548,7 @@
   // ---------- init ----------
   function init() {
     $("#prices-valid-until").textContent = LTS_DATA.pricesValidUntil;
-    renderProduct();
+    renderProducts();
     renderTemplates();
     renderFaqs();
     renderSavedList();

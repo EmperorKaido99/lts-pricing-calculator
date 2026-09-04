@@ -27,7 +27,6 @@ const LTS_DATA = {
   manualBaseline: {
     hoursPerTrainee: 2, // staff hours per trainee per month spent on manual admin
     hourlyRate: 250, // fully-loaded staff cost per hour (ZAR)
-    materialsPerTrainee: 50, // paper, printing, filing & storage per trainee per month (ZAR)
   },
 
   contact: {
@@ -36,23 +35,42 @@ const LTS_DATA = {
     email: "info@LTSystems.co.za",
   },
 
-  // The one core product LTS sells: SaaS online assessment / learner tracking platform.
-  product: {
-    id: "lts-platform",
-    name: "Online Assessment & Learner Tracking Platform",
-    tagline: "The preferred electronic assessment solution for training offices",
-    description:
-      "A web-based platform for managing trainee assessments, competency tracking and reporting — accessible anywhere, with no software to install and no per-user licensing fees.",
-    valueProps: [
-      "24/7 web-based access — no installation, works on any device",
-      "Full compliance with SAICA, CIMA, ACCA, IIA, Compliance Institute, SAIGA and SAIPA requirements",
-      "Extensive reporting: outcome status, progress, score grid, moderator review reports",
-      "Help desk support 07:00–19:00 on business days, 10:00–13:00 weekends & holidays",
-      "99.99% average uptime",
-      "No licensing fees, no installation fees — only the ongoing per-trainee subscription",
-      "Records retained for at least 5 years after a trainee is signed off",
-    ],
-  },
+  // Everything LTS sells. The core platform is priced by trainee count
+  // (tiered); add-on services like Time Sheet are billed separately, flat
+  // per user, with no volume brackets.
+  products: [
+    {
+      id: "platform",
+      name: "Online Assessment & Learner Tracking Platform",
+      tagline: "The preferred electronic assessment solution for training offices",
+      description:
+        "A web-based platform for managing trainee assessments, competency tracking and reporting — accessible anywhere, with no software to install and no per-user licensing fees.",
+      valueProps: [
+        "24/7 web-based access — no installation, works on any device",
+        "Full compliance with SAICA, CIMA, ACCA, IIA, Compliance Institute, SAIGA and SAIPA requirements",
+        "Extensive reporting: outcome status, progress, score grid, moderator review reports",
+        "Help desk support 07:00–19:00 on business days, 10:00–13:00 weekends & holidays",
+        "99.99% average uptime",
+        "No licensing fees, no installation fees — only the ongoing per-trainee subscription",
+        "Records retained for at least 5 years after a trainee is signed off",
+      ],
+      pricingModel: "tiered",
+    },
+    {
+      id: "timesheet",
+      name: "Time Sheet",
+      tagline: "Staff time tracking, billed separately from the assessment platform",
+      description:
+        "A standalone module for logging and reporting staff time. Priced per timesheet user — flat, not per trainee, with no volume brackets.",
+      valueProps: [
+        "One flat rate per timesheet user, regardless of trainee count",
+        "Billed separately from the Online Assessment & Learner Tracking Platform",
+        "Same subscription model — no installation or licensing fees",
+      ],
+      pricingModel: "flat",
+      flatRate: null, // pricing to be confirmed by LTS
+    },
+  ],
 
   // Trainee volume brackets — the published price applies to ALL trainees once a firm
   // falls in a bracket (not a marginal/graduated rate).

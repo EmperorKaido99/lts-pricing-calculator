@@ -163,6 +163,9 @@ a { color: var(--brand-mid); }
 .tabpanel.is-active { display: block; }
 .panel-intro { color: var(--text-muted); margin: 0 0 20px; max-width: 640px; }
 
+/* ---------- Product list ---------- */
+#product-list { display: flex; flex-direction: column; gap: 16px; }
+
 /* ---------- Product card ---------- */
 .product-card {
   position: relative;
@@ -205,6 +208,10 @@ a { color: var(--brand-mid); }
   -webkit-background-clip: text; background-clip: text; color: transparent;
 }
 .product-card__per { font-size: 12px; color: var(--text-muted); margin-bottom: 12px; }
+.product-card__price--tbc {
+  font-size: 15px; font-weight: 700; background: none; -webkit-background-clip: initial;
+  background-clip: initial; color: var(--text-muted);
+}
 
 /* ---------- Buttons ---------- */
 .btn {
@@ -282,6 +289,16 @@ a { color: var(--brand-mid); }
 }
 .line-item__result b { color: var(--navy-900); font-size: 15px; }
 
+/* flat-rate / pricing-to-be-confirmed line items (e.g. Time Sheet) */
+.line-item--tbc { border-left: 3px solid #dca63f; }
+.line-item__tbc {
+  border-top: 1px solid var(--border); padding-top: 12px; margin-top: 4px;
+  display: flex; flex-direction: column; gap: 4px; font-size: 13px;
+}
+.line-item__tbc strong { color: #8a5a1f; font-size: 14px; }
+.line-item__tbc span { color: var(--text-muted); font-size: 12px; }
+.line-item__tbc a { font-size: 12px; font-weight: 700; }
+
 /* ---------- Savings table ---------- */
 .savings-table { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
 .savings-cell { border: 1px solid var(--border); border-radius: 8px; padding: 12px; text-align: center; }
@@ -333,7 +350,7 @@ a { color: var(--brand-mid); }
 .compare-card__title { margin: 4px 0 2px; font-size: 18px; font-weight: 800; color: var(--navy-900); }
 .compare-card__title span { color: #b3261e; text-transform: uppercase; font-style: italic; }
 .compare-card__sub { margin: 0 0 16px; color: var(--text-muted); font-size: 13px; max-width: 640px; }
-.compare-assumptions { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 18px; }
+.compare-assumptions { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-bottom: 18px; max-width: 480px; }
 .compare-assumptions .field input { min-width: 0; width: 100%; }
 
 .compare-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
@@ -580,31 +597,15 @@ a { color: var(--brand-mid); }
 
   <!-- ============ PRODUCTS TAB ============ -->
   <section class="tabpanel is-active" id="panel-products">
-    <p class="panel-intro">LTS sells one thing, and does it well: a single online assessment &amp; learner tracking platform, priced by trainee count. Add it to your estimate and configure it on the right.</p>
+    <p class="panel-intro">LTS is built around one core platform — priced by trainee count — plus optional add-on services, priced separately. Add what your training office needs to your estimate below.</p>
 
-    <div class="product-card">
-      <div class="product-card__main">
-        <div class="product-card__icon" aria-hidden="true">📋</div>
-        <div>
-          <h2 id="product-name"></h2>
-          <p class="product-card__tagline" id="product-tagline"></p>
-          <p class="product-card__desc" id="product-desc"></p>
-          <ul class="product-card__props" id="product-props"></ul>
-        </div>
-      </div>
-      <div class="product-card__action">
-        <div class="product-card__from">From</div>
-        <div class="product-card__price" id="product-from-price"></div>
-        <div class="product-card__per">per trainee / month, excl. VAT</div>
-        <button class="btn btn--primary" id="btn-add-to-estimate" type="button">Add to estimate</button>
-      </div>
-    </div>
+    <div id="product-list"></div>
   </section>
 
   <!-- ============ ESTIMATE TAB ============ -->
   <section class="tabpanel" id="panel-estimate">
     <div class="estimate-empty" id="estimate-empty">
-      <p>Your estimate is empty. Add the LTS platform from the <button class="linklike" data-goto-tab="products" type="button">Products</button> tab, or start from a <button class="linklike" data-goto-tab="templates" type="button">template</button>.</p>
+      <p>Your estimate is empty. Add a product from the <button class="linklike" data-goto-tab="products" type="button">Products</button> tab, or start from a <button class="linklike" data-goto-tab="templates" type="button">template</button>.</p>
     </div>
 
     <div id="estimate-builder" hidden>
@@ -669,10 +670,6 @@ a { color: var(--brand-mid); }
             <label for="assume-rate">Your staff cost / hour (R)</label>
             <input type="number" id="assume-rate" min="0" step="10" />
           </div>
-          <div class="field">
-            <label for="assume-materials">Paper, printing &amp; storage / trainee / month (R)</label>
-            <input type="number" id="assume-materials" min="0" step="5" />
-          </div>
         </div>
 
         <div class="compare-grid">
@@ -683,7 +680,6 @@ a { color: var(--brand-mid); }
             <ul>
               <li>Admin time: <b id="cmp-hours">0</b> hours / month</li>
               <li>Cost of that time: <b id="cmp-labour">R0.00</b></li>
-              <li>Paper &amp; storage: <b id="cmp-materials">R0.00</b></li>
             </ul>
           </div>
           <div class="compare-col compare-col--with">
@@ -804,7 +800,6 @@ const LTS_DATA = {
   manualBaseline: {
     hoursPerTrainee: 2, // staff hours per trainee per month spent on manual admin
     hourlyRate: 250, // fully-loaded staff cost per hour (ZAR)
-    materialsPerTrainee: 50, // paper, printing, filing & storage per trainee per month (ZAR)
   },
 
   contact: {
@@ -813,23 +808,42 @@ const LTS_DATA = {
     email: "info@LTSystems.co.za",
   },
 
-  // The one core product LTS sells: SaaS online assessment / learner tracking platform.
-  product: {
-    id: "lts-platform",
-    name: "Online Assessment & Learner Tracking Platform",
-    tagline: "The preferred electronic assessment solution for training offices",
-    description:
-      "A web-based platform for managing trainee assessments, competency tracking and reporting — accessible anywhere, with no software to install and no per-user licensing fees.",
-    valueProps: [
-      "24/7 web-based access — no installation, works on any device",
-      "Full compliance with SAICA, CIMA, ACCA, IIA, Compliance Institute, SAIGA and SAIPA requirements",
-      "Extensive reporting: outcome status, progress, score grid, moderator review reports",
-      "Help desk support 07:00–19:00 on business days, 10:00–13:00 weekends & holidays",
-      "99.99% average uptime",
-      "No licensing fees, no installation fees — only the ongoing per-trainee subscription",
-      "Records retained for at least 5 years after a trainee is signed off",
-    ],
-  },
+  // Everything LTS sells. The core platform is priced by trainee count
+  // (tiered); add-on services like Time Sheet are billed separately, flat
+  // per user, with no volume brackets.
+  products: [
+    {
+      id: "platform",
+      name: "Online Assessment & Learner Tracking Platform",
+      tagline: "The preferred electronic assessment solution for training offices",
+      description:
+        "A web-based platform for managing trainee assessments, competency tracking and reporting — accessible anywhere, with no software to install and no per-user licensing fees.",
+      valueProps: [
+        "24/7 web-based access — no installation, works on any device",
+        "Full compliance with SAICA, CIMA, ACCA, IIA, Compliance Institute, SAIGA and SAIPA requirements",
+        "Extensive reporting: outcome status, progress, score grid, moderator review reports",
+        "Help desk support 07:00–19:00 on business days, 10:00–13:00 weekends & holidays",
+        "99.99% average uptime",
+        "No licensing fees, no installation fees — only the ongoing per-trainee subscription",
+        "Records retained for at least 5 years after a trainee is signed off",
+      ],
+      pricingModel: "tiered",
+    },
+    {
+      id: "timesheet",
+      name: "Time Sheet",
+      tagline: "Staff time tracking, billed separately from the assessment platform",
+      description:
+        "A standalone module for logging and reporting staff time. Priced per timesheet user — flat, not per trainee, with no volume brackets.",
+      valueProps: [
+        "One flat rate per timesheet user, regardless of trainee count",
+        "Billed separately from the Online Assessment & Learner Tracking Platform",
+        "Same subscription model — no installation or licensing fees",
+      ],
+      pricingModel: "flat",
+      flatRate: null, // pricing to be confirmed by LTS
+    },
+  ],
 
   // Trainee volume brackets — the published price applies to ALL trainees once a firm
   // falls in a bracket (not a marginal/graduated rate).
@@ -979,6 +993,10 @@ const LTSCalculator = (() => {
     return LTS_DATA.contracts.find((c) => c.id === contractId);
   }
 
+  function getProduct(productId) {
+    return LTS_DATA.products.find((p) => p.id === productId);
+  }
+
   function getRate(contractId, tierId) {
     const row = LTS_DATA.rates[contractId];
     return row ? row[tierId] : undefined;
@@ -1031,16 +1049,43 @@ const LTSCalculator = (() => {
 
   /**
    * The "cost of NOT using LTS" — what it costs to run the same processes by
-   * hand for a given trainee count: staff time (hours × rate) plus materials.
-   * All inputs are caller-supplied assumptions so the user can adjust them.
+   * hand for a given trainee count: staff time (hours × rate). All inputs
+   * are caller-supplied assumptions so the user can adjust them.
    */
-  function manualBaselineCost({ trainees, hoursPerTrainee, hourlyRate, materialsPerTrainee }) {
+  function manualBaselineCost({ trainees, hoursPerTrainee, hourlyRate }) {
     const n = Math.max(1, Math.floor(Number(trainees) || 0));
     const hours = n * Math.max(0, Number(hoursPerTrainee) || 0);
     const labourCost = hours * Math.max(0, Number(hourlyRate) || 0);
-    const materialsCost = n * Math.max(0, Number(materialsPerTrainee) || 0);
-    const monthly = labourCost + materialsCost;
-    return { trainees: n, hours, labourCost, materialsCost, monthly, annual: monthly * 12 };
+    const monthly = labourCost;
+    return { trainees: n, hours, labourCost, monthly, annual: monthly * 12 };
+  }
+
+  /**
+   * Estimate a single line item regardless of which product it's for.
+   * The core platform is tiered (trainees x contract term, via calcLine);
+   * flat-rate add-ons (e.g. Time Sheet) are priced per unit and contribute
+   * R0 to totals until LTS confirms the rate.
+   */
+  function calcEstimateLine(line) {
+    const product = getProduct(line.productId) || LTS_DATA.products[0];
+    if (product.pricingModel === "flat") {
+      const n = Math.max(1, Math.floor(Number(line.units) || 0));
+      const rate = typeof product.flatRate === "number" ? product.flatRate : null;
+      const pricingConfirmed = rate !== null;
+      const monthlyExclVat = pricingConfirmed ? n * rate : 0;
+      const annualExclVat = monthlyExclVat * 12;
+      return {
+        product,
+        pricingConfirmed,
+        units: n,
+        ratePerUnit: rate,
+        monthlyExclVat,
+        annualExclVat,
+        monthlyInclVat: monthlyExclVat * (1 + LTS_DATA.vatRate),
+        annualInclVat: annualExclVat * (1 + LTS_DATA.vatRate),
+      };
+    }
+    return Object.assign({ product, pricingConfirmed: true }, calcLine(line));
   }
 
   function formatCurrency(amount, { decimals = 2 } = {}) {
@@ -1065,7 +1110,7 @@ const LTSCalculator = (() => {
   function totalEstimate(lines) {
     return lines.reduce(
       (acc, line) => {
-        const calc = calcLine(line);
+        const calc = calcEstimateLine(line);
         acc.monthlyExclVat += calc.monthlyExclVat;
         acc.annualExclVat += calc.annualExclVat;
         acc.monthlyInclVat += calc.monthlyInclVat;
@@ -1080,8 +1125,10 @@ const LTSCalculator = (() => {
     getTierForCount,
     getTier,
     getContract,
+    getProduct,
     getRate,
     calcLine,
+    calcEstimateLine,
     calcSavingsVsPayg,
     calcAllContracts,
     manualBaselineCost,
@@ -1165,7 +1212,20 @@ const LTSExport = (() => {
     }
 
     const rows = lines.map((line) => {
-      const calc = LTSCalculator.calcLine(line);
+      const calc = LTSCalculator.calcEstimateLine(line);
+      if (calc.product.pricingModel === "flat") {
+        return {
+          "Line item": line.label || calc.product.name,
+          "Trainees": calc.units + " timesheet user(s)",
+          "Bracket": "",
+          "Contract term": "",
+          "Rate per trainee / month (excl. VAT)": calc.pricingConfirmed ? calc.ratePerUnit : "To be confirmed",
+          "Monthly (excl. VAT)": calc.pricingConfirmed ? Number(calc.monthlyExclVat.toFixed(2)) : "To be confirmed",
+          "Monthly (incl. VAT)": calc.pricingConfirmed ? Number(calc.monthlyInclVat.toFixed(2)) : "To be confirmed",
+          "Annual (excl. VAT)": calc.pricingConfirmed ? Number(calc.annualExclVat.toFixed(2)) : "To be confirmed",
+          "Annual (incl. VAT)": calc.pricingConfirmed ? Number(calc.annualInclVat.toFixed(2)) : "To be confirmed",
+        };
+      }
       return {
         "Line item": line.label || calc.tier.label,
         "Trainees": calc.trainees,
@@ -1241,8 +1301,10 @@ const LTSExport = (() => {
       {
         id: "line-" + lineSeq,
         label: "Line " + lineSeq,
+        productId: "platform",
         trainees: 15,
         contractId: "payg",
+        units: 1,
       },
       overrides
     );
@@ -1318,23 +1380,64 @@ const LTSExport = (() => {
   });
 
   // ---------- product tab ----------
-  function renderProduct() {
-    const p = LTS_DATA.product;
-    $("#product-name").textContent = p.name;
-    $("#product-tagline").textContent = p.tagline;
-    $("#product-desc").textContent = p.description;
-    $("#product-props").innerHTML = p.valueProps.map((v) => `<li>${v}</li>`).join("");
+  function productPriceBlockHtml(product) {
+    if (product.pricingModel === "flat") {
+      const priceHtml =
+        typeof product.flatRate === "number"
+          ? `<div class="product-card__price">${fmt(product.flatRate)}</div>`
+          : `<div class="product-card__price product-card__price--tbc">Pricing to be confirmed</div>`;
+      return `
+        <div class="product-card__from">Flat rate</div>
+        ${priceHtml}
+        <div class="product-card__per">per timesheet user / month, excl. VAT</div>`;
+    }
     const cheapestRate = Math.min(...Object.values(LTS_DATA.rates["3yr"]));
-    $("#product-from-price").textContent = fmt(cheapestRate);
+    return `
+      <div class="product-card__from">From</div>
+      <div class="product-card__price">${fmt(cheapestRate)}</div>
+      <div class="product-card__per">per trainee / month, excl. VAT</div>`;
   }
 
-  $("#btn-add-to-estimate").addEventListener("click", () => {
-    if (state.lines.length === 0) {
-      state.lines.push(newLine({ label: "LTS Platform" }));
-    }
-    renderEstimate();
-    goToTab("estimate");
-  });
+  function productCardHtml(product) {
+    const icon = product.pricingModel === "flat" ? "⏱️" : "📋";
+    return `
+      <div class="product-card">
+        <div class="product-card__main">
+          <div class="product-card__icon" aria-hidden="true">${icon}</div>
+          <div>
+            <h2>${product.name}</h2>
+            <p class="product-card__tagline">${product.tagline}</p>
+            <p class="product-card__desc">${product.description}</p>
+            <ul class="product-card__props">${product.valueProps.map((v) => `<li>${v}</li>`).join("")}</ul>
+          </div>
+        </div>
+        <div class="product-card__action">
+          ${productPriceBlockHtml(product)}
+          <button class="btn btn--primary" data-add-product="${product.id}" type="button">Add to estimate</button>
+        </div>
+      </div>`;
+  }
+
+  function renderProducts() {
+    $("#product-list").innerHTML = LTS_DATA.products.map(productCardHtml).join("");
+
+    $$("[data-add-product]").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        const productId = btn.dataset.addProduct;
+        const alreadyAdded = state.lines.some((l) => l.productId === productId);
+        if (!alreadyAdded) {
+          const product = LTSCalculator.getProduct(productId);
+          if (product.pricingModel === "flat") {
+            state.lines.push(newLine({ label: product.name, productId, trainees: null, contractId: null, units: 1 }));
+          } else {
+            state.lines.push(newLine({ label: "LTS Platform", productId }));
+          }
+        }
+        renderEstimate();
+        goToTab("estimate");
+      });
+    });
+  }
 
   // ---------- estimate tab ----------
   function contractOptionHtml(line, contract) {
@@ -1353,6 +1456,11 @@ const LTSExport = (() => {
   }
 
   function lineHtml(line) {
+    const product = LTSCalculator.getProduct(line.productId) || LTS_DATA.products[0];
+    return product.pricingModel === "flat" ? flatLineHtml(line, product) : tieredLineHtml(line);
+  }
+
+  function tieredLineHtml(line) {
     const calc = LTSCalculator.calcLine({ trainees: line.trainees, contractId: line.contractId });
     const removeBtn = state.lines.length > 1 ? `<button class="line-item__remove" data-remove="${line.id}" title="Remove line" type="button">✕</button>` : "";
     return `
@@ -1372,12 +1480,39 @@ const LTSExport = (() => {
             <label>&nbsp;</label>
             <div class="line-item__result">
               <span>Monthly<br/><b>${fmt(state.showVat ? calc.monthlyInclVat : calc.monthlyExclVat)}</b></span>
-              <span>Annual<br/><b>${fmt(state.showVat ? calc.annualInclVat : calc.annualExclVat)}</b></span>
+              <span>Estimated Annual<br/><b>${fmt(state.showVat ? calc.annualInclVat : calc.annualExclVat)}</b></span>
             </div>
           </div>
         </div>
         <div class="contract-options">
           ${LTS_DATA.contracts.map((c) => contractOptionHtml(line, c)).join("")}
+        </div>
+      </div>`;
+  }
+
+  function flatLineHtml(line, product) {
+    const removeBtn = state.lines.length > 1 ? `<button class="line-item__remove" data-remove="${line.id}" title="Remove line" type="button">✕</button>` : "";
+    const subject = encodeURIComponent(`${product.name} pricing for ${line.label}`);
+    return `
+      <div class="card line-item line-item--tbc" data-line-card="${line.id}">
+        ${removeBtn}
+        <div class="line-item__grid">
+          <div class="field">
+            <label for="name-${line.id}">Line item name</label>
+            <input type="text" id="name-${line.id}" data-field="label" data-line="${line.id}" value="${line.label}" />
+          </div>
+          <div class="field">
+            <label for="units-${line.id}">Number of timesheet users</label>
+            <input type="number" min="1" id="units-${line.id}" data-field="units" data-line="${line.id}" value="${line.units}" />
+          </div>
+          <div class="field">
+            <label>&nbsp;</label>
+            <div class="line-item__tbc">
+              <strong>Pricing to be confirmed</strong>
+              <span>Not included in your totals yet.</span>
+              <a class="linklike" href="mailto:${LTS_DATA.contact.email}?subject=${subject}">Contact LTS for a quote</a>
+            </div>
+          </div>
         </div>
       </div>`;
   }
@@ -1396,6 +1531,13 @@ const LTSExport = (() => {
       input.addEventListener("change", (e) => {
         const line = state.lines.find((l) => l.id === e.target.dataset.line);
         line.trainees = Math.max(1, parseInt(e.target.value, 10) || 1);
+        renderEstimate();
+      });
+    });
+    $$('[data-field="units"]').forEach((input) => {
+      input.addEventListener("change", (e) => {
+        const line = state.lines.find((l) => l.id === e.target.dataset.line);
+        line.units = Math.max(1, parseInt(e.target.value, 10) || 1);
         renderEstimate();
       });
     });
@@ -1444,7 +1586,6 @@ const LTSExport = (() => {
   const baselineInputs = {
     "#assume-hours": "hoursPerTrainee",
     "#assume-rate": "hourlyRate",
-    "#assume-materials": "materialsPerTrainee",
   };
   Object.entries(baselineInputs).forEach(([sel, key]) => {
     const input = $(sel);
@@ -1459,7 +1600,12 @@ const LTSExport = (() => {
 
   function ctaHtml() {
     if (state.lines.length === 0) return "";
-    const primaryLine = state.lines[0];
+    const primaryLine = state.lines.find((l) => l.contractId);
+    if (!primaryLine) {
+      // No priced line yet (e.g. only a "pricing to be confirmed" add-on) —
+      // there's no plan to sign up on, so point them at a quote instead.
+      return `<a class="btn btn--primary" target="_blank" rel="noopener" href="mailto:${LTS_DATA.contact.email}?subject=LTS pricing enquiry">Contact LTS for a quote</a>`;
+    }
     const contract = LTSCalculator.getContract(primaryLine.contractId);
     if (state.audience === "new") {
       const signupParam = contract.id === "payg" ? "Pay-as-you-go" : contract.years + "-Year-Contract";
@@ -1514,7 +1660,6 @@ const LTSExport = (() => {
     setCost("#cmp-with-monthly", fmt(ltsMonthly));
     setCost("#cmp-hours", base.hours.toLocaleString("en-ZA"));
     setCost("#cmp-labour", fmt(base.labourCost));
-    setCost("#cmp-materials", fmt(base.materialsCost));
 
     const saveMonthly = base.monthly - ltsMonthly;
     const saveAnnual = saveMonthly * 12;
@@ -1679,7 +1824,7 @@ const LTSExport = (() => {
   // ---------- init ----------
   function init() {
     $("#prices-valid-until").textContent = LTS_DATA.pricesValidUntil;
-    renderProduct();
+    renderProducts();
     renderTemplates();
     renderFaqs();
     renderSavedList();

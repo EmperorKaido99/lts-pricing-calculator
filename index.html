@@ -83,31 +83,15 @@
 
   <!-- ============ PRODUCTS TAB ============ -->
   <section class="tabpanel is-active" id="panel-products">
-    <p class="panel-intro">LTS sells one thing, and does it well: a single online assessment &amp; learner tracking platform, priced by trainee count. Add it to your estimate and configure it on the right.</p>
+    <p class="panel-intro">LTS is built around one core platform — priced by trainee count — plus optional add-on services, priced separately. Add what your training office needs to your estimate below.</p>
 
-    <div class="product-card">
-      <div class="product-card__main">
-        <div class="product-card__icon" aria-hidden="true">📋</div>
-        <div>
-          <h2 id="product-name"></h2>
-          <p class="product-card__tagline" id="product-tagline"></p>
-          <p class="product-card__desc" id="product-desc"></p>
-          <ul class="product-card__props" id="product-props"></ul>
-        </div>
-      </div>
-      <div class="product-card__action">
-        <div class="product-card__from">From</div>
-        <div class="product-card__price" id="product-from-price"></div>
-        <div class="product-card__per">per trainee / month, excl. VAT</div>
-        <button class="btn btn--primary" id="btn-add-to-estimate" type="button">Add to estimate</button>
-      </div>
-    </div>
+    <div id="product-list"></div>
   </section>
 
   <!-- ============ ESTIMATE TAB ============ -->
   <section class="tabpanel" id="panel-estimate">
     <div class="estimate-empty" id="estimate-empty">
-      <p>Your estimate is empty. Add the LTS platform from the <button class="linklike" data-goto-tab="products" type="button">Products</button> tab, or start from a <button class="linklike" data-goto-tab="templates" type="button">template</button>.</p>
+      <p>Your estimate is empty. Add a product from the <button class="linklike" data-goto-tab="products" type="button">Products</button> tab, or start from a <button class="linklike" data-goto-tab="templates" type="button">template</button>.</p>
     </div>
 
     <div id="estimate-builder" hidden>
@@ -172,10 +156,6 @@
             <label for="assume-rate">Your staff cost / hour (R)</label>
             <input type="number" id="assume-rate" min="0" step="10" />
           </div>
-          <div class="field">
-            <label for="assume-materials">Paper, printing &amp; storage / trainee / month (R)</label>
-            <input type="number" id="assume-materials" min="0" step="5" />
-          </div>
         </div>
 
         <div class="compare-grid">
@@ -186,7 +166,6 @@
             <ul>
               <li>Admin time: <b id="cmp-hours">0</b> hours / month</li>
               <li>Cost of that time: <b id="cmp-labour">R0.00</b></li>
-              <li>Paper &amp; storage: <b id="cmp-materials">R0.00</b></li>
             </ul>
           </div>
           <div class="compare-col compare-col--with">

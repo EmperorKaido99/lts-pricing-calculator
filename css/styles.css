@@ -156,6 +156,9 @@ a { color: var(--brand-mid); }
 .tabpanel.is-active { display: block; }
 .panel-intro { color: var(--text-muted); margin: 0 0 20px; max-width: 640px; }
 
+/* ---------- Product list ---------- */
+#product-list { display: flex; flex-direction: column; gap: 16px; }
+
 /* ---------- Product card ---------- */
 .product-card {
   position: relative;
@@ -198,6 +201,10 @@ a { color: var(--brand-mid); }
   -webkit-background-clip: text; background-clip: text; color: transparent;
 }
 .product-card__per { font-size: 12px; color: var(--text-muted); margin-bottom: 12px; }
+.product-card__price--tbc {
+  font-size: 15px; font-weight: 700; background: none; -webkit-background-clip: initial;
+  background-clip: initial; color: var(--text-muted);
+}
 
 /* ---------- Buttons ---------- */
 .btn {
@@ -275,6 +282,16 @@ a { color: var(--brand-mid); }
 }
 .line-item__result b { color: var(--navy-900); font-size: 15px; }
 
+/* flat-rate / pricing-to-be-confirmed line items (e.g. Time Sheet) */
+.line-item--tbc { border-left: 3px solid #dca63f; }
+.line-item__tbc {
+  border-top: 1px solid var(--border); padding-top: 12px; margin-top: 4px;
+  display: flex; flex-direction: column; gap: 4px; font-size: 13px;
+}
+.line-item__tbc strong { color: #8a5a1f; font-size: 14px; }
+.line-item__tbc span { color: var(--text-muted); font-size: 12px; }
+.line-item__tbc a { font-size: 12px; font-weight: 700; }
+
 /* ---------- Savings table ---------- */
 .savings-table { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
 .savings-cell { border: 1px solid var(--border); border-radius: 8px; padding: 12px; text-align: center; }
@@ -326,7 +343,7 @@ a { color: var(--brand-mid); }
 .compare-card__title { margin: 4px 0 2px; font-size: 18px; font-weight: 800; color: var(--navy-900); }
 .compare-card__title span { color: #b3261e; text-transform: uppercase; font-style: italic; }
 .compare-card__sub { margin: 0 0 16px; color: var(--text-muted); font-size: 13px; max-width: 640px; }
-.compare-assumptions { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 18px; }
+.compare-assumptions { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-bottom: 18px; max-width: 480px; }
 .compare-assumptions .field input { min-width: 0; width: 100%; }
 
 .compare-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }

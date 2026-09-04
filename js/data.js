@@ -68,7 +68,7 @@ const LTS_DATA = {
         "Same subscription model — no installation or licensing fees",
       ],
       pricingModel: "flat",
-      flatRate: null, // pricing to be confirmed by LTS
+      flatRate: 59.24, // ZAR per timesheet user per month, excl. VAT
     },
   ],
 

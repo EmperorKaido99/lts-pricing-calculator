@@ -215,10 +215,37 @@
   }
 
   function flatLineHtml(line, product) {
+    const calc = LTSCalculator.calcEstimateLine(line);
     const removeBtn = state.lines.length > 1 ? `<button class="line-item__remove" data-remove="${line.id}" title="Remove line" type="button">✕</button>` : "";
-    const subject = encodeURIComponent(`${product.name} pricing for ${line.label}`);
+
+    if (!calc.pricingConfirmed) {
+      const subject = encodeURIComponent(`${product.name} pricing for ${line.label}`);
+      return `
+        <div class="card line-item line-item--tbc" data-line-card="${line.id}">
+          ${removeBtn}
+          <div class="line-item__grid">
+            <div class="field">
+              <label for="name-${line.id}">Line item name</label>
+              <input type="text" id="name-${line.id}" data-field="label" data-line="${line.id}" value="${line.label}" />
+            </div>
+            <div class="field">
+              <label for="units-${line.id}">Number of timesheet users</label>
+              <input type="number" min="1" id="units-${line.id}" data-field="units" data-line="${line.id}" value="${line.units}" />
+            </div>
+            <div class="field">
+              <label>&nbsp;</label>
+              <div class="line-item__tbc">
+                <strong>Pricing to be confirmed</strong>
+                <span>Not included in your totals yet.</span>
+                <a class="linklike" href="mailto:${LTS_DATA.contact.email}?subject=${subject}">Contact LTS for a quote</a>
+              </div>
+            </div>
+          </div>
+        </div>`;
+    }
+
     return `
-      <div class="card line-item line-item--tbc" data-line-card="${line.id}">
+      <div class="card line-item" data-line-card="${line.id}">
         ${removeBtn}
         <div class="line-item__grid">
           <div class="field">
@@ -228,13 +255,13 @@
           <div class="field">
             <label for="units-${line.id}">Number of timesheet users</label>
             <input type="number" min="1" id="units-${line.id}" data-field="units" data-line="${line.id}" value="${line.units}" />
+            <div class="line-item__tier">Flat rate: ${fmt(calc.ratePerUnit)} /user/mo</div>
           </div>
           <div class="field">
             <label>&nbsp;</label>
-            <div class="line-item__tbc">
-              <strong>Pricing to be confirmed</strong>
-              <span>Not included in your totals yet.</span>
-              <a class="linklike" href="mailto:${LTS_DATA.contact.email}?subject=${subject}">Contact LTS for a quote</a>
+            <div class="line-item__result">
+              <span>Monthly<br/><b>${fmt(state.showVat ? calc.monthlyInclVat : calc.monthlyExclVat)}</b></span>
+              <span>Estimated Annual<br/><b>${fmt(state.showVat ? calc.annualInclVat : calc.annualExclVat)}</b></span>
             </div>
           </div>
         </div>
@@ -490,21 +517,6 @@
       )
       .join("");
   }
-
-  // ---------- support bubble ----------
-  $("#support-phone1").textContent = LTS_DATA.contact.phone1;
-  $("#support-phone1").href = "tel:" + LTS_DATA.contact.phone1.replace(/\s/g, "");
-  $("#support-phone2").textContent = LTS_DATA.contact.phone2;
-  $("#support-phone2").href = "tel:" + LTS_DATA.contact.phone2.replace(/\s/g, "");
-  $("#support-email").textContent = LTS_DATA.contact.email;
-  $("#support-email").href = "mailto:" + LTS_DATA.contact.email;
-
-  $("#support-toggle").addEventListener("click", () => {
-    const panel = $("#support-panel");
-    const willShow = panel.hidden;
-    panel.hidden = !willShow;
-    $("#support-toggle").setAttribute("aria-expanded", String(willShow));
-  });
 
   // ---------- shared-link restore ----------
   function restoreFromShareUrl() {

@@ -467,22 +467,6 @@ a { color: var(--brand-mid); }
   .calc-loader.is-visible .calc-loader__bar span { animation-duration: .3s; }
 }
 
-/* ---------- Support bubble ---------- */
-.support-bubble { position: fixed; right: 20px; bottom: 20px; z-index: 50; }
-.support-bubble__toggle {
-  background: var(--brand-gradient); color: #fff; border: none; border-radius: 999px;
-  padding: 12px 18px; font-size: 14px; font-weight: 700; cursor: pointer; box-shadow: var(--shadow-brand);
-}
-.support-bubble__panel {
-  position: absolute; bottom: 54px; right: 0; width: 260px;
-  background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius);
-  box-shadow: var(--shadow); padding: 16px;
-  border-top: 3px solid transparent; border-image: var(--brand-gradient) 1;
-}
-.support-bubble__panel h4 { margin: 0 0 6px; color: var(--brand-blue); }
-.support-bubble__panel p { margin: 4px 0; font-size: 13px; color: var(--text-muted); }
-.support-bubble__hours { font-size: 11px; }
-
 @media (max-width: 720px) {
   .hero { padding: 36px 20px; }
   .hero h1 { font-size: 28px; }

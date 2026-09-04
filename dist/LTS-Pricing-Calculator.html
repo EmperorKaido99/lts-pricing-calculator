@@ -474,22 +474,6 @@ a { color: var(--brand-mid); }
   .calc-loader.is-visible .calc-loader__bar span { animation-duration: .3s; }
 }
 
-/* ---------- Support bubble ---------- */
-.support-bubble { position: fixed; right: 20px; bottom: 20px; z-index: 50; }
-.support-bubble__toggle {
-  background: var(--brand-gradient); color: #fff; border: none; border-radius: 999px;
-  padding: 12px 18px; font-size: 14px; font-weight: 700; cursor: pointer; box-shadow: var(--shadow-brand);
-}
-.support-bubble__panel {
-  position: absolute; bottom: 54px; right: 0; width: 260px;
-  background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius);
-  box-shadow: var(--shadow); padding: 16px;
-  border-top: 3px solid transparent; border-image: var(--brand-gradient) 1;
-}
-.support-bubble__panel h4 { margin: 0 0 6px; color: var(--brand-blue); }
-.support-bubble__panel p { margin: 4px 0; font-size: 13px; color: var(--text-muted); }
-.support-bubble__hours { font-size: 11px; }
-
 @media (max-width: 720px) {
   .hero { padding: 36px 20px; }
   .hero h1 { font-size: 28px; }
@@ -735,20 +719,6 @@ a { color: var(--brand-mid); }
   </div>
 </div>
 
-<!-- ============ SUPPORT BUBBLE ============ -->
-<div class="support-bubble" id="support-bubble">
-  <button class="support-bubble__toggle" id="support-toggle" type="button" aria-expanded="false">
-    💬 Contact Support
-  </button>
-  <div class="support-bubble__panel" id="support-panel" hidden>
-    <h4>Contact LTS Support</h4>
-    <p>Have a question about pricing or your estimate? Reach the LTS team directly:</p>
-    <p><strong>Phone:</strong> <a id="support-phone1" href="#"></a> / <a id="support-phone2" href="#"></a></p>
-    <p><strong>Email:</strong> <a id="support-email" href="#"></a></p>
-    <p class="support-bubble__hours">Help desk: 07:00–19:00 business days, 10:00–13:00 weekends &amp; holidays.</p>
-  </div>
-</div>
-
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <script>
 /**
@@ -821,7 +791,7 @@ const LTS_DATA = {
         "Same subscription model — no installation or licensing fees",
       ],
       pricingModel: "flat",
-      flatRate: null, // pricing to be confirmed by LTS
+      flatRate: 59.24, // ZAR per timesheet user per month, excl. VAT
     },
   ],
 
@@ -1471,10 +1441,37 @@ const LTSExport = (() => {
   }
 
   function flatLineHtml(line, product) {
+    const calc = LTSCalculator.calcEstimateLine(line);
     const removeBtn = state.lines.length > 1 ? `<button class="line-item__remove" data-remove="${line.id}" title="Remove line" type="button">✕</button>` : "";
-    const subject = encodeURIComponent(`${product.name} pricing for ${line.label}`);
+
+    if (!calc.pricingConfirmed) {
+      const subject = encodeURIComponent(`${product.name} pricing for ${line.label}`);
+      return `
+        <div class="card line-item line-item--tbc" data-line-card="${line.id}">
+          ${removeBtn}
+          <div class="line-item__grid">
+            <div class="field">
+              <label for="name-${line.id}">Line item name</label>
+              <input type="text" id="name-${line.id}" data-field="label" data-line="${line.id}" value="${line.label}" />
+            </div>
+            <div class="field">
+              <label for="units-${line.id}">Number of timesheet users</label>
+              <input type="number" min="1" id="units-${line.id}" data-field="units" data-line="${line.id}" value="${line.units}" />
+            </div>
+            <div class="field">
+              <label>&nbsp;</label>
+              <div class="line-item__tbc">
+                <strong>Pricing to be confirmed</strong>
+                <span>Not included in your totals yet.</span>
+                <a class="linklike" href="mailto:${LTS_DATA.contact.email}?subject=${subject}">Contact LTS for a quote</a>
+              </div>
+            </div>
+          </div>
+        </div>`;
+    }
+
     return `
-      <div class="card line-item line-item--tbc" data-line-card="${line.id}">
+      <div class="card line-item" data-line-card="${line.id}">
         ${removeBtn}
         <div class="line-item__grid">
           <div class="field">
@@ -1484,13 +1481,13 @@ const LTSExport = (() => {
           <div class="field">
             <label for="units-${line.id}">Number of timesheet users</label>
             <input type="number" min="1" id="units-${line.id}" data-field="units" data-line="${line.id}" value="${line.units}" />
+            <div class="line-item__tier">Flat rate: ${fmt(calc.ratePerUnit)} /user/mo</div>
           </div>
           <div class="field">
             <label>&nbsp;</label>
-            <div class="line-item__tbc">
-              <strong>Pricing to be confirmed</strong>
-              <span>Not included in your totals yet.</span>
-              <a class="linklike" href="mailto:${LTS_DATA.contact.email}?subject=${subject}">Contact LTS for a quote</a>
+            <div class="line-item__result">
+              <span>Monthly<br/><b>${fmt(state.showVat ? calc.monthlyInclVat : calc.monthlyExclVat)}</b></span>
+              <span>Estimated Annual<br/><b>${fmt(state.showVat ? calc.annualInclVat : calc.annualExclVat)}</b></span>
             </div>
           </div>
         </div>
@@ -1746,21 +1743,6 @@ const LTSExport = (() => {
       )
       .join("");
   }
-
-  // ---------- support bubble ----------
-  $("#support-phone1").textContent = LTS_DATA.contact.phone1;
-  $("#support-phone1").href = "tel:" + LTS_DATA.contact.phone1.replace(/\s/g, "");
-  $("#support-phone2").textContent = LTS_DATA.contact.phone2;
-  $("#support-phone2").href = "tel:" + LTS_DATA.contact.phone2.replace(/\s/g, "");
-  $("#support-email").textContent = LTS_DATA.contact.email;
-  $("#support-email").href = "mailto:" + LTS_DATA.contact.email;
-
-  $("#support-toggle").addEventListener("click", () => {
-    const panel = $("#support-panel");
-    const willShow = panel.hidden;
-    panel.hidden = !willShow;
-    $("#support-toggle").setAttribute("aria-expanded", String(willShow));
-  });
 
   // ---------- shared-link restore ----------
   function restoreFromShareUrl() {

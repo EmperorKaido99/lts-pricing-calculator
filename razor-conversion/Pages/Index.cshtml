@@ -1,0 +1,273 @@
+@page
+@model IndexModel
+@{
+    /*
+     * LTS Pricing Calculator — Razor Pages entry point.
+     *
+     * This page is a direct port of the standalone LTSPricingCalculator.html
+     * file: the markup below (top bar, hero, tabs, estimate builder, FAQs,
+     * loading overlay, footer) is copied verbatim — nothing was rewritten,
+     * so it should render and behave identically to the original.
+     *
+     * All interactivity lives client-side in wwwroot/js/pricing-calculator.js
+     * (a concatenation of the original data.js / calculator.js / export.js /
+     * app.js, in that load order) — this page has no server-side logic of
+     * its own (see Index.cshtml.cs: OnGet() does nothing).
+     *
+     * ViewData["HideNav"] tells _Layout.cshtml to suppress the shared site
+     * navbar for this page only, since the calculator has its own top bar.
+     * ViewData["FullBleed"] tells it to skip the Bootstrap .container
+     * wrapper too, since the topbar/hero/footer are all designed edge-to-
+     * edge — left inside .container they'd be capped to its max-width and
+     * gain side padding, breaking the hero gradient and topbar visually.
+     * See Pages/Shared/_Layout.cshtml for the corresponding @if checks.
+     */
+    ViewData["Title"] = "LTS Pricing Calculator";
+    ViewData["HideNav"] = true;
+    ViewData["FullBleed"] = true;
+}
+
+@* Calculator-specific stylesheet — scoped to this page only (not loaded
+   site-wide) via the Styles section rendered from _Layout.cshtml's <head>. *@
+@section Styles {
+    <link rel="stylesheet" href="~/css/pricing-calculator.css" />
+}
+
+@* ======================================================================
+   Everything below this line is the calculator UI, copied unchanged from
+   the standalone HTML file's <body>. Do not reformat/reorder — several
+   ids are wired up directly by pricing-calculator.js via getElementById-
+   style lookups, so structural changes here can silently break the app.
+   ====================================================================== *@
+
+<!-- ============ TOP BAR ============ -->
+<header class="topbar">
+  <div class="topbar__left">
+    <span class="lts-logo" aria-hidden="true">
+      <svg viewBox="0 0 100 100" width="46" height="46" role="img" aria-label="LTS logo">
+        <defs>
+          <linearGradient id="ltsGrad" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0" stop-color="#1a2ae6" />
+            <stop offset="0.55" stop-color="#0a8fd0" />
+            <stop offset="1" stop-color="#10d18a" />
+          </linearGradient>
+        </defs>
+        <path d="M27 6 L73 6 L96 50 L73 94 L27 94 L4 50 Z" fill="url(#ltsGrad)" />
+        <text x="50" y="50" text-anchor="middle" dominant-baseline="central"
+              font-family="-apple-system, Segoe UI, Inter, Arial, sans-serif"
+              font-size="30" font-weight="700" letter-spacing="1" fill="#ffffff">LTS</text>
+      </svg>
+    </span>
+    <span class="topbar__title">LTS Pricing Calculator</span>
+  </div>
+  <div class="topbar__right">
+    <div class="topbar__stat">
+      <span class="topbar__stat-value" id="stat-upfront">R0.00</span>
+      <span class="topbar__stat-label">Estimated upfront cost</span>
+    </div>
+    <div class="topbar__stat">
+      <span class="topbar__stat-value" id="stat-monthly">R0.00</span>
+      <span class="topbar__stat-label">Estimated monthly cost</span>
+    </div>
+    <a class="btn btn--login" href="https://www.ltsystems.co.za/login/" target="_blank" rel="noopener">LOGIN</a>
+  </div>
+</header>
+
+<!-- ============ HERO ============ -->
+<section class="hero">
+  <div class="hero__inner">
+    <div class="hero__text">
+      <h1>Pricing calculator</h1>
+      <p>See exactly what your training office gets with LTS — and what it costs.</p>
+      <button class="btn btn--primary" id="btn-hero-get-started" type="button">Get started with LTS</button>
+    </div>
+    <div class="hero__art">
+      <img src="assets/hero-calculator.svg" alt="Calculator" width="430" height="410" />
+    </div>
+  </div>
+</section>
+
+<!-- ============ TABS ============ -->
+<nav class="tabs" role="tablist" aria-label="Pricing calculator sections">
+  <button class="tabs__btn is-active" data-tab="products" type="button">Products</button>
+  <button class="tabs__btn" data-tab="estimate" type="button">Your Estimate <span id="tab-line-count" class="tabs__badge" hidden>0</span></button>
+  <button class="tabs__btn" data-tab="templates" type="button">Estimate templates</button>
+  <button class="tabs__btn" data-tab="saved" type="button">Saved estimates</button>
+  <button class="tabs__btn" data-tab="faqs" type="button">FAQs</button>
+</nav>
+
+<main class="content">
+
+  <!-- ============ PRODUCTS TAB ============ -->
+  <section class="tabpanel is-active" id="panel-products">
+    <p class="panel-intro">LTS is built around one core platform — priced by trainee count — plus optional add-on services, priced separately. Add what your training office needs to your estimate below.</p>
+
+    <div id="product-list"></div>
+  </section>
+
+  <!-- ============ ESTIMATE TAB ============ -->
+  <section class="tabpanel" id="panel-estimate">
+    <div class="estimate-empty" id="estimate-empty">
+      <p>Your estimate is empty. Add a product from the <button class="linklike" data-goto-tab="products" type="button">Products</button> tab, or start from a <button class="linklike" data-goto-tab="templates" type="button">template</button>.</p>
+    </div>
+
+    <div id="estimate-builder" hidden>
+      <div class="card">
+        <div class="card__row card__row--top">
+          <div class="field">
+            <label for="input-estimate-name">Estimate name</label>
+            <input type="text" id="input-estimate-name" value="My LTS estimate" />
+          </div>
+          <div class="card__actions">
+            <select class="icon-btn" id="add-line-select" title="Add another line item" aria-label="Add another line item">
+              <option value="" selected disabled>+ Add line</option>
+            </select>
+            <button class="icon-btn icon-btn--danger" id="btn-clear-estimate" type="button" title="Clear estimate">Clear</button>
+          </div>
+        </div>
+      </div>
+
+      <div id="estimate-lines"></div>
+
+      <div class="card totals-card">
+        <div class="pending-note">⏳ Pending review: awaiting details from Susan &amp; Thato on this section (Totals &amp; call to action).</div>
+        <div class="totals-card__toggle">
+          <label class="switch">
+            <input type="checkbox" id="toggle-vat" />
+            <span class="switch__track"><span class="switch__thumb"></span></span>
+          </label>
+          <span>Show prices including VAT (15%)</span>
+        </div>
+        <div class="totals-grid">
+          <div>
+            <div class="totals-grid__label">Upfront cost</div>
+            <div class="totals-grid__value" id="total-upfront">R0.00</div>
+          </div>
+          <div>
+            <div class="totals-grid__label">Monthly cost</div>
+            <div class="totals-grid__value" id="total-monthly">R0.00</div>
+          </div>
+          <div>
+            <div class="totals-grid__label">Estimated Annual Cost</div>
+            <div class="totals-grid__value" id="total-annual">R0.00</div>
+          </div>
+        </div>
+        <p class="totals-card__note">Prices are estimates, exclude VAT unless stated, and are valid until <span id="prices-valid-until"></span>. LTS escalates rates on 1 April each year in line with the previous year's average CPI (SARB figure). Actual pricing is confirmed in your LTS Service Level Agreement.</p>
+        <div class="totals-card__cta" id="totals-cta"></div>
+        <div class="totals-card__buttons">
+          <button class="btn btn--outline" id="btn-export" type="button">⬇ Export to Excel</button>
+        </div>
+      </div>
+
+      <!-- ===== Cost of NOT using LTS ===== -->
+      <div class="card compare-card">
+        <h3 class="compare-card__title">The cost of <span>not</span> using LTS</h3>
+        <p class="compare-card__sub">The same admin done by hand costs time and money every month. Adjust the assumptions to match your office — see what LTS gives back.</p>
+
+        <div class="compare-assumptions">
+          <div class="field">
+            <label for="assume-hours">Manual admin hours / trainee / month</label>
+            <input type="number" id="assume-hours" min="0" step="0.5" />
+          </div>
+          <div class="field">
+            <label for="assume-rate">Your staff cost / hour (R)</label>
+            <input type="number" id="assume-rate" min="0" step="10" />
+          </div>
+        </div>
+
+        <div class="compare-grid">
+          <div class="compare-col compare-col--without">
+            <div class="compare-col__tag">Without LTS — by hand</div>
+            <div class="compare-col__big" id="cmp-without-monthly">R0.00</div>
+            <div class="compare-col__per">per month</div>
+            <ul>
+              <li>Admin time: <b id="cmp-hours">0</b> hours / month</li>
+              <li>Cost of that time: <b id="cmp-labour">R0.00</b></li>
+            </ul>
+          </div>
+          <div class="compare-col compare-col--with">
+            <div class="compare-col__tag">With LTS</div>
+            <div class="compare-col__big" id="cmp-with-monthly">R0.00</div>
+            <div class="compare-col__per">per month</div>
+            <ul>
+              <li>One simple per-trainee subscription</li>
+              <li>No paper, no manual capturing</li>
+              <li>Automated tracking, reports &amp; audit trail</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="compare-savings" id="cmp-savings"></div>
+        <p class="compare-card__note">These figures are your own estimates of manual effort, not LTS charges — they help show the time and money LTS saves. LTS costs above exclude VAT unless the toggle is on.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ TEMPLATES TAB ============ -->
+  <section class="tabpanel" id="panel-templates">
+    <p class="panel-intro">Common training-office profiles, pre-configured. Pick one as a starting point, then fine-tune the trainee count on the Estimate tab.</p>
+    <div class="template-grid" id="template-grid"></div>
+  </section>
+
+  <!-- ============ SAVED TAB ============ -->
+  <section class="tabpanel" id="panel-saved">
+    <p class="panel-intro">Estimates you save are kept on this device.</p>
+    <div id="saved-list" class="saved-list"></div>
+  </section>
+
+  <!-- ============ FAQ TAB ============ -->
+  <section class="tabpanel" id="panel-faqs">
+    <div id="faq-list" class="faq-list"></div>
+  </section>
+
+</main>
+
+<!-- ============ FOOTER ============ -->
+<footer class="site-footer">
+  <div class="brand-bar" aria-hidden="true"></div>
+  <div class="site-footer__inner">
+    <span class="site-footer__brand">
+      <span class="lts-logo lts-logo--sm" aria-hidden="true">
+        <svg viewBox="0 0 100 100" width="26" height="26" role="img" aria-label="LTS logo">
+          <path d="M27 6 L73 6 L96 50 L73 94 L27 94 L4 50 Z" fill="url(#ltsGrad)" />
+          <text x="50" y="50" text-anchor="middle" dominant-baseline="central"
+                font-family="-apple-system, Segoe UI, Inter, Arial, sans-serif"
+                font-size="30" font-weight="700" letter-spacing="1" fill="#ffffff">LTS</text>
+        </svg>
+      </span>
+      LTS — Learner Tracking Systems
+    </span>
+    <span class="site-footer__note">Prices exclude VAT unless stated · Estimates only</span>
+  </div>
+</footer>
+
+<!-- ============ CALCULATOR LOADING OVERLAY ============ -->
+<div class="calc-loader" id="calc-loader" hidden role="status" aria-live="polite" aria-label="Loading your estimate">
+  <div class="calc-loader__card">
+    <div class="calc-device">
+      <div class="calc-device__screen"></div>
+      <div class="calc-device__keys">
+        <span></span><span></span><span></span><span></span>
+        <span></span><span></span><span></span><span></span>
+        <span></span><span></span><span></span><span></span>
+        <span></span><span></span><span></span><span></span>
+      </div>
+    </div>
+    <div class="calc-loader__label">Loading your estimate…</div>
+    <div class="calc-loader__bar"><span></span></div>
+  </div>
+</div>
+
+@* ======================================================================
+   Scripts — rendered into _Layout.cshtml's Scripts section (the default
+   Razor Pages template already has @RenderSection("Scripts", required:
+   false) just before </body>; if your _Layout.cshtml doesn't, add it
+   there — see the _Layout.cshtml notes for the exact line).
+
+   Load order matters: SheetJS (xlsx) must load before pricing-calculator.js,
+   since app.js's Export-to-Excel button calls into the global XLSX object.
+   ====================================================================== *@
+@section Scripts {
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <script src="~/js/pricing-calculator.js"></script>
+}

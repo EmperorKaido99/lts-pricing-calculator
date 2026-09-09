@@ -1,3 +1,18 @@
+/**
+ * LTS Pricing Calculator — stylesheet
+ *
+ * Byte-for-byte copy of the original standalone site's css/styles.css,
+ * relocated here for the Razor Pages port. Nothing in this file was
+ * changed — see README.md in this folder for how it's wired in.
+ *
+ * Scoped to the calculator page only: loaded via Index.cshtml's
+ * `@section Styles { ... }`, not referenced from _Layout.cshtml directly,
+ * so it has no effect on any other page in the site.
+ *
+ * Depends on: wwwroot/assets/hero-pattern.svg (referenced via url() below
+ * in the .hero::before rule — a relative path resolved from this file's
+ * own URL, i.e. /css/pricing-calculator.css -> ../assets/... -> /assets/...).
+ */
 :root {
   /* ---- LTS brand ---- */
   --brand-blue: #1a2ae6;

@@ -1,4 +1,19 @@
-/* ===== data.js ===== */
+/**
+ * LTS Pricing Calculator — client-side app bundle
+ *
+ * This file is the original site's four JS files concatenated, in their
+ * original <script> load order, with no logic changes:
+ *   1. data.js        — pricing/product/FAQ data (edit HERE for rate changes)
+ *   2. calculator.js  — pure pricing/escalation math, no DOM access
+ *   3. export.js      — Excel export, save/share-link helpers
+ *   4. app.js         — DOM wiring: tabs, forms, rendering (runs on load)
+ * Each section below is marked so you can still jump to the right file.
+ *
+ * Loaded from Index.cshtml's @section Scripts, after the SheetJS (xlsx)
+ * CDN script that export.js's Excel export depends on.
+ */
+
+/* ===== 1/4: data.js — pricing & content ===== */
 /**
  * LTS Pricing Calculator — data model
  *
@@ -201,7 +216,7 @@ const LTS_DATA = {
   ],
 };
 
-/* ===== calculator.js ===== */
+/* ===== 2/4: calculator.js — pricing math (pure functions, no DOM) ===== */
 /**
  * LTS Pricing Calculator — calculation engine
  * Pure functions, no DOM access, so this file is unit-testable on its own.
@@ -390,7 +405,7 @@ const LTSCalculator = (() => {
   };
 })();
 
-/* ===== export.js ===== */
+/* ===== 3/4: export.js — Excel export, save, share-link ===== */
 /**
  * LTS Pricing Calculator — export / save / share helpers
  * No backend required: Export uses SheetJS (client-side .xlsx generation),
@@ -523,7 +538,7 @@ const LTSExport = (() => {
   return { saveEstimate, loadSavedEstimates, buildShareUrl, readShareUrl, exportToExcel };
 })();
 
-/* ===== app.js ===== */
+/* ===== 4/4: app.js — DOM wiring, runs on page load ===== */
 /**
  * LTS Pricing Calculator — app wiring
  * Talks to LTS_DATA (data.js), LTSCalculator (calculator.js) and LTSExport (export.js).

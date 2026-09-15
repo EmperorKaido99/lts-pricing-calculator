@@ -319,8 +319,21 @@ select.icon-btn { font-family: inherit; -webkit-appearance: menulist; appearance
 .compare-card__title { margin: 4px 0 2px; font-size: 18px; font-weight: 800; color: var(--navy-900); }
 .compare-card__title span { color: #b3261e; text-transform: uppercase; font-style: italic; }
 .compare-card__sub { margin: 0 0 16px; color: var(--text-muted); font-size: 13px; max-width: 640px; }
-.compare-assumptions { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-bottom: 18px; max-width: 480px; }
-.compare-assumptions .field input { min-width: 0; width: 100%; }
+.compare-trainees { max-width: 420px; margin-bottom: 16px; }
+.compare-trainees input { min-width: 0; width: 100%; }
+.compare-categories { display: grid; gap: 14px; margin-bottom: 18px; }
+.compare-category { border: 1px solid var(--border); border-radius: 10px; padding: 14px 16px; background: #fafbfc; }
+.compare-category__head { display: flex; gap: 10px; align-items: flex-start; margin-bottom: 10px; }
+.compare-category__num {
+  flex: none; width: 22px; height: 22px; border-radius: 50%;
+  background: var(--brand-gradient); color: #fff; font-size: 12px; font-weight: 800;
+  display: flex; align-items: center; justify-content: center;
+}
+.compare-category__title { font-weight: 700; font-size: 13.5px; color: var(--navy-900); }
+.compare-category__q { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
+.compare-category__fields { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; align-items: end; }
+.compare-category__fields .field input { min-width: 0; width: 100%; }
+.compare-category__hint { align-self: center; font-size: 12px; color: var(--text-muted); font-style: italic; }
 
 .compare-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
 .compare-col { border-radius: 12px; padding: 16px 18px; }
@@ -465,7 +478,7 @@ select.icon-btn { font-family: inherit; -webkit-appearance: menulist; appearance
   .contract-options { grid-template-columns: repeat(2, 1fr); }
   .savings-table { grid-template-columns: repeat(2, 1fr); }
   .totals-grid { grid-template-columns: 1fr; }
-  .compare-assumptions { grid-template-columns: 1fr; }
+  .compare-category__fields { grid-template-columns: 1fr; }
   .compare-grid { grid-template-columns: 1fr; }
   .product-card { flex-direction: column; }
   .product-card__action { text-align: left; }

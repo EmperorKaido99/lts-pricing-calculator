@@ -12,6 +12,7 @@
   };
 
   let lineSeq = 0;
+  let traineesTouched = false; // true once the user edits "cost of not using LTS" trainee count directly
 
   // ---------- helpers ----------
   const $ = (sel, root = document) => root.querySelector(sel);
@@ -355,16 +356,27 @@
     renderEstimate();
   });
 
-  // "Cost of not using LTS" assumption inputs
+  // "Cost of not using LTS" assumption inputs — Susan's 4-category model
+  // (2026-09-14 feedback). "trainees" is auto-filled from the estimate's
+  // total trainee count until the user edits it directly, at which point it
+  // stops auto-syncing — this is what fixes the old bug where adding a
+  // non-trainee-priced line (e.g. Time Sheet) threw the figure off.
   const baselineInputs = {
-    "#assume-hours": "hoursPerTrainee",
-    "#assume-rate": "hourlyRate",
+    "#assume-trainees": "trainees",
+    "#assume-admin-hours": "adminHoursPerTrainee",
+    "#assume-admin-rate": "adminRate",
+    "#assume-monitor-hours": "monitorHours",
+    "#assume-reporting-hours": "reportingHours",
+    "#assume-ld-rate": "ldRate",
+    "#assume-management-hours": "managementHours",
+    "#assume-management-rate": "managementRate",
   };
   Object.entries(baselineInputs).forEach(([sel, key]) => {
     const input = $(sel);
     if (!input) return;
     input.value = state.baseline[key];
     input.addEventListener("input", () => {
+      if (sel === "#assume-trainees") traineesTouched = true;
       const v = parseFloat(input.value);
       state.baseline[key] = isNaN(v) || v < 0 ? 0 : v;
       renderTotals();
@@ -422,22 +434,35 @@
   }
 
   // "The cost of NOT using LTS" — compare the manual baseline against the
-  // currently displayed LTS monthly cost, live.
+  // currently displayed LTS monthly cost, live. Trainee count auto-fills
+  // from the estimate's lines until the user overrides it directly (see
+  // baselineInputs wiring above) — kept editable rather than silently
+  // summed, per Susan's feedback, since some products (e.g. Time Sheet)
+  // aren't priced per trainee and shouldn't skew the figure.
   function renderComparison(ltsMonthly) {
     if (state.lines.length === 0) return;
-    const totalTrainees = state.lines.reduce((sum, l) => sum + (parseInt(l.trainees, 10) || 0), 0);
-    const base = LTSCalculator.manualBaselineCost(
-      Object.assign({ trainees: totalTrainees }, state.baseline)
-    );
+    if (!traineesTouched) {
+      const totalTrainees = state.lines.reduce((sum, l) => sum + (parseInt(l.trainees, 10) || 0), 0);
+      if (totalTrainees > 0) {
+        state.baseline.trainees = totalTrainees;
+        const traineesInput = $("#assume-trainees");
+        if (traineesInput && document.activeElement !== traineesInput) {
+          traineesInput.value = totalTrainees;
+        }
+      }
+    }
+    const base = LTSCalculator.manualBaselineCost(state.baseline);
 
     setCost("#cmp-without-monthly", fmt(base.monthly));
     setCost("#cmp-with-monthly", fmt(ltsMonthly));
-    setCost("#cmp-hours", base.hours.toLocaleString("en-ZA"));
-    setCost("#cmp-labour", fmt(base.labourCost));
+    setCost("#cmp-admin", fmt(base.breakdown.admin));
+    setCost("#cmp-monitor", fmt(base.breakdown.monitor));
+    setCost("#cmp-reporting", fmt(base.breakdown.reporting));
+    setCost("#cmp-management", fmt(base.breakdown.management));
 
     const saveMonthly = base.monthly - ltsMonthly;
     const saveAnnual = saveMonthly * 12;
-    const hoursLabel = `<b>${base.hours.toLocaleString("en-ZA")}</b> hours`;
+    const hoursLabel = `<b>${base.hours.toLocaleString("en-ZA", { maximumFractionDigits: 1 })}</b> hours`;
     const savingsEl = $("#cmp-savings");
     if (saveMonthly >= 0) {
       savingsEl.classList.remove("is-negative");

@@ -72,16 +72,43 @@ const LTSCalculator = (() => {
   }
 
   /**
-   * The "cost of NOT using LTS" — what it costs to run the same processes by
-   * hand for a given trainee count: staff time (hours × rate). All inputs
-   * are caller-supplied assumptions so the user can adjust them.
+   * The "cost of NOT using LTS" — four categories of hidden admin cost a
+   * training office carries doing this by hand (Susan's 2026-09-14 spec):
+   *   1. Learner & Training Programme Administration — trainees x hours/trainee x admin rate
+   *   2. Monitoring, Follow-Up & Exception Handling — hours x admin rate
+   *   3. Reporting, Status Updates & Compliance — hours x L&D/Compliance rate
+   *   4. Management Time & Ad-hoc Information Requests — hours x management rate
+   * All inputs are caller-supplied assumptions so the user can adjust them;
+   * "trainees" is a plain number the user sets directly, not derived from the
+   * estimate lines, so the figure stays correct once add-ons (e.g. Time
+   * Sheet) are in the estimate too.
    */
-  function manualBaselineCost({ trainees, hoursPerTrainee, hourlyRate }) {
-    const n = Math.max(1, Math.floor(Number(trainees) || 0));
-    const hours = n * Math.max(0, Number(hoursPerTrainee) || 0);
-    const labourCost = hours * Math.max(0, Number(hourlyRate) || 0);
-    const monthly = labourCost;
-    return { trainees: n, hours, labourCost, monthly, annual: monthly * 12 };
+  function manualBaselineCost(a) {
+    const n = Math.max(0, Math.floor(Number(a.trainees) || 0));
+    const adminHoursPerTrainee = Math.max(0, Number(a.adminHoursPerTrainee) || 0);
+    const adminRate = Math.max(0, Number(a.adminRate) || 0);
+    const monitorHours = Math.max(0, Number(a.monitorHours) || 0);
+    const reportingHours = Math.max(0, Number(a.reportingHours) || 0);
+    const ldRate = Math.max(0, Number(a.ldRate) || 0);
+    const managementHours = Math.max(0, Number(a.managementHours) || 0);
+    const managementRate = Math.max(0, Number(a.managementRate) || 0);
+
+    const adminHours = n * adminHoursPerTrainee;
+    const admin = adminHours * adminRate;
+    const monitor = monitorHours * adminRate;
+    const reporting = reportingHours * ldRate;
+    const management = managementHours * managementRate;
+
+    const hours = adminHours + monitorHours + reportingHours + managementHours;
+    const monthly = admin + monitor + reporting + management;
+
+    return {
+      trainees: n,
+      hours,
+      monthly,
+      annual: monthly * 12,
+      breakdown: { admin, monitor, reporting, management },
+    };
   }
 
   /**

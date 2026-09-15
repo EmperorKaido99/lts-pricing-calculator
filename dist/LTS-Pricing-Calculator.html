@@ -326,8 +326,21 @@ select.icon-btn { font-family: inherit; -webkit-appearance: menulist; appearance
 .compare-card__title { margin: 4px 0 2px; font-size: 18px; font-weight: 800; color: var(--navy-900); }
 .compare-card__title span { color: #b3261e; text-transform: uppercase; font-style: italic; }
 .compare-card__sub { margin: 0 0 16px; color: var(--text-muted); font-size: 13px; max-width: 640px; }
-.compare-assumptions { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-bottom: 18px; max-width: 480px; }
-.compare-assumptions .field input { min-width: 0; width: 100%; }
+.compare-trainees { max-width: 420px; margin-bottom: 16px; }
+.compare-trainees input { min-width: 0; width: 100%; }
+.compare-categories { display: grid; gap: 14px; margin-bottom: 18px; }
+.compare-category { border: 1px solid var(--border); border-radius: 10px; padding: 14px 16px; background: #fafbfc; }
+.compare-category__head { display: flex; gap: 10px; align-items: flex-start; margin-bottom: 10px; }
+.compare-category__num {
+  flex: none; width: 22px; height: 22px; border-radius: 50%;
+  background: var(--brand-gradient); color: #fff; font-size: 12px; font-weight: 800;
+  display: flex; align-items: center; justify-content: center;
+}
+.compare-category__title { font-weight: 700; font-size: 13.5px; color: var(--navy-900); }
+.compare-category__q { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
+.compare-category__fields { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; align-items: end; }
+.compare-category__fields .field input { min-width: 0; width: 100%; }
+.compare-category__hint { align-self: center; font-size: 12px; color: var(--text-muted); font-style: italic; }
 
 .compare-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
 .compare-col { border-radius: 12px; padding: 16px 18px; }
@@ -472,7 +485,7 @@ select.icon-btn { font-family: inherit; -webkit-appearance: menulist; appearance
   .contract-options { grid-template-columns: repeat(2, 1fr); }
   .savings-table { grid-template-columns: repeat(2, 1fr); }
   .totals-grid { grid-template-columns: 1fr; }
-  .compare-assumptions { grid-template-columns: 1fr; }
+  .compare-category__fields { grid-template-columns: 1fr; }
   .compare-grid { grid-template-columns: 1fr; }
   .product-card { flex-direction: column; }
   .product-card__action { text-align: left; }
@@ -606,14 +619,87 @@ select.icon-btn { font-family: inherit; -webkit-appearance: menulist; appearance
         <h3 class="compare-card__title">The cost of <span>not</span> using LTS</h3>
         <p class="compare-card__sub">The same admin done by hand costs time and money every month. Adjust the assumptions to match your office — see what LTS gives back.</p>
 
-        <div class="compare-assumptions">
-          <div class="field">
-            <label for="assume-hours">Manual admin hours / trainee / month</label>
-            <input type="number" id="assume-hours" min="0" step="0.5" />
+        <div class="field compare-trainees">
+          <label for="assume-trainees">Number of active trainees / employees being assessed</label>
+          <input type="number" id="assume-trainees" min="0" step="1" />
+        </div>
+
+        <div class="compare-categories">
+          <div class="compare-category">
+            <div class="compare-category__head">
+              <span class="compare-category__num">1</span>
+              <div class="compare-category__copy">
+                <div class="compare-category__title">Learner &amp; Training Programme Administration</div>
+                <div class="compare-category__q">Creating &amp; updating learner records, Excel trackers, allocations, progress updates.</div>
+              </div>
+            </div>
+            <div class="compare-category__fields">
+              <div class="field">
+                <label for="assume-admin-hours">Admin time / trainee / month (hours)</label>
+                <input type="number" id="assume-admin-hours" min="0" step="0.25" />
+              </div>
+              <div class="field">
+                <label for="assume-admin-rate">Administrator cost / hour (R)</label>
+                <input type="number" id="assume-admin-rate" min="0" step="10" />
+              </div>
+            </div>
           </div>
-          <div class="field">
-            <label for="assume-rate">Your staff cost / hour (R)</label>
-            <input type="number" id="assume-rate" min="0" step="10" />
+
+          <div class="compare-category">
+            <div class="compare-category__head">
+              <span class="compare-category__num">2</span>
+              <div class="compare-category__copy">
+                <div class="compare-category__title">Monitoring, Follow-Up &amp; Exception Handling</div>
+                <div class="compare-category__q">Checking who's behind, chasing trainees &amp; managers, escalating overdue items.</div>
+              </div>
+            </div>
+            <div class="compare-category__fields">
+              <div class="field">
+                <label for="assume-monitor-hours">Hours / month</label>
+                <input type="number" id="assume-monitor-hours" min="0" step="0.5" />
+              </div>
+              <div class="compare-category__hint">Uses the administrator rate above</div>
+            </div>
+          </div>
+
+          <div class="compare-category">
+            <div class="compare-category__head">
+              <span class="compare-category__num">3</span>
+              <div class="compare-category__copy">
+                <div class="compare-category__title">Reporting, Status Updates &amp; Compliance</div>
+                <div class="compare-category__q">Management &amp; trainee status reports, compliance &amp; audit information.</div>
+              </div>
+            </div>
+            <div class="compare-category__fields">
+              <div class="field">
+                <label for="assume-reporting-hours">Hours / month</label>
+                <input type="number" id="assume-reporting-hours" min="0" step="0.5" />
+              </div>
+              <div class="field">
+                <label for="assume-ld-rate">L&amp;D / Compliance cost / hour (R)</label>
+                <input type="number" id="assume-ld-rate" min="0" step="10" />
+              </div>
+            </div>
+          </div>
+
+          <div class="compare-category">
+            <div class="compare-category__head">
+              <span class="compare-category__num">4</span>
+              <div class="compare-category__copy">
+                <div class="compare-category__title">Management Time &amp; Ad-hoc Information Requests</div>
+                <div class="compare-category__q">Queries, reviewing progress, requesting information about the programme.</div>
+              </div>
+            </div>
+            <div class="compare-category__fields">
+              <div class="field">
+                <label for="assume-management-hours">Hours / month</label>
+                <input type="number" id="assume-management-hours" min="0" step="0.5" />
+              </div>
+              <div class="field">
+                <label for="assume-management-rate">Management cost / hour (R)</label>
+                <input type="number" id="assume-management-rate" min="0" step="10" />
+              </div>
+            </div>
           </div>
         </div>
 
@@ -623,8 +709,10 @@ select.icon-btn { font-family: inherit; -webkit-appearance: menulist; appearance
             <div class="compare-col__big" id="cmp-without-monthly">R0.00</div>
             <div class="compare-col__per">per month</div>
             <ul>
-              <li>Admin time: <b id="cmp-hours">0</b> hours / month</li>
-              <li>Cost of that time: <b id="cmp-labour">R0.00</b></li>
+              <li>1. Learner &amp; programme admin: <b id="cmp-admin">R0.00</b></li>
+              <li>2. Monitoring &amp; follow-up: <b id="cmp-monitor">R0.00</b></li>
+              <li>3. Reporting &amp; compliance: <b id="cmp-reporting">R0.00</b></li>
+              <li>4. Management time: <b id="cmp-management">R0.00</b></li>
             </ul>
           </div>
           <div class="compare-col compare-col--with">
@@ -725,13 +813,24 @@ const LTS_DATA = {
   annualEscalationPct: 6.6, // confirmed CPI-based increase applying from 1 April
 
   // "Cost of NOT using LTS" — a manual/paper baseline the customer compares
-  // against. These are editable ASSUMPTIONS shown to the user, not LTS charges:
-  // the time and money a training office spends doing, by hand, the admin that
-  // LTS automates (capturing assessments, tracking competencies, chasing
-  // trainees, moderator reports, filing and audit prep).
+  // against. These are editable ASSUMPTIONS shown to the user, not LTS charges.
+  // Structure follows Susan's four hidden-cost categories (2026-09-14 feedback):
+  //   1. Learner & Training Programme Administration
+  //   2. Monitoring, Follow-Up & Exception Handling
+  //   3. Reporting, Status Updates & Compliance
+  //   4. Management Time & Ad-hoc Information Requests
+  // "trainees" is a plain editable number (not auto-summed from estimate
+  // lines) so the figure stays correct once add-on products like Time Sheet
+  // are added to the estimate.
   manualBaseline: {
-    hoursPerTrainee: 2, // staff hours per trainee per month spent on manual admin
-    hourlyRate: 250, // fully-loaded staff cost per hour (ZAR)
+    trainees: 50, // number of active trainees/employees being assessed
+    adminHoursPerTrainee: 0.75, // category 1: hours/trainee/month on learner & programme admin
+    adminRate: 220, // category 1 & 2: administrator cost per hour (ZAR)
+    monitorHours: 8, // category 2: hours/month monitoring, following up, handling exceptions
+    reportingHours: 6, // category 3: hours/month on reports, status updates, compliance/audit info
+    ldRate: 280, // category 3: L&D / Compliance administrator cost per hour (ZAR)
+    managementHours: 5, // category 4: management hours/month on queries & programme review
+    managementRate: 450, // category 4: management cost per hour (ZAR)
   },
 
   contact: {
@@ -980,16 +1079,43 @@ const LTSCalculator = (() => {
   }
 
   /**
-   * The "cost of NOT using LTS" — what it costs to run the same processes by
-   * hand for a given trainee count: staff time (hours × rate). All inputs
-   * are caller-supplied assumptions so the user can adjust them.
+   * The "cost of NOT using LTS" — four categories of hidden admin cost a
+   * training office carries doing this by hand (Susan's 2026-09-14 spec):
+   *   1. Learner & Training Programme Administration — trainees x hours/trainee x admin rate
+   *   2. Monitoring, Follow-Up & Exception Handling — hours x admin rate
+   *   3. Reporting, Status Updates & Compliance — hours x L&D/Compliance rate
+   *   4. Management Time & Ad-hoc Information Requests — hours x management rate
+   * All inputs are caller-supplied assumptions so the user can adjust them;
+   * "trainees" is a plain number the user sets directly, not derived from the
+   * estimate lines, so the figure stays correct once add-ons (e.g. Time
+   * Sheet) are in the estimate too.
    */
-  function manualBaselineCost({ trainees, hoursPerTrainee, hourlyRate }) {
-    const n = Math.max(1, Math.floor(Number(trainees) || 0));
-    const hours = n * Math.max(0, Number(hoursPerTrainee) || 0);
-    const labourCost = hours * Math.max(0, Number(hourlyRate) || 0);
-    const monthly = labourCost;
-    return { trainees: n, hours, labourCost, monthly, annual: monthly * 12 };
+  function manualBaselineCost(a) {
+    const n = Math.max(0, Math.floor(Number(a.trainees) || 0));
+    const adminHoursPerTrainee = Math.max(0, Number(a.adminHoursPerTrainee) || 0);
+    const adminRate = Math.max(0, Number(a.adminRate) || 0);
+    const monitorHours = Math.max(0, Number(a.monitorHours) || 0);
+    const reportingHours = Math.max(0, Number(a.reportingHours) || 0);
+    const ldRate = Math.max(0, Number(a.ldRate) || 0);
+    const managementHours = Math.max(0, Number(a.managementHours) || 0);
+    const managementRate = Math.max(0, Number(a.managementRate) || 0);
+
+    const adminHours = n * adminHoursPerTrainee;
+    const admin = adminHours * adminRate;
+    const monitor = monitorHours * adminRate;
+    const reporting = reportingHours * ldRate;
+    const management = managementHours * managementRate;
+
+    const hours = adminHours + monitorHours + reportingHours + managementHours;
+    const monthly = admin + monitor + reporting + management;
+
+    return {
+      trainees: n,
+      hours,
+      monthly,
+      annual: monthly * 12,
+      breakdown: { admin, monitor, reporting, management },
+    };
   }
 
   /**
@@ -1244,6 +1370,7 @@ const LTSExport = (() => {
   };
 
   let lineSeq = 0;
+  let traineesTouched = false; // true once the user edits "cost of not using LTS" trainee count directly
 
   // ---------- helpers ----------
   const $ = (sel, root = document) => root.querySelector(sel);
@@ -1587,16 +1714,27 @@ const LTSExport = (() => {
     renderEstimate();
   });
 
-  // "Cost of not using LTS" assumption inputs
+  // "Cost of not using LTS" assumption inputs — Susan's 4-category model
+  // (2026-09-14 feedback). "trainees" is auto-filled from the estimate's
+  // total trainee count until the user edits it directly, at which point it
+  // stops auto-syncing — this is what fixes the old bug where adding a
+  // non-trainee-priced line (e.g. Time Sheet) threw the figure off.
   const baselineInputs = {
-    "#assume-hours": "hoursPerTrainee",
-    "#assume-rate": "hourlyRate",
+    "#assume-trainees": "trainees",
+    "#assume-admin-hours": "adminHoursPerTrainee",
+    "#assume-admin-rate": "adminRate",
+    "#assume-monitor-hours": "monitorHours",
+    "#assume-reporting-hours": "reportingHours",
+    "#assume-ld-rate": "ldRate",
+    "#assume-management-hours": "managementHours",
+    "#assume-management-rate": "managementRate",
   };
   Object.entries(baselineInputs).forEach(([sel, key]) => {
     const input = $(sel);
     if (!input) return;
     input.value = state.baseline[key];
     input.addEventListener("input", () => {
+      if (sel === "#assume-trainees") traineesTouched = true;
       const v = parseFloat(input.value);
       state.baseline[key] = isNaN(v) || v < 0 ? 0 : v;
       renderTotals();
@@ -1654,22 +1792,35 @@ const LTSExport = (() => {
   }
 
   // "The cost of NOT using LTS" — compare the manual baseline against the
-  // currently displayed LTS monthly cost, live.
+  // currently displayed LTS monthly cost, live. Trainee count auto-fills
+  // from the estimate's lines until the user overrides it directly (see
+  // baselineInputs wiring above) — kept editable rather than silently
+  // summed, per Susan's feedback, since some products (e.g. Time Sheet)
+  // aren't priced per trainee and shouldn't skew the figure.
   function renderComparison(ltsMonthly) {
     if (state.lines.length === 0) return;
-    const totalTrainees = state.lines.reduce((sum, l) => sum + (parseInt(l.trainees, 10) || 0), 0);
-    const base = LTSCalculator.manualBaselineCost(
-      Object.assign({ trainees: totalTrainees }, state.baseline)
-    );
+    if (!traineesTouched) {
+      const totalTrainees = state.lines.reduce((sum, l) => sum + (parseInt(l.trainees, 10) || 0), 0);
+      if (totalTrainees > 0) {
+        state.baseline.trainees = totalTrainees;
+        const traineesInput = $("#assume-trainees");
+        if (traineesInput && document.activeElement !== traineesInput) {
+          traineesInput.value = totalTrainees;
+        }
+      }
+    }
+    const base = LTSCalculator.manualBaselineCost(state.baseline);
 
     setCost("#cmp-without-monthly", fmt(base.monthly));
     setCost("#cmp-with-monthly", fmt(ltsMonthly));
-    setCost("#cmp-hours", base.hours.toLocaleString("en-ZA"));
-    setCost("#cmp-labour", fmt(base.labourCost));
+    setCost("#cmp-admin", fmt(base.breakdown.admin));
+    setCost("#cmp-monitor", fmt(base.breakdown.monitor));
+    setCost("#cmp-reporting", fmt(base.breakdown.reporting));
+    setCost("#cmp-management", fmt(base.breakdown.management));
 
     const saveMonthly = base.monthly - ltsMonthly;
     const saveAnnual = saveMonthly * 12;
-    const hoursLabel = `<b>${base.hours.toLocaleString("en-ZA")}</b> hours`;
+    const hoursLabel = `<b>${base.hours.toLocaleString("en-ZA", { maximumFractionDigits: 1 })}</b> hours`;
     const savingsEl = $("#cmp-savings");
     if (saveMonthly >= 0) {
       savingsEl.classList.remove("is-negative");

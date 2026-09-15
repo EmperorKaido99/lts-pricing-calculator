@@ -132,14 +132,87 @@
         <h3 class="compare-card__title">The cost of <span>not</span> using LTS</h3>
         <p class="compare-card__sub">The same admin done by hand costs time and money every month. Adjust the assumptions to match your office — see what LTS gives back.</p>
 
-        <div class="compare-assumptions">
-          <div class="field">
-            <label for="assume-hours">Manual admin hours / trainee / month</label>
-            <input type="number" id="assume-hours" min="0" step="0.5" />
+        <div class="field compare-trainees">
+          <label for="assume-trainees">Number of active trainees / employees being assessed</label>
+          <input type="number" id="assume-trainees" min="0" step="1" />
+        </div>
+
+        <div class="compare-categories">
+          <div class="compare-category">
+            <div class="compare-category__head">
+              <span class="compare-category__num">1</span>
+              <div class="compare-category__copy">
+                <div class="compare-category__title">Learner &amp; Training Programme Administration</div>
+                <div class="compare-category__q">Creating &amp; updating learner records, Excel trackers, allocations, progress updates.</div>
+              </div>
+            </div>
+            <div class="compare-category__fields">
+              <div class="field">
+                <label for="assume-admin-hours">Admin time / trainee / month (hours)</label>
+                <input type="number" id="assume-admin-hours" min="0" step="0.25" />
+              </div>
+              <div class="field">
+                <label for="assume-admin-rate">Administrator cost / hour (R)</label>
+                <input type="number" id="assume-admin-rate" min="0" step="10" />
+              </div>
+            </div>
           </div>
-          <div class="field">
-            <label for="assume-rate">Your staff cost / hour (R)</label>
-            <input type="number" id="assume-rate" min="0" step="10" />
+
+          <div class="compare-category">
+            <div class="compare-category__head">
+              <span class="compare-category__num">2</span>
+              <div class="compare-category__copy">
+                <div class="compare-category__title">Monitoring, Follow-Up &amp; Exception Handling</div>
+                <div class="compare-category__q">Checking who's behind, chasing trainees &amp; managers, escalating overdue items.</div>
+              </div>
+            </div>
+            <div class="compare-category__fields">
+              <div class="field">
+                <label for="assume-monitor-hours">Hours / month</label>
+                <input type="number" id="assume-monitor-hours" min="0" step="0.5" />
+              </div>
+              <div class="compare-category__hint">Uses the administrator rate above</div>
+            </div>
+          </div>
+
+          <div class="compare-category">
+            <div class="compare-category__head">
+              <span class="compare-category__num">3</span>
+              <div class="compare-category__copy">
+                <div class="compare-category__title">Reporting, Status Updates &amp; Compliance</div>
+                <div class="compare-category__q">Management &amp; trainee status reports, compliance &amp; audit information.</div>
+              </div>
+            </div>
+            <div class="compare-category__fields">
+              <div class="field">
+                <label for="assume-reporting-hours">Hours / month</label>
+                <input type="number" id="assume-reporting-hours" min="0" step="0.5" />
+              </div>
+              <div class="field">
+                <label for="assume-ld-rate">L&amp;D / Compliance cost / hour (R)</label>
+                <input type="number" id="assume-ld-rate" min="0" step="10" />
+              </div>
+            </div>
+          </div>
+
+          <div class="compare-category">
+            <div class="compare-category__head">
+              <span class="compare-category__num">4</span>
+              <div class="compare-category__copy">
+                <div class="compare-category__title">Management Time &amp; Ad-hoc Information Requests</div>
+                <div class="compare-category__q">Queries, reviewing progress, requesting information about the programme.</div>
+              </div>
+            </div>
+            <div class="compare-category__fields">
+              <div class="field">
+                <label for="assume-management-hours">Hours / month</label>
+                <input type="number" id="assume-management-hours" min="0" step="0.5" />
+              </div>
+              <div class="field">
+                <label for="assume-management-rate">Management cost / hour (R)</label>
+                <input type="number" id="assume-management-rate" min="0" step="10" />
+              </div>
+            </div>
           </div>
         </div>
 
@@ -149,8 +222,10 @@
             <div class="compare-col__big" id="cmp-without-monthly">R0.00</div>
             <div class="compare-col__per">per month</div>
             <ul>
-              <li>Admin time: <b id="cmp-hours">0</b> hours / month</li>
-              <li>Cost of that time: <b id="cmp-labour">R0.00</b></li>
+              <li>1. Learner &amp; programme admin: <b id="cmp-admin">R0.00</b></li>
+              <li>2. Monitoring &amp; follow-up: <b id="cmp-monitor">R0.00</b></li>
+              <li>3. Reporting &amp; compliance: <b id="cmp-reporting">R0.00</b></li>
+              <li>4. Management time: <b id="cmp-management">R0.00</b></li>
             </ul>
           </div>
           <div class="compare-col compare-col--with">

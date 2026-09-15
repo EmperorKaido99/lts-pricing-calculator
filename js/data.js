@@ -21,13 +21,24 @@ const LTS_DATA = {
   annualEscalationPct: 6.6, // confirmed CPI-based increase applying from 1 April
 
   // "Cost of NOT using LTS" — a manual/paper baseline the customer compares
-  // against. These are editable ASSUMPTIONS shown to the user, not LTS charges:
-  // the time and money a training office spends doing, by hand, the admin that
-  // LTS automates (capturing assessments, tracking competencies, chasing
-  // trainees, moderator reports, filing and audit prep).
+  // against. These are editable ASSUMPTIONS shown to the user, not LTS charges.
+  // Structure follows Susan's four hidden-cost categories (2026-09-14 feedback):
+  //   1. Learner & Training Programme Administration
+  //   2. Monitoring, Follow-Up & Exception Handling
+  //   3. Reporting, Status Updates & Compliance
+  //   4. Management Time & Ad-hoc Information Requests
+  // "trainees" is a plain editable number (not auto-summed from estimate
+  // lines) so the figure stays correct once add-on products like Time Sheet
+  // are added to the estimate.
   manualBaseline: {
-    hoursPerTrainee: 2, // staff hours per trainee per month spent on manual admin
-    hourlyRate: 250, // fully-loaded staff cost per hour (ZAR)
+    trainees: 50, // number of active trainees/employees being assessed
+    adminHoursPerTrainee: 0.75, // category 1: hours/trainee/month on learner & programme admin
+    adminRate: 220, // category 1 & 2: administrator cost per hour (ZAR)
+    monitorHours: 8, // category 2: hours/month monitoring, following up, handling exceptions
+    reportingHours: 6, // category 3: hours/month on reports, status updates, compliance/audit info
+    ldRate: 280, // category 3: L&D / Compliance administrator cost per hour (ZAR)
+    managementHours: 5, // category 4: management hours/month on queries & programme review
+    managementRate: 450, // category 4: management cost per hour (ZAR)
   },
 
   contact: {

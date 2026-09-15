@@ -37,13 +37,24 @@ const LTS_DATA = {
   annualEscalationPct: 6.6, // confirmed CPI-based increase applying from 1 April
 
   // "Cost of NOT using LTS" — a manual/paper baseline the customer compares
-  // against. These are editable ASSUMPTIONS shown to the user, not LTS charges:
-  // the time and money a training office spends doing, by hand, the admin that
-  // LTS automates (capturing assessments, tracking competencies, chasing
-  // trainees, moderator reports, filing and audit prep).
+  // against. These are editable ASSUMPTIONS shown to the user, not LTS charges.
+  // Structure follows Susan's four hidden-cost categories (2026-09-14 feedback):
+  //   1. Learner & Training Programme Administration
+  //   2. Monitoring, Follow-Up & Exception Handling
+  //   3. Reporting, Status Updates & Compliance
+  //   4. Management Time & Ad-hoc Information Requests
+  // "trainees" is a plain editable number (not auto-summed from estimate
+  // lines) so the figure stays correct once add-on products like Time Sheet
+  // are added to the estimate.
   manualBaseline: {
-    hoursPerTrainee: 2, // staff hours per trainee per month spent on manual admin
-    hourlyRate: 250, // fully-loaded staff cost per hour (ZAR)
+    trainees: 50, // number of active trainees/employees being assessed
+    adminHoursPerTrainee: 0.75, // category 1: hours/trainee/month on learner & programme admin
+    adminRate: 220, // category 1 & 2: administrator cost per hour (ZAR)
+    monitorHours: 8, // category 2: hours/month monitoring, following up, handling exceptions
+    reportingHours: 6, // category 3: hours/month on reports, status updates, compliance/audit info
+    ldRate: 280, // category 3: L&D / Compliance administrator cost per hour (ZAR)
+    managementHours: 5, // category 4: management hours/month on queries & programme review
+    managementRate: 450, // category 4: management cost per hour (ZAR)
   },
 
   contact: {
@@ -216,7 +227,7 @@ const LTS_DATA = {
   ],
 };
 
-/* ===== 2/4: calculator.js — pricing math (pure functions, no DOM) ===== */
+/* ===== 2/4: calculator.js — pricing math ===== */
 /**
  * LTS Pricing Calculator — calculation engine
  * Pure functions, no DOM access, so this file is unit-testable on its own.
@@ -291,16 +302,43 @@ const LTSCalculator = (() => {
   }
 
   /**
-   * The "cost of NOT using LTS" — what it costs to run the same processes by
-   * hand for a given trainee count: staff time (hours × rate). All inputs
-   * are caller-supplied assumptions so the user can adjust them.
+   * The "cost of NOT using LTS" — four categories of hidden admin cost a
+   * training office carries doing this by hand (Susan's 2026-09-14 spec):
+   *   1. Learner & Training Programme Administration — trainees x hours/trainee x admin rate
+   *   2. Monitoring, Follow-Up & Exception Handling — hours x admin rate
+   *   3. Reporting, Status Updates & Compliance — hours x L&D/Compliance rate
+   *   4. Management Time & Ad-hoc Information Requests — hours x management rate
+   * All inputs are caller-supplied assumptions so the user can adjust them;
+   * "trainees" is a plain number the user sets directly, not derived from the
+   * estimate lines, so the figure stays correct once add-ons (e.g. Time
+   * Sheet) are in the estimate too.
    */
-  function manualBaselineCost({ trainees, hoursPerTrainee, hourlyRate }) {
-    const n = Math.max(1, Math.floor(Number(trainees) || 0));
-    const hours = n * Math.max(0, Number(hoursPerTrainee) || 0);
-    const labourCost = hours * Math.max(0, Number(hourlyRate) || 0);
-    const monthly = labourCost;
-    return { trainees: n, hours, labourCost, monthly, annual: monthly * 12 };
+  function manualBaselineCost(a) {
+    const n = Math.max(0, Math.floor(Number(a.trainees) || 0));
+    const adminHoursPerTrainee = Math.max(0, Number(a.adminHoursPerTrainee) || 0);
+    const adminRate = Math.max(0, Number(a.adminRate) || 0);
+    const monitorHours = Math.max(0, Number(a.monitorHours) || 0);
+    const reportingHours = Math.max(0, Number(a.reportingHours) || 0);
+    const ldRate = Math.max(0, Number(a.ldRate) || 0);
+    const managementHours = Math.max(0, Number(a.managementHours) || 0);
+    const managementRate = Math.max(0, Number(a.managementRate) || 0);
+
+    const adminHours = n * adminHoursPerTrainee;
+    const admin = adminHours * adminRate;
+    const monitor = monitorHours * adminRate;
+    const reporting = reportingHours * ldRate;
+    const management = managementHours * managementRate;
+
+    const hours = adminHours + monitorHours + reportingHours + managementHours;
+    const monthly = admin + monitor + reporting + management;
+
+    return {
+      trainees: n,
+      hours,
+      monthly,
+      annual: monthly * 12,
+      breakdown: { admin, monitor, reporting, management },
+    };
   }
 
   /**
@@ -405,7 +443,7 @@ const LTSCalculator = (() => {
   };
 })();
 
-/* ===== 3/4: export.js — Excel export, save, share-link ===== */
+/* ===== 3/4: export.js — Excel export & save/share ===== */
 /**
  * LTS Pricing Calculator — export / save / share helpers
  * No backend required: Export uses SheetJS (client-side .xlsx generation),
@@ -538,7 +576,7 @@ const LTSExport = (() => {
   return { saveEstimate, loadSavedEstimates, buildShareUrl, readShareUrl, exportToExcel };
 })();
 
-/* ===== 4/4: app.js — DOM wiring, runs on page load ===== */
+/* ===== 4/4: app.js — DOM wiring ===== */
 /**
  * LTS Pricing Calculator — app wiring
  * Talks to LTS_DATA (data.js), LTSCalculator (calculator.js) and LTSExport (export.js).
@@ -553,6 +591,7 @@ const LTSExport = (() => {
   };
 
   let lineSeq = 0;
+  let traineesTouched = false; // true once the user edits "cost of not using LTS" trainee count directly
 
   // ---------- helpers ----------
   const $ = (sel, root = document) => root.querySelector(sel);
@@ -896,16 +935,27 @@ const LTSExport = (() => {
     renderEstimate();
   });
 
-  // "Cost of not using LTS" assumption inputs
+  // "Cost of not using LTS" assumption inputs — Susan's 4-category model
+  // (2026-09-14 feedback). "trainees" is auto-filled from the estimate's
+  // total trainee count until the user edits it directly, at which point it
+  // stops auto-syncing — this is what fixes the old bug where adding a
+  // non-trainee-priced line (e.g. Time Sheet) threw the figure off.
   const baselineInputs = {
-    "#assume-hours": "hoursPerTrainee",
-    "#assume-rate": "hourlyRate",
+    "#assume-trainees": "trainees",
+    "#assume-admin-hours": "adminHoursPerTrainee",
+    "#assume-admin-rate": "adminRate",
+    "#assume-monitor-hours": "monitorHours",
+    "#assume-reporting-hours": "reportingHours",
+    "#assume-ld-rate": "ldRate",
+    "#assume-management-hours": "managementHours",
+    "#assume-management-rate": "managementRate",
   };
   Object.entries(baselineInputs).forEach(([sel, key]) => {
     const input = $(sel);
     if (!input) return;
     input.value = state.baseline[key];
     input.addEventListener("input", () => {
+      if (sel === "#assume-trainees") traineesTouched = true;
       const v = parseFloat(input.value);
       state.baseline[key] = isNaN(v) || v < 0 ? 0 : v;
       renderTotals();
@@ -963,22 +1013,35 @@ const LTSExport = (() => {
   }
 
   // "The cost of NOT using LTS" — compare the manual baseline against the
-  // currently displayed LTS monthly cost, live.
+  // currently displayed LTS monthly cost, live. Trainee count auto-fills
+  // from the estimate's lines until the user overrides it directly (see
+  // baselineInputs wiring above) — kept editable rather than silently
+  // summed, per Susan's feedback, since some products (e.g. Time Sheet)
+  // aren't priced per trainee and shouldn't skew the figure.
   function renderComparison(ltsMonthly) {
     if (state.lines.length === 0) return;
-    const totalTrainees = state.lines.reduce((sum, l) => sum + (parseInt(l.trainees, 10) || 0), 0);
-    const base = LTSCalculator.manualBaselineCost(
-      Object.assign({ trainees: totalTrainees }, state.baseline)
-    );
+    if (!traineesTouched) {
+      const totalTrainees = state.lines.reduce((sum, l) => sum + (parseInt(l.trainees, 10) || 0), 0);
+      if (totalTrainees > 0) {
+        state.baseline.trainees = totalTrainees;
+        const traineesInput = $("#assume-trainees");
+        if (traineesInput && document.activeElement !== traineesInput) {
+          traineesInput.value = totalTrainees;
+        }
+      }
+    }
+    const base = LTSCalculator.manualBaselineCost(state.baseline);
 
     setCost("#cmp-without-monthly", fmt(base.monthly));
     setCost("#cmp-with-monthly", fmt(ltsMonthly));
-    setCost("#cmp-hours", base.hours.toLocaleString("en-ZA"));
-    setCost("#cmp-labour", fmt(base.labourCost));
+    setCost("#cmp-admin", fmt(base.breakdown.admin));
+    setCost("#cmp-monitor", fmt(base.breakdown.monitor));
+    setCost("#cmp-reporting", fmt(base.breakdown.reporting));
+    setCost("#cmp-management", fmt(base.breakdown.management));
 
     const saveMonthly = base.monthly - ltsMonthly;
     const saveAnnual = saveMonthly * 12;
-    const hoursLabel = `<b>${base.hours.toLocaleString("en-ZA")}</b> hours`;
+    const hoursLabel = `<b>${base.hours.toLocaleString("en-ZA", { maximumFractionDigits: 1 })}</b> hours`;
     const savingsEl = $("#cmp-savings");
     if (saveMonthly >= 0) {
       savingsEl.classList.remove("is-negative");

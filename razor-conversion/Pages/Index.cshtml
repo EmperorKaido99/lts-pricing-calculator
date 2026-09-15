@@ -164,14 +164,87 @@
         <h3 class="compare-card__title">The cost of <span>not</span> using LTS</h3>
         <p class="compare-card__sub">The same admin done by hand costs time and money every month. Adjust the assumptions to match your office — see what LTS gives back.</p>
 
-        <div class="compare-assumptions">
-          <div class="field">
-            <label for="assume-hours">Manual admin hours / trainee / month</label>
-            <input type="number" id="assume-hours" min="0" step="0.5" />
+        <div class="field compare-trainees">
+          <label for="assume-trainees">Number of active trainees / employees being assessed</label>
+          <input type="number" id="assume-trainees" min="0" step="1" />
+        </div>
+
+        <div class="compare-categories">
+          <div class="compare-category">
+            <div class="compare-category__head">
+              <span class="compare-category__num">1</span>
+              <div class="compare-category__copy">
+                <div class="compare-category__title">Learner &amp; Training Programme Administration</div>
+                <div class="compare-category__q">Creating &amp; updating learner records, Excel trackers, allocations, progress updates.</div>
+              </div>
+            </div>
+            <div class="compare-category__fields">
+              <div class="field">
+                <label for="assume-admin-hours">Admin time / trainee / month (hours)</label>
+                <input type="number" id="assume-admin-hours" min="0" step="0.25" />
+              </div>
+              <div class="field">
+                <label for="assume-admin-rate">Administrator cost / hour (R)</label>
+                <input type="number" id="assume-admin-rate" min="0" step="10" />
+              </div>
+            </div>
           </div>
-          <div class="field">
-            <label for="assume-rate">Your staff cost / hour (R)</label>
-            <input type="number" id="assume-rate" min="0" step="10" />
+
+          <div class="compare-category">
+            <div class="compare-category__head">
+              <span class="compare-category__num">2</span>
+              <div class="compare-category__copy">
+                <div class="compare-category__title">Monitoring, Follow-Up &amp; Exception Handling</div>
+                <div class="compare-category__q">Checking who's behind, chasing trainees &amp; managers, escalating overdue items.</div>
+              </div>
+            </div>
+            <div class="compare-category__fields">
+              <div class="field">
+                <label for="assume-monitor-hours">Hours / month</label>
+                <input type="number" id="assume-monitor-hours" min="0" step="0.5" />
+              </div>
+              <div class="compare-category__hint">Uses the administrator rate above</div>
+            </div>
+          </div>
+
+          <div class="compare-category">
+            <div class="compare-category__head">
+              <span class="compare-category__num">3</span>
+              <div class="compare-category__copy">
+                <div class="compare-category__title">Reporting, Status Updates &amp; Compliance</div>
+                <div class="compare-category__q">Management &amp; trainee status reports, compliance &amp; audit information.</div>
+              </div>
+            </div>
+            <div class="compare-category__fields">
+              <div class="field">
+                <label for="assume-reporting-hours">Hours / month</label>
+                <input type="number" id="assume-reporting-hours" min="0" step="0.5" />
+              </div>
+              <div class="field">
+                <label for="assume-ld-rate">L&amp;D / Compliance cost / hour (R)</label>
+                <input type="number" id="assume-ld-rate" min="0" step="10" />
+              </div>
+            </div>
+          </div>
+
+          <div class="compare-category">
+            <div class="compare-category__head">
+              <span class="compare-category__num">4</span>
+              <div class="compare-category__copy">
+                <div class="compare-category__title">Management Time &amp; Ad-hoc Information Requests</div>
+                <div class="compare-category__q">Queries, reviewing progress, requesting information about the programme.</div>
+              </div>
+            </div>
+            <div class="compare-category__fields">
+              <div class="field">
+                <label for="assume-management-hours">Hours / month</label>
+                <input type="number" id="assume-management-hours" min="0" step="0.5" />
+              </div>
+              <div class="field">
+                <label for="assume-management-rate">Management cost / hour (R)</label>
+                <input type="number" id="assume-management-rate" min="0" step="10" />
+              </div>
+            </div>
           </div>
         </div>
 
@@ -181,82 +254,9 @@
             <div class="compare-col__big" id="cmp-without-monthly">R0.00</div>
             <div class="compare-col__per">per month</div>
             <ul>
-              <li>Admin time: <b id="cmp-hours">0</b> hours / month</li>
-              <li>Cost of that time: <b id="cmp-labour">R0.00</b></li>
-            </ul>
-          </div>
-          <div class="compare-col compare-col--with">
-            <div class="compare-col__tag">With LTS</div>
-            <div class="compare-col__big" id="cmp-with-monthly">R0.00</div>
-            <div class="compare-col__per">per month</div>
-            <ul>
-              <li>One simple per-trainee subscription</li>
-              <li>No paper, no manual capturing</li>
-              <li>Automated tracking, reports &amp; audit trail</li>
-            </ul>
-          </div>
-        </div>
-
-        <div class="compare-savings" id="cmp-savings"></div>
-        <p class="compare-card__note">These figures are your own estimates of manual effort, not LTS charges — they help show the time and money LTS saves. LTS costs above exclude VAT unless the toggle is on.</p>
-      </div>
-    </div>
-  </section>
-
-  <!-- ============ TEMPLATES TAB ============ -->
-  <section class="tabpanel" id="panel-templates">
-    <p class="panel-intro">Common training-office profiles, pre-configured. Pick one as a starting point, then fine-tune the trainee count on the Estimate tab.</p>
-    <div class="template-grid" id="template-grid"></div>
-  </section>
-
-  <!-- ============ SAVED TAB ============ -->
-  <section class="tabpanel" id="panel-saved">
-    <p class="panel-intro">Estimates you save are kept on this device.</p>
-    <div id="saved-list" class="saved-list"></div>
-  </section>
-
-  <!-- ============ FAQ TAB ============ -->
-  <section class="tabpanel" id="panel-faqs">
-    <div id="faq-list" class="faq-list"></div>
-  </section>
-
-</main>
-
-<!-- ============ FOOTER ============ -->
-<footer class="site-footer">
-  <div class="brand-bar" aria-hidden="true"></div>
-  <div class="site-footer__inner">
-    <span class="site-footer__brand">
-      <span class="lts-logo lts-logo--sm" aria-hidden="true">
-        <svg viewBox="0 0 100 100" width="26" height="26" role="img" aria-label="LTS logo">
-          <path d="M27 6 L73 6 L96 50 L73 94 L27 94 L4 50 Z" fill="url(#ltsGrad)" />
-          <text x="50" y="50" text-anchor="middle" dominant-baseline="central"
-                font-family="-apple-system, Segoe UI, Inter, Arial, sans-serif"
-                font-size="30" font-weight="700" letter-spacing="1" fill="#ffffff">LTS</text>
-        </svg>
-      </span>
-      LTS — Learner Tracking Systems
-    </span>
-    <span class="site-footer__note">Prices exclude VAT unless stated · Estimates only</span>
-  </div>
-</footer>
-
-<!-- ============ CALCULATOR LOADING OVERLAY ============ -->
-<div class="calc-loader" id="calc-loader" hidden role="status" aria-live="polite" aria-label="Loading your estimate">
-  <div class="calc-loader__card">
-    <div class="calc-device">
-      <div class="calc-device__screen"></div>
-      <div class="calc-device__keys">
-        <span></span><span></span><span></span><span></span>
-        <span></span><span></span><span></span><span></span>
-        <span></span><span></span><span></span><span></span>
-        <span></span><span></span><span></span><span></span>
-      </div>
-    </div>
-    <div class="calc-loader__label">Loading your estimate…</div>
-    <div class="calc-loader__bar"><span></span></div>
-  </div>
-</div>
+              <li>1. Learner &amp; programme admin: <b id="cmp-admin">R0.00</b></li>
+              <li>2. Monitoring &amp; follow-up: <b id="cmp-monitor">R0.00</b></li>
+              <li>3. Reporting &amp; compliance: <b id="cmp-reporting">R0.00</b></li>
 
 @* ======================================================================
    Scripts — rendered into _Layout.cshtml's Scripts section (the default

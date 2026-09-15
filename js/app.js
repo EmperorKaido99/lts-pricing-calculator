@@ -29,7 +29,7 @@
         productId: "platform",
         trainees: 15,
         contractId: "3yr", // LTS's best-value term is the default for a new platform line
-        units: 1,
+        units: 15, // same default as trainees, so a new Time Sheet line isn't just "1"
       },
       overrides
     );
@@ -122,7 +122,7 @@
   function buildLineForProduct(productId) {
     const product = LTSCalculator.getProduct(productId);
     if (product.pricingModel === "flat") {
-      return newLine({ label: product.name, productId, trainees: null, contractId: null, units: 1 });
+      return newLine({ label: product.name, productId, trainees: null, contractId: null });
     }
     return newLine({ label: product.name, productId });
   }

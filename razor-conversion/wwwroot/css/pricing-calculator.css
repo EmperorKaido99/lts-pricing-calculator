@@ -15,28 +15,28 @@
  */
 :root {
   /* ---- LTS brand ---- */
-  --brand-blue: #1a2ae6;
-  --brand-mid: #0a8fd0;
-  --brand-green: #10d18a;
-  --brand-gradient: linear-gradient(120deg, #1a2ae6 0%, #0a8fd0 50%, #10d18a 100%);
-  --brand-gradient-soft: linear-gradient(120deg, rgba(26,42,230,0.08) 0%, rgba(16,209,138,0.08) 100%);
+  --brand-blue: #0f2c52;
+  --brand-mid: #2f6fdb;
+  --brand-green: #1ea89a;
+  --brand-gradient: linear-gradient(120deg, #0f2c52 0%, #2f6fdb 55%, #1ea89a 100%);
+  --brand-gradient-soft: linear-gradient(120deg, rgba(15,44,82,0.08) 0%, rgba(30,168,154,0.08) 100%);
 
   /* ---- Neutrals / text ---- */
-  --navy-900: #101b33;
-  --navy-800: #16244a;
-  --navy-700: #1f3163;
-  --teal-500: #10b090;
-  --teal-600: #0a8fd0;
-  --teal-50: #e7f6f1;
-  --bg: #f5f7fb;
+  --navy-900: #0f2c52;
+  --navy-800: #163a63;
+  --navy-700: #1f4a7a;
+  --teal-500: #1ea89a;
+  --teal-600: #187f75;
+  --teal-50: #e6f7f5;
+  --bg: #eef5fb;
   --surface: #ffffff;
-  --border: #e2e5ec;
-  --text: #1c2333;
-  --text-muted: #5b6478;
-  --success: #10a86f;
+  --border: #dbe6f0;
+  --text: #16233c;
+  --text-muted: #5c6b83;
+  --success: #1ea89a;
   --radius: 12px;
   --shadow: 0 1px 2px rgba(16, 27, 51, 0.06), 0 6px 18px rgba(16, 27, 51, 0.06);
-  --shadow-brand: 0 8px 24px rgba(26, 42, 230, 0.18);
+  --shadow-brand: 0 8px 24px rgba(15, 44, 82, 0.22);
   font-family: -apple-system, "Segoe UI", Inter, Roboto, Helvetica, Arial, sans-serif;
 }
 
@@ -73,7 +73,7 @@ a { color: var(--brand-mid); }
   background: var(--brand-gradient);
 }
 .topbar__left { display: flex; align-items: center; gap: 12px; }
-.lts-logo { display: inline-flex; filter: drop-shadow(0 2px 6px rgba(26,42,230,0.28)); }
+.lts-logo { display: inline-flex; filter: drop-shadow(0 2px 6px rgba(15,44,82,0.28)); }
 .topbar__title { font-size: 18px; font-weight: 700; color: var(--navy-900); letter-spacing: 0.2px; }
 .topbar__right { display: flex; align-items: center; gap: 24px; }
 .topbar__stat { text-align: right; line-height: 1.2; }
@@ -199,18 +199,18 @@ a { color: var(--brand-mid); }
   transition: transform .08s, box-shadow .15s, background .15s;
 }
 .btn--primary { background: var(--brand-gradient); color: #fff; box-shadow: var(--shadow-brand); }
-.btn--primary:hover { transform: translateY(-1px); box-shadow: 0 10px 28px rgba(26,42,230,0.28); }
+.btn--primary:hover { transform: translateY(-1px); box-shadow: 0 10px 28px rgba(15,44,82,0.28); }
 .btn--outline { background: #fff; color: var(--navy-900); border-color: var(--border); }
 .btn--outline:hover { border-color: var(--brand-mid); color: var(--brand-blue); }
 .btn--ghost { background: transparent; color: var(--navy-900); border-color: var(--border); }
 .btn--ghost:hover { border-color: var(--brand-mid); color: var(--brand-blue); }
-/* LOGIN pill — indigo/blue brand button */
+/* LOGIN pill — teal brand button (matches the LTS site's "Sign In" pill) */
 .btn--login {
-  background: linear-gradient(180deg, #2626e6 0%, #1a1ad6 100%);
+  background: linear-gradient(180deg, #22c2b0 0%, #178f83 100%);
   color: #fff; border-radius: 999px; padding: 9px 26px; letter-spacing: 1px;
-  box-shadow: 0 4px 14px rgba(26, 26, 214, 0.32);
+  box-shadow: 0 4px 14px rgba(23, 143, 131, 0.35);
 }
-.btn--login:hover { transform: translateY(-1px); box-shadow: 0 8px 22px rgba(26, 42, 230, 0.38); }
+.btn--login:hover { transform: translateY(-1px); box-shadow: 0 8px 22px rgba(23, 143, 131, 0.42); }
 .linklike { background: none; border: none; padding: 0; color: var(--brand-mid); font: inherit; font-weight: 600; cursor: pointer; text-decoration: underline; }
 
 /* ---------- Cards / estimate builder ---------- */
@@ -229,7 +229,7 @@ a { color: var(--brand-mid); }
 }
 .field input:focus, .field select:focus {
   outline: none; border-color: var(--brand-mid);
-  box-shadow: 0 0 0 3px rgba(10,143,208,0.15);
+  box-shadow: 0 0 0 3px rgba(47,111,219,0.15);
 }
 .icon-btn {
   background: #fff; border: 1px solid var(--border); border-radius: 8px; padding: 7px 12px;
@@ -421,7 +421,7 @@ select.icon-btn { font-family: inherit; -webkit-appearance: menulist; appearance
   gap: 12px; flex-wrap: wrap;
 }
 .site-footer__brand { display: flex; align-items: center; gap: 10px; font-weight: 700; color: var(--navy-900); font-size: 14px; }
-.lts-logo--sm { filter: drop-shadow(0 1px 3px rgba(26,42,230,0.25)); }
+.lts-logo--sm { filter: drop-shadow(0 1px 3px rgba(15,44,82,0.25)); }
 .site-footer__note { font-size: 12px; color: var(--text-muted); }
 
 /* ---------- Estimate price: clickable ---------- */

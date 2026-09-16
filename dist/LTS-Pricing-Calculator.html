@@ -285,11 +285,6 @@ select.icon-btn { font-family: inherit; -webkit-appearance: menulist; appearance
   border-top: 3px solid transparent;
   border-image: var(--brand-gradient) 1;
 }
-.pending-note {
-  border: 1px dashed #dca63f; background: #fff8ec; color: #8a5a1f;
-  border-radius: 8px; padding: 8px 12px; font-size: 12px; font-weight: 600;
-  margin-bottom: 16px;
-}
 .totals-card__toggle { display: flex; align-items: center; gap: 10px; margin-bottom: 16px; font-size: 13px; }
 .switch { display: inline-flex; }
 .switch input { display: none; }
@@ -324,7 +319,6 @@ select.icon-btn { font-family: inherit; -webkit-appearance: menulist; appearance
 /* ---------- Cost of NOT using LTS ---------- */
 .compare-card { border-top: 3px solid transparent; border-image: var(--brand-gradient) 1; }
 .compare-card__title { margin: 4px 0 2px; font-size: 18px; font-weight: 800; color: var(--navy-900); }
-.compare-card__title span { color: #b3261e; text-transform: uppercase; font-style: italic; }
 .compare-card__sub { margin: 0 0 16px; color: var(--text-muted); font-size: 13px; max-width: 640px; }
 .compare-trainees { max-width: 420px; margin-bottom: 16px; }
 .compare-trainees input { min-width: 0; width: 100%; }
@@ -585,7 +579,6 @@ select.icon-btn { font-family: inherit; -webkit-appearance: menulist; appearance
       <div id="estimate-lines"></div>
 
       <div class="card totals-card">
-        <div class="pending-note">⏳ Pending review: awaiting details from Susan &amp; Thato on this section (Totals &amp; call to action).</div>
         <div class="totals-card__toggle">
           <label class="switch">
             <input type="checkbox" id="toggle-vat" />
@@ -616,8 +609,8 @@ select.icon-btn { font-family: inherit; -webkit-appearance: menulist; appearance
 
       <!-- ===== Cost of NOT using LTS ===== -->
       <div class="card compare-card">
-        <h3 class="compare-card__title">The cost of <span>not</span> using LTS</h3>
-        <p class="compare-card__sub">The same admin done by hand costs time and money every month. Adjust the assumptions to match your office — see what LTS gives back.</p>
+        <h3 class="compare-card__title">What is manual training administration really costing you?</h3>
+        <p class="compare-card__sub">Tell us how you currently manage your training programme. We'll turn the time spent on administration, follow-ups, reporting and management into a real monthly cost — and show you what LTS could save.</p>
 
         <div class="field compare-trainees">
           <label for="assume-trainees">Number of active trainees / employees being assessed</label>
@@ -834,7 +827,7 @@ const LTS_DATA = {
   },
 
   contact: {
-    phone1: "086 110 5966",
+    phone1: "+27 12 253 0017", // shown in the Excel export's Contact row (Susan's 2026-09-15 feedback)
     phone2: "012 253 0017",
     email: "info@LTSystems.co.za",
   },
@@ -1795,12 +1788,19 @@ const LTSExport = (() => {
   // currently displayed LTS monthly cost, live. Trainee count auto-fills
   // from the estimate's lines until the user overrides it directly (see
   // baselineInputs wiring above) — kept editable rather than silently
-  // summed, per Susan's feedback, since some products (e.g. Time Sheet)
-  // aren't priced per trainee and shouldn't skew the figure.
+  // summed. Per Susan's 2026-09-15 feedback, the sum must count EVERY line's
+  // people, not just trainee-priced ones: a platform line contributes its
+  // trainees, a flat-rate line (e.g. Time Sheet) contributes its units —
+  // otherwise adding Time Sheet on top of the platform understates the
+  // trainee count and makes "with LTS" look far more expensive than
+  // "without LTS" for the same group of people.
   function renderComparison(ltsMonthly) {
     if (state.lines.length === 0) return;
     if (!traineesTouched) {
-      const totalTrainees = state.lines.reduce((sum, l) => sum + (parseInt(l.trainees, 10) || 0), 0);
+      const totalTrainees = state.lines.reduce((sum, l) => {
+        const n = l.trainees != null ? parseInt(l.trainees, 10) : parseInt(l.units, 10);
+        return sum + (isNaN(n) ? 0 : n);
+      }, 0);
       if (totalTrainees > 0) {
         state.baseline.trainees = totalTrainees;
         const traineesInput = $("#assume-trainees");

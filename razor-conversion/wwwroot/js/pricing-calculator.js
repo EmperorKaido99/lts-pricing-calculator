@@ -59,7 +59,7 @@ const LTS_DATA = {
   },
 
   contact: {
-    phone1: "086 110 5966",
+    phone1: "+27 12 253 0017", // shown in the Excel export's Contact row (Susan's 2026-09-15 feedback)
     phone2: "012 253 0017",
     email: "info@LTSystems.co.za",
   },
@@ -1017,12 +1017,19 @@ const LTSExport = (() => {
   // currently displayed LTS monthly cost, live. Trainee count auto-fills
   // from the estimate's lines until the user overrides it directly (see
   // baselineInputs wiring above) — kept editable rather than silently
-  // summed, per Susan's feedback, since some products (e.g. Time Sheet)
-  // aren't priced per trainee and shouldn't skew the figure.
+  // summed. Per Susan's 2026-09-15 feedback, the sum must count EVERY line's
+  // people, not just trainee-priced ones: a platform line contributes its
+  // trainees, a flat-rate line (e.g. Time Sheet) contributes its units —
+  // otherwise adding Time Sheet on top of the platform understates the
+  // trainee count and makes "with LTS" look far more expensive than
+  // "without LTS" for the same group of people.
   function renderComparison(ltsMonthly) {
     if (state.lines.length === 0) return;
     if (!traineesTouched) {
-      const totalTrainees = state.lines.reduce((sum, l) => sum + (parseInt(l.trainees, 10) || 0), 0);
+      const totalTrainees = state.lines.reduce((sum, l) => {
+        const n = l.trainees != null ? parseInt(l.trainees, 10) : parseInt(l.units, 10);
+        return sum + (isNaN(n) ? 0 : n);
+      }, 0);
       if (totalTrainees > 0) {
         state.baseline.trainees = totalTrainees;
         const traineesInput = $("#assume-trainees");

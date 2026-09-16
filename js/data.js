@@ -42,7 +42,7 @@ const LTS_DATA = {
   },
 
   contact: {
-    phone1: "086 110 5966",
+    phone1: "+27 12 253 0017", // shown in the Excel export's Contact row (Susan's 2026-09-15 feedback)
     phone2: "012 253 0017",
     email: "info@LTSystems.co.za",
   },

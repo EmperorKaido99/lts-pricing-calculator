@@ -293,11 +293,6 @@ select.icon-btn { font-family: inherit; -webkit-appearance: menulist; appearance
   border-top: 3px solid transparent;
   border-image: var(--brand-gradient) 1;
 }
-.pending-note {
-  border: 1px dashed #dca63f; background: #fff8ec; color: #8a5a1f;
-  border-radius: 8px; padding: 8px 12px; font-size: 12px; font-weight: 600;
-  margin-bottom: 16px;
-}
 .totals-card__toggle { display: flex; align-items: center; gap: 10px; margin-bottom: 16px; font-size: 13px; }
 .switch { display: inline-flex; }
 .switch input { display: none; }
@@ -332,7 +327,6 @@ select.icon-btn { font-family: inherit; -webkit-appearance: menulist; appearance
 /* ---------- Cost of NOT using LTS ---------- */
 .compare-card { border-top: 3px solid transparent; border-image: var(--brand-gradient) 1; }
 .compare-card__title { margin: 4px 0 2px; font-size: 18px; font-weight: 800; color: var(--navy-900); }
-.compare-card__title span { color: #b3261e; text-transform: uppercase; font-style: italic; }
 .compare-card__sub { margin: 0 0 16px; color: var(--text-muted); font-size: 13px; max-width: 640px; }
 .compare-trainees { max-width: 420px; margin-bottom: 16px; }
 .compare-trainees input { min-width: 0; width: 100%; }

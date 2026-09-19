@@ -33,8 +33,9 @@ const LTS_DATA = {
   manualBaseline: {
     trainees: 50, // number of active trainees/employees being assessed
     adminHoursPerTrainee: 0.75, // category 1: hours/trainee/month on learner & programme admin
-    adminRate: 220, // category 1 & 2: administrator cost per hour (ZAR)
+    adminRate: 220, // category 1: administrator cost per hour (ZAR)
     monitorHours: 8, // category 2: hours/month monitoring, following up, handling exceptions
+    monitorRate: 220, // category 2: administrator cost per hour (ZAR) — editable independently of category 1
     reportingHours: 6, // category 3: hours/month on reports, status updates, compliance/audit info
     ldRate: 280, // category 3: L&D / Compliance administrator cost per hour (ZAR)
     managementHours: 5, // category 4: management hours/month on queries & programme review

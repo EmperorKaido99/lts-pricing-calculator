@@ -366,6 +366,7 @@
     "#assume-admin-hours": "adminHoursPerTrainee",
     "#assume-admin-rate": "adminRate",
     "#assume-monitor-hours": "monitorHours",
+    "#assume-monitor-rate": "monitorRate",
     "#assume-reporting-hours": "reportingHours",
     "#assume-ld-rate": "ldRate",
     "#assume-management-hours": "managementHours",

@@ -75,19 +75,21 @@ const LTSCalculator = (() => {
    * The "cost of NOT using LTS" — four categories of hidden admin cost a
    * training office carries doing this by hand (Susan's 2026-09-14 spec):
    *   1. Learner & Training Programme Administration — trainees x hours/trainee x admin rate
-   *   2. Monitoring, Follow-Up & Exception Handling — hours x admin rate
+   *   2. Monitoring, Follow-Up & Exception Handling — hours x its own admin rate
    *   3. Reporting, Status Updates & Compliance — hours x L&D/Compliance rate
    *   4. Management Time & Ad-hoc Information Requests — hours x management rate
    * All inputs are caller-supplied assumptions so the user can adjust them;
    * "trainees" is a plain number the user sets directly, not derived from the
    * estimate lines, so the figure stays correct once add-ons (e.g. Time
-   * Sheet) are in the estimate too.
+   * Sheet) are in the estimate too. Category 2's rate is independently
+   * editable from category 1's, even though they default to the same value.
    */
   function manualBaselineCost(a) {
     const n = Math.max(0, Math.floor(Number(a.trainees) || 0));
     const adminHoursPerTrainee = Math.max(0, Number(a.adminHoursPerTrainee) || 0);
     const adminRate = Math.max(0, Number(a.adminRate) || 0);
     const monitorHours = Math.max(0, Number(a.monitorHours) || 0);
+    const monitorRate = Math.max(0, Number(a.monitorRate) || 0);
     const reportingHours = Math.max(0, Number(a.reportingHours) || 0);
     const ldRate = Math.max(0, Number(a.ldRate) || 0);
     const managementHours = Math.max(0, Number(a.managementHours) || 0);
@@ -95,7 +97,7 @@ const LTSCalculator = (() => {
 
     const adminHours = n * adminHoursPerTrainee;
     const admin = adminHours * adminRate;
-    const monitor = monitorHours * adminRate;
+    const monitor = monitorHours * monitorRate;
     const reporting = reportingHours * ldRate;
     const management = managementHours * managementRate;
 

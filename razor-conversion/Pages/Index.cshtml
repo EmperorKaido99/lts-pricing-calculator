@@ -1,45 +1,37 @@
 @page
-@model IndexModel
 @{
     /*
      * LTS Pricing Calculator — Razor Pages entry point.
      *
-     * This page is a direct port of the standalone LTSPricingCalculator.html
-     * file: the markup below (top bar, hero, tabs, estimate builder, FAQs,
-     * loading overlay, footer) is copied verbatim — nothing was rewritten,
-     * so it should render and behave identically to the original.
+     * This page is fully self-contained: it does NOT use the site's shared
+     * _Layout.cshtml at all (Layout = null below), so dropping it into an
+     * existing ASP.NET Core 6 project requires ZERO edits to that project's
+     * layout, navbar, or Program.cs beyond confirming app.UseStaticFiles()
+     * is present (see PROGRAM_CS_NOTES.md). There is also no PageModel
+     * (.cshtml.cs) file — this page has no server-side logic (everything
+     * happens client-side in wwwroot/js/pricing-calculator.js), so there is
+     * nothing to bind a namespace to and nothing else to configure.
      *
-     * All interactivity lives client-side in wwwroot/js/pricing-calculator.js
-     * (a concatenation of the original data.js / calculator.js / export.js /
-     * app.js, in that load order) — this page has no server-side logic of
-     * its own (see Index.cshtml.cs: OnGet() does nothing).
-     *
-     * ViewData["HideNav"] tells _Layout.cshtml to suppress the shared site
-     * navbar for this page only, since the calculator has its own top bar.
-     * ViewData["FullBleed"] tells it to skip the Bootstrap .container
-     * wrapper too, since the topbar/hero/footer are all designed edge-to-
-     * edge — left inside .container they'd be capped to its max-width and
-     * gain side padding, breaking the hero gradient and topbar visually.
-     * See Pages/Shared/_Layout.cshtml for the corresponding @if checks.
+     * The markup below (top bar, hero, tabs, estimate builder, FAQs, loading
+     * overlay, footer) is copied verbatim from the original standalone
+     * LTSPricingCalculator.html file's <body> — nothing was rewritten, so it
+     * renders and behaves identically to the original. Do not reformat or
+     * reorder it: several ids are wired up directly by pricing-calculator.js
+     * via getElementById-style lookups, so structural changes can silently
+     * break the app.
      */
     ViewData["Title"] = "LTS Pricing Calculator";
-    ViewData["HideNav"] = true;
-    ViewData["FullBleed"] = true;
+    Layout = null;
 }
-
-@* Calculator-specific stylesheet — scoped to this page only (not loaded
-   site-wide) via the Styles section rendered from _Layout.cshtml's <head>. *@
-@section Styles {
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"]</title>
     <link rel="stylesheet" href="~/css/pricing-calculator.css" />
-}
-
-@* ======================================================================
-   Everything below this line is the calculator UI, copied unchanged from
-   the standalone HTML file's <body>. Do not reformat/reorder — several
-   ids are wired up directly by pricing-calculator.js via getElementById-
-   style lookups, so structural changes here can silently break the app.
-   ====================================================================== *@
-
+</head>
+<body>
 <!-- ============ TOP BAR ============ -->
 <header class="topbar">
   <div class="topbar__left">
@@ -259,17 +251,85 @@
               <li>1. Learner &amp; programme admin: <b id="cmp-admin">R0.00</b></li>
               <li>2. Monitoring &amp; follow-up: <b id="cmp-monitor">R0.00</b></li>
               <li>3. Reporting &amp; compliance: <b id="cmp-reporting">R0.00</b></li>
+              <li>4. Management time: <b id="cmp-management">R0.00</b></li>
+            </ul>
+          </div>
+          <div class="compare-col compare-col--with">
+            <div class="compare-col__tag">With LTS</div>
+            <div class="compare-col__big" id="cmp-with-monthly">R0.00</div>
+            <div class="compare-col__per">per month</div>
+            <ul>
+              <li>One simple per-trainee subscription</li>
+              <li>No paper, no manual capturing</li>
+              <li>Automated tracking, reports &amp; audit trail</li>
+            </ul>
+          </div>
+        </div>
 
-@* ======================================================================
-   Scripts — rendered into _Layout.cshtml's Scripts section (the default
-   Razor Pages template already has @RenderSection("Scripts", required:
-   false) just before </body>; if your _Layout.cshtml doesn't, add it
-   there — see the _Layout.cshtml notes for the exact line).
+        <div class="compare-savings" id="cmp-savings"></div>
+        <p class="compare-card__note">These figures are your own estimates of manual effort, not LTS charges — they help show the time and money LTS saves. LTS costs above exclude VAT unless the toggle is on.</p>
+      </div>
+    </div>
+  </section>
 
-   Load order matters: SheetJS (xlsx) must load before pricing-calculator.js,
-   since app.js's Export-to-Excel button calls into the global XLSX object.
-   ====================================================================== *@
-@section Scripts {
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
-    <script src="~/js/pricing-calculator.js"></script>
-}
+  <!-- ============ TEMPLATES TAB ============ -->
+  <section class="tabpanel" id="panel-templates">
+    <p class="panel-intro">Common training-office profiles, pre-configured. Pick one as a starting point, then fine-tune the trainee count on the Estimate tab.</p>
+    <div class="template-grid" id="template-grid"></div>
+  </section>
+
+  <!-- ============ SAVED TAB ============ -->
+  <section class="tabpanel" id="panel-saved">
+    <p class="panel-intro">Estimates you save are kept on this device.</p>
+    <div id="saved-list" class="saved-list"></div>
+  </section>
+
+  <!-- ============ FAQ TAB ============ -->
+  <section class="tabpanel" id="panel-faqs">
+    <div id="faq-list" class="faq-list"></div>
+  </section>
+
+</main>
+
+<!-- ============ FOOTER ============ -->
+<footer class="site-footer">
+  <div class="brand-bar" aria-hidden="true"></div>
+  <div class="site-footer__inner">
+    <span class="site-footer__brand">
+      <span class="lts-logo lts-logo--sm" aria-hidden="true">
+        <svg viewBox="0 0 100 100" width="26" height="26" role="img" aria-label="LTS logo">
+          <path d="M27 6 L73 6 L96 50 L73 94 L27 94 L4 50 Z" fill="url(#ltsGrad)" />
+          <text x="50" y="50" text-anchor="middle" dominant-baseline="central"
+                font-family="-apple-system, Segoe UI, Inter, Arial, sans-serif"
+                font-size="30" font-weight="700" letter-spacing="1" fill="#ffffff">LTS</text>
+        </svg>
+      </span>
+      LTS — Learner Tracking Systems
+    </span>
+    <span class="site-footer__note">Prices exclude VAT unless stated · Estimates only</span>
+  </div>
+</footer>
+
+<!-- ============ CALCULATOR LOADING OVERLAY ============ -->
+<div class="calc-loader" id="calc-loader" hidden role="status" aria-live="polite" aria-label="Loading your estimate">
+  <div class="calc-loader__card">
+    <div class="calc-device">
+      <div class="calc-device__screen"></div>
+      <div class="calc-device__keys">
+        <span></span><span></span><span></span><span></span>
+        <span></span><span></span><span></span><span></span>
+        <span></span><span></span><span></span><span></span>
+        <span></span><span></span><span></span><span></span>
+      </div>
+    </div>
+    <div class="calc-loader__label">Loading your estimate…</div>
+    <div class="calc-loader__bar"><span></span></div>
+  </div>
+</div>
+
+<!-- Load order matters: SheetJS (xlsx) must load before pricing-calculator.js,
+     since app.js's Export-to-Excel button calls into the global XLSX object. -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script src="~/js/pricing-calculator.js"></script>
+</body>
+</html>
